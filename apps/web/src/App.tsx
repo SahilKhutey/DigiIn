@@ -17,6 +17,8 @@ import { DocumentCenter } from "./components/wallet/DocumentCenter";
 import { OfflineScannerModal } from "./components/scanner/OfflineScannerModal";
 import { EkycVerificationModal } from "./components/ekyc/EkycVerificationModal";
 import { DirectVerificationFlow } from "./components/verification/DirectVerificationFlow";
+import { LanguageProvider, useLanguage } from "./context/LanguageContext";
+
 
 
 
@@ -104,7 +106,7 @@ const FALLBACK_DIAGNOSTIC: Diagnostic = {
   ],
 };
 
-export function App() {
+function AppContent() {
   // Scenario & Document Catalogue State
   const [scenarios, setScenarios] = useState<Scenario[]>(LOCAL_SCENARIOS);
   const [documents, setDocuments] = useState<DocumentOption[]>(LOCAL_DOCUMENTS);
@@ -476,4 +478,13 @@ export function App() {
     </main>
   );
 }
+
+export function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
+  );
+}
+
 
