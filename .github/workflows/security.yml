@@ -1,0 +1,77 @@
+name: Security Audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 4 * * 1' # Weekly Monday scan
+  workflow_dispatch:
+
+jobs:
+  # 1. Dependency Vulnerability Scan
+  dependency-scan:
+    name: Dependency Vulnerability Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pip-audit & scan Python dependencies
+        working-directory: services/api
+        run: |
+          python -m pip install --upgrade pip pip-audit
+          pip install -e .
+          pip-audit || true
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run npm audit
+        working-directory: apps/web
+        run: |
+          npm audit --audit-level=high || true
+
+  # 2. Sovereign Cryptographic & Privacy Compliance Check
+  cryptographic-audit:
+    name: Sovereign Privacy & Cryptographic Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Backend Dependencies
+        working-directory: services/api
+        run: |
+          pip install -e ".[dev]"
+
+      - name: Verify Deterministic Sovereign Key Derivation & RFC 7517 JWKS Discovery
+        working-directory: services/api
+        env:
+          PYTHONPATH: "."
+        run: |
+          python -c "
+          from app.services.crypto import get_public_jwks, sign_proof_token, verify_proof_token
+          jwks = get_public_jwks()
+          assert len(jwks['keys']) == 2, 'JWKS must expose both Ed25519 and RSA public keys'
+          tok, kid, alg = sign_proof_token({'sub': 'test', 'aud': 'TEST', 'status': 'VERIFIED'})
+          assert alg == 'EdDSA', 'Default sovereign algorithm must be Ed25519 (EdDSA)'
+          verified, claims, err = verify_proof_token(tok, 'TEST')
+          assert verified, f'Cryptographic verification failed: {err}'
+          print('✅ Sovereign Cryptographic Audit Passed: Ed25519 & JWKS compliant.')
+          "
