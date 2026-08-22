@@ -379,4 +379,65 @@ export type SupportSafeSummary = {
   qrDigest: string;
 };
 
+export type EkycOtpRequest = {
+  aadhaarRef: string;
+  purpose?: string;
+};
+
+export type EkycOtpResponse = {
+  txnId: string;
+  maskedMobile: string;
+  expiresInSeconds: number;
+  demoOtpHint: string;
+  message: string;
+};
+
+export type EkycVerifyRequest = {
+  txnId: string;
+  otp: string;
+  documentId?: string;
+};
+
+export type EkycIdentitySnapshot = {
+  name: string;
+  dob: string;
+  gender: string;
+  maskedAadhaar: string;
+  state: string;
+  district: string;
+  pincode: string;
+};
+
+export type EkycMatchResult = {
+  nameMatch: boolean;
+  dobMatch: boolean;
+  stateMatch: boolean;
+  score: number;
+  verdict: "EXACT_MATCH" | "HIGH_CONFIDENCE_MATCH" | "PARTIAL_MATCH" | "MISMATCH";
+  claimedValues: Record<string, string>;
+  officialValues: Record<string, string>;
+  notes: string[];
+};
+
+export type EkycVerifyResponse = {
+  txnId: string;
+  status: "VERIFIED" | "FAILED" | "EXPIRED";
+  identitySnapshot: EkycIdentitySnapshot;
+  matchResult: EkycMatchResult;
+  elevatedDocumentLevel?: number;
+  ekycProofToken: string;
+  keyId: string;
+  algorithm: "EdDSA";
+  verifiedAt: string;
+  message: string;
+};
+
+export type EkycMatchDemographicsRequest = {
+  claimedName: string;
+  claimedDob?: string;
+  claimedState?: string;
+  aadhaarRef: string;
+};
+
+
 

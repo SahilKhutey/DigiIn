@@ -592,3 +592,64 @@ class SupportSafeSummary(BaseModel):
     qrDigest: str
 
 
+class EkycOtpRequest(BaseModel):
+    aadhaarRef: str
+    purpose: str = "Citizen Identity Verification"
+
+
+class EkycOtpResponse(BaseModel):
+    txnId: str
+    maskedMobile: str
+    expiresInSeconds: int = 600
+    demoOtpHint: str
+    message: str
+
+
+class EkycVerifyRequest(BaseModel):
+    txnId: str
+    otp: str
+    documentId: str | None = None
+
+
+class EkycIdentitySnapshot(BaseModel):
+    name: str
+    dob: str
+    gender: str
+    maskedAadhaar: str
+    state: str
+    district: str
+    pincode: str
+
+
+class EkycMatchResult(BaseModel):
+    nameMatch: bool
+    dobMatch: bool
+    stateMatch: bool
+    score: int
+    verdict: Literal["EXACT_MATCH", "HIGH_CONFIDENCE_MATCH", "PARTIAL_MATCH", "MISMATCH"]
+    claimedValues: dict[str, str] = Field(default_factory=dict)
+    officialValues: dict[str, str] = Field(default_factory=dict)
+    notes: list[str] = Field(default_factory=list)
+
+
+class EkycVerifyResponse(BaseModel):
+    txnId: str
+    status: Literal["VERIFIED", "FAILED", "EXPIRED"]
+    identitySnapshot: EkycIdentitySnapshot
+    matchResult: EkycMatchResult
+    elevatedDocumentLevel: int | None = None
+    ekycProofToken: str
+    keyId: str
+    algorithm: Literal["EdDSA"] = "EdDSA"
+    verifiedAt: datetime
+    message: str
+
+
+class EkycMatchDemographicsRequest(BaseModel):
+    claimedName: str
+    claimedDob: str | None = None
+    claimedState: str | None = None
+    aadhaarRef: str
+
+
+
