@@ -1,19 +1,36 @@
 """DigiIn modular-monolith API entry point."""
 
+from __future__ import annotations
+
+from typing import Any
+
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
+
 from app.domain.models import (
     ConsentPreview,
-    DocumentUploadRequest,
+    ConsentRecord,
+    CorrectionRequestCreate,
+    CorrectionRequestRecord,
+    CorrectionReviewDecision,
+    DirectUploadPayload,
     DocumentOption,
+    DocumentUploadRequest,
+    DocumentVersionRecord,
+    DomainEvent,
+    EvidenceComparisonDetail,
     GovernmentReviewDecision,
     IssuerHealth,
+    JwksResponse,
+    PipelineUploadResponse,
     PlatformSnapshot,
     ProofTokenIntrospection,
     ProofTokenIntrospectionRequest,
+    RevokeConsentPayload,
     ScenarioSummary,
     StudentDemoResult,
+    SupportSafeSummary,
     TransactionDiagnosis,
     UploadedDocument,
     VerificationAuthorization,
@@ -21,17 +38,32 @@ from app.domain.models import (
     VerificationRequestCreate,
     VerificationRequestRecord,
     VerificationResult,
+    VerifierQueueId,
+    VerifierQueueSummary,
+    WalletDocument,
 )
+from app.services.crypto import get_public_jwks
 from app.services.platform import (
     classify_document,
+    create_correction_request,
     create_verification_case,
+    decide_correction_request,
     decide_verification_case,
+    get_case_evidence_comparison,
+    get_correction,
+    get_document_versions,
+    get_wallet_documents,
+    list_corrections,
+    list_verifier_cases,
+    list_verifier_queues,
     platform_snapshot,
     run_student_demo,
+    upload_and_classify_pipeline,
     upload_document,
 )
+
 from app.services.catalogue import get_document, search_documents
-from app.services.recovery import get_diagnosis, list_scenarios
+from app.services.recovery import generate_support_summary, get_diagnosis, list_scenarios
 from app.services.trust import consent_preview, issuer_health
 from app.services.verification import (
     authorize_verification_request,
@@ -40,9 +72,18 @@ from app.services.verification import (
     get_verification_request,
     get_verification_result,
     introspect_token,
+    list_consents,
     list_verification_requests,
     result_for_request,
+    revoke_verification_consent,
 )
+
+
+
+from app.db.session import check_db_health, init_db
+
+# Initialize database tables and initial seed fixtures on module load / startup
+init_db()
 
 app = FastAPI(title="DigiIn Prototype API", version="0.4.0")
 app.add_middleware(
@@ -55,8 +96,23 @@ app.add_middleware(
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok", "service": "digiin-api", "mode": "synthetic-prototype"}
+def health() -> dict[str, Any]:
+    db_health = check_db_health()
+    return {
+        "status": "ok",
+        "service": "digiin-api",
+        "mode": "persistent-relational",
+        "database": db_health,
+    }
+
+
+@app.get("/.well-known/jwks.json", response_model=JwksResponse)
+@app.get("/api/v1/.well-known/jwks.json", response_model=JwksResponse)
+def jwks() -> JwksResponse:
+    """RFC 7517 JSON Web Key Set discovery endpoint for offline third-party proof verification."""
+    return JwksResponse(**get_public_jwks())
+
+
 
 
 @app.get("/api/v1/documents", response_model=list[DocumentOption])
@@ -73,6 +129,13 @@ def read_document(document_id: str) -> DocumentOption:
     return document
 
 
+@app.get("/api/v1/wallet/documents", response_model=list[WalletDocument])
+def list_wallet_documents(subject_id: str = Query(default="subj_demo_5c7b90")) -> list[WalletDocument]:
+    """Retrieve all citizen wallet documents with full 5-signal trust models."""
+    return get_wallet_documents(subject_id)
+
+
+
 @app.get("/api/v1/scenarios", response_model=list[ScenarioSummary])
 def scenarios() -> list[ScenarioSummary]:
     return list_scenarios()
@@ -84,6 +147,16 @@ def transaction_diagnosis(transaction_id: str) -> TransactionDiagnosis:
     if diagnosis is None:
         raise HTTPException(status_code=404, detail="Transaction diagnosis not found")
     return diagnosis
+
+
+@app.get("/api/v1/transactions/{transaction_id}/support-summary", response_model=SupportSafeSummary)
+def transaction_support_summary(transaction_id: str) -> SupportSafeSummary:
+    """Generate a printable, PII-free facilitation report with an opaque support code."""
+    summary = generate_support_summary(transaction_id)
+    if summary is None:
+        raise HTTPException(status_code=404, detail="Transaction scenario not found")
+    return summary
+
 
 
 @app.get("/api/v1/diagnostics/{scenario_id}", response_model=TransactionDiagnosis, deprecated=True)
@@ -190,16 +263,59 @@ def introspect_proof_token(
     return introspect_token(payload.token, payload.audience, payload.nonce)
 
 
+@app.get("/api/v1/consent", response_model=list[ConsentRecord])
+def get_consents(subject_id: str = Query(default="subj_demo_5c7b90")) -> list[ConsentRecord]:
+    """Retrieve all active, revoked, and historical consents for a citizen."""
+    return list_consents(subject_id)
+
+
+@app.post("/api/v1/consent/{verification_id}/revoke", response_model=ConsentRecord)
+def revoke_consent(
+    verification_id: str,
+    payload: RevokeConsentPayload,
+    subject_id: str = Query(default="subj_demo_5c7b90"),
+) -> ConsentRecord:
+    """Cryptographically revokes an active proof token issued to a relying party."""
+    updated = revoke_verification_consent(verification_id, subject_id, payload.reason)
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Verification consent not found")
+    return updated
+
+
+@app.get("/api/v1/audit/events", response_model=list[DomainEvent])
+def get_audit_events(
+    event_type: str | None = Query(default=None),
+    aggregate_id: str | None = Query(default=None),
+    limit: int = Query(default=50, ge=1, le=200),
+) -> list[DomainEvent]:
+    """Retrieves full filterable platform audit trail of sovereign domain events."""
+    snapshot = platform_snapshot()
+    events = snapshot.events
+    if event_type:
+        events = [e for e in events if e.type == event_type]
+    if aggregate_id:
+        events = [e for e in events if e.aggregateId == aggregate_id]
+    return events[-limit:]
+
+
 @app.get("/api/v1/platform/snapshot", response_model=PlatformSnapshot)
 def read_platform_snapshot() -> PlatformSnapshot:
     """Read the current synthetic platform state: flags, policies, integrations and events."""
     return platform_snapshot()
 
 
+
 @app.post("/api/v1/documents/upload", response_model=UploadedDocument)
 def create_uploaded_document(payload: DocumentUploadRequest) -> UploadedDocument:
     """Create citizen-uploaded document metadata; no real file is accepted in the prototype."""
     return upload_document(payload)
+
+
+@app.post("/api/v1/documents/upload-pipeline", response_model=PipelineUploadResponse)
+def execute_upload_pipeline(payload: DirectUploadPayload) -> PipelineUploadResponse:
+    """Ingest document, extract OCR entities, compute hash, and enqueue for verification review."""
+    return upload_and_classify_pipeline(payload)
+
 
 
 @app.post("/api/v1/documents/{document_id}/classify", response_model=UploadedDocument)
@@ -226,7 +342,92 @@ def decide_case(case_id: str, payload: GovernmentReviewDecision) -> Verification
     return case
 
 
+@app.post("/api/v1/documents/{document_id}/corrections", response_model=CorrectionRequestRecord)
+def request_document_correction(
+    document_id: str, payload: CorrectionRequestCreate
+) -> CorrectionRequestRecord:
+    """Submit a formal citizen correction request for an official or uploaded document."""
+    request = create_correction_request(document_id, payload)
+    if request is None:
+        raise HTTPException(status_code=404, detail="Target document not found")
+    return request
+
+
+@app.get("/api/v1/documents/{document_id}/corrections", response_model=list[CorrectionRequestRecord])
+def get_corrections_for_document(document_id: str) -> list[CorrectionRequestRecord]:
+    """List all correction requests associated with a specific document."""
+    return list_corrections(document_id)
+
+
+@app.get("/api/v1/documents/{document_id}/versions", response_model=list[DocumentVersionRecord])
+def get_versions_for_document(document_id: str) -> list[DocumentVersionRecord]:
+    """Retrieve the complete, immutable version history chain for a document."""
+    return get_document_versions(document_id)
+
+
+@app.get("/api/v1/corrections", response_model=list[CorrectionRequestRecord])
+def get_all_corrections() -> list[CorrectionRequestRecord]:
+    """List all platform correction requests across all queues."""
+    return list_corrections()
+
+
+@app.get("/api/v1/corrections/{request_id}", response_model=CorrectionRequestRecord)
+def read_correction_request(request_id: str) -> CorrectionRequestRecord:
+    request = get_correction(request_id)
+    if request is None:
+        raise HTTPException(status_code=404, detail="Correction request not found")
+    return request
+
+
+@app.post("/api/v1/corrections/{request_id}/decision", response_model=CorrectionRequestRecord)
+def review_correction(
+    request_id: str, payload: CorrectionReviewDecision
+) -> CorrectionRequestRecord:
+    """Record an authorized officer decision on a correction request and issue a new version if approved."""
+    request = decide_correction_request(request_id, payload)
+    if request is None:
+        raise HTTPException(status_code=404, detail="Correction request or document not found")
+    return request
+
+
 @app.post("/api/v1/platform/demo/student", response_model=StudentDemoResult)
 def run_student_vertical_slice() -> StudentDemoResult:
     """Run the canonical student upload -> government verification -> requester proof demo."""
     return run_student_demo()
+
+
+@app.get("/api/v1/verifier/queues", response_model=list[VerifierQueueSummary])
+def verifier_queues() -> list[VerifierQueueSummary]:
+    """List multi-tenant verifier queues with live pending and verified counts."""
+    return list_verifier_queues()
+
+
+@app.get("/api/v1/verifier/cases", response_model=list[VerificationCase])
+def verifier_cases(
+    queue_id: VerifierQueueId | None = Query(default=None),
+    status: str | None = Query(default=None),
+) -> list[VerificationCase]:
+    """List verification cases with optional department queue and status filters."""
+    return list_verifier_cases(queue_id, status)
+
+
+@app.get("/api/v1/verifier/cases/{case_id}/comparison", response_model=EvidenceComparisonDetail)
+def verifier_case_comparison(case_id: str) -> EvidenceComparisonDetail:
+    """Fetch side-by-side evidence diff comparison for a specific verification case."""
+    comparison = get_case_evidence_comparison(case_id)
+    if comparison is None:
+        raise HTTPException(status_code=404, detail="Verification case or document not found")
+    return comparison
+
+
+@app.post("/api/v1/verifier/cases/{case_id}/decision", response_model=VerificationCase)
+def submit_verifier_decision(
+    case_id: str, payload: GovernmentReviewDecision
+) -> VerificationCase:
+    """Record an official government verifier decision (Verify, Reject, Request Evidence, Transfer)."""
+    case = decide_verification_case(case_id, payload)
+    if case is None:
+        raise HTTPException(status_code=404, detail="Verification case not found")
+    return case
+
+
