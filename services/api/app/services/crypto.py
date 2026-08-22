@@ -10,9 +10,11 @@ from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ed25519, padding, rsa
 
-# Generate sovereign signing keypairs (in memory for prototype persistence)
-ED25519_PRIVATE_KEY = ed25519.Ed25519PrivateKey.generate()
+# Sovereign signing keypairs (deterministic sovereign root for air-gapped JWKS public discovery)
+SOVEREIGN_ED25519_SEED = b"digiin_sovereign_ed25519_key_32b"
+ED25519_PRIVATE_KEY = ed25519.Ed25519PrivateKey.from_private_bytes(SOVEREIGN_ED25519_SEED)
 ED25519_KEY_ID = "digiin-ed25519-key-2026"
+
 
 RSA_PRIVATE_KEY = rsa.generate_private_key(public_exponent=65537, key_size=2048)
 RSA_KEY_ID = "digiin-rs256-key-2026"
