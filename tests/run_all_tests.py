@@ -52,6 +52,7 @@ def main():
         ("Standalone Core Services (Audit & Catalogue)", ["python", "tests/test_standalone_services.py"], root_dir),
         ("Core Foundation & Security Hardening", ["python", "tests/test_foundation_hardening.py"], root_dir),
         ("API Performance & Latency SLAs", ["python", "tests/test_performance_and_latency.py"], root_dir),
+        ("Security & Anti-Piracy Safeguards", ["python", "tests/test_security_and_anti_piracy.py"], root_dir),
         ("Background Worker & Mobile Integration", ["python", "tests/test_mobile_and_worker_integration.py"], root_dir),
         ("Document Pipeline 9-Step E2E", ["python", "tests/test_document_pipeline_e2e.py"], root_dir),
         ("Core Verification Flow E2E", ["python", "tests/e2e_verification_flow.py"], root_dir),
