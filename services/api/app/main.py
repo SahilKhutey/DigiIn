@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 import uuid
 from typing import Any
 
@@ -114,18 +115,24 @@ from app.services.verification import (
 init_db()
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """Hardened security headers & correlation ID injection middleware."""
+    """Hardened security headers, correlation ID injection, and microsecond server timing middleware."""
 
     async def dispatch(self, request: Request, call_next):  # type: ignore
+        start_time = time.perf_counter()
         req_id = request.headers.get("X-Request-ID") or f"req_{uuid.uuid4().hex[:12]}"
         response: Response = await call_next(request)
+        duration_ms = (time.perf_counter() - start_time) * 1000.0
+
         response.headers["X-Request-ID"] = req_id
+        response.headers["X-Response-Time"] = f"{duration_ms:.2f}ms"
+        response.headers["Server-Timing"] = f"total;dur={duration_ms:.2f}"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         return response
+
 
 
 app = FastAPI(title="DigiLocker X API", version="0.5.0")
