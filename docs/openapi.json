@@ -1,0 +1,6096 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DigiLocker X API",
+    "version": "0.5.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register",
+        "operationId": "register_api_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Refresh",
+        "operationId": "refresh_api_v1_auth_refresh_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "tags": [
+          "citizen"
+        ],
+        "summary": "Me",
+        "operationId": "me_api_v1_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/credentials": {
+      "get": {
+        "tags": [
+          "citizen"
+        ],
+        "summary": "Credentials",
+        "operationId": "credentials_api_v1_credentials_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CredentialOut"
+                  },
+                  "type": "array",
+                  "title": "Response Credentials Api V1 Credentials Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "citizen"
+        ],
+        "summary": "Create Credential",
+        "operationId": "create_credential_api_v1_credentials_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CredentialCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CredentialOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/verification/requests": {
+      "get": {
+        "summary": "Verification Requests",
+        "operationId": "verification_requests_api_v1_verification_requests_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VerificationRequestRecord"
+                  },
+                  "type": "array",
+                  "title": "Response Verification Requests Api V1 Verification Requests Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Proof Request",
+        "description": "Create a purpose-bound verification request from a requester portal.",
+        "operationId": "create_proof_request_api_v1_verification_requests_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerificationRequestCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationRequestRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verification/requests/{request_id}/consent": {
+      "post": {
+        "tags": [
+          "citizen"
+        ],
+        "summary": "Consent",
+        "operationId": "consent_api_v1_verification_requests__request_id__consent_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verification/requests/{request_id}/run": {
+      "post": {
+        "tags": [
+          "citizen"
+        ],
+        "summary": "Run Verification",
+        "operationId": "run_verification_api_v1_verification_requests__request_id__run_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/corrections": {
+      "get": {
+        "summary": "Get All Corrections",
+        "description": "List all platform correction requests across all queues.",
+        "operationId": "get_all_corrections_api_v1_corrections_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CorrectionRequestRecord"
+                  },
+                  "type": "array",
+                  "title": "Response Get All Corrections Api V1 Corrections Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "citizen"
+        ],
+        "summary": "Correction",
+        "operationId": "correction_api_v1_corrections_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorrectionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "tags": [
+          "citizen"
+        ],
+        "summary": "Notifications",
+        "operationId": "notifications_api_v1_notifications_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/documents/upload-pipeline": {
+      "post": {
+        "summary": "Execute Upload Pipeline",
+        "description": "Ingest document, extract OCR entities, compute hash, and enqueue for verification review.",
+        "operationId": "execute_upload_pipeline_api_v1_documents_upload_pipeline_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectUploadPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PipelineUploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/government/review-queue": {
+      "get": {
+        "tags": [
+          "government"
+        ],
+        "summary": "Review Queue",
+        "operationId": "review_queue_api_v1_government_review_queue_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/government/queues": {
+      "get": {
+        "tags": [
+          "government"
+        ],
+        "summary": "Get Queues",
+        "description": "Retrieve summary metrics across all departmental verifier review queues.",
+        "operationId": "get_queues_api_v1_government_queues_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VerifierQueueSummary"
+                  },
+                  "type": "array",
+                  "title": "Response Get Queues Api V1 Government Queues Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/government/cases": {
+      "get": {
+        "tags": [
+          "government"
+        ],
+        "summary": "Get Cases",
+        "description": "Retrieve all verification discrepancy cases for review.",
+        "operationId": "get_cases_api_v1_government_cases_get",
+        "parameters": [
+          {
+            "name": "queue",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/VerifierQueueId"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Queue"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VerificationCase"
+                  },
+                  "title": "Response Get Cases Api V1 Government Cases Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/government/cases/{case_id}/comparison": {
+      "get": {
+        "tags": [
+          "government"
+        ],
+        "summary": "Get Case Comparison",
+        "description": "Side-by-side comparison of citizen OCR extracted claims vs official state registry records.",
+        "operationId": "get_case_comparison_api_v1_government_cases__case_id__comparison_get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceComparisonDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/government/cases/{case_id}/decision": {
+      "post": {
+        "tags": [
+          "government"
+        ],
+        "summary": "Submit Case Decision",
+        "description": "Submit officer adjudication decision (VERIFY, REJECT, REQUEST_MORE_EVIDENCE, TRANSFER).",
+        "operationId": "submit_case_decision_api_v1_government_cases__case_id__decision_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GovernmentReviewDecision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationCase"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/proofs/{proof_id}/verify": {
+      "get": {
+        "tags": [
+          "proofs"
+        ],
+        "summary": "Verify Proof",
+        "operationId": "verify_proof_api_v1_proofs__proof_id__verify_get",
+        "parameters": [
+          {
+            "name": "proof_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Proof Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/.well-known/jwks.json": {
+      "get": {
+        "summary": "Jwks",
+        "description": "RFC 7517 JSON Web Key Set discovery endpoint for offline third-party proof verification.",
+        "operationId": "jwks_api_v1__well_known_jwks_json_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwksResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/jwks.json": {
+      "get": {
+        "summary": "Jwks",
+        "description": "RFC 7517 JSON Web Key Set discovery endpoint for offline third-party proof verification.",
+        "operationId": "jwks__well_known_jwks_json_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwksResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/otp/send": {
+      "post": {
+        "summary": "Send Auth Otp",
+        "description": "Passwordless mobile OTP challenge generation.",
+        "operationId": "send_auth_otp_api_v1_auth_otp_send_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthSendOtpRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSendOtpResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/otp/verify": {
+      "post": {
+        "summary": "Verify Auth Otp",
+        "description": "Verify OTP challenge and return sovereign session tokens.",
+        "operationId": "verify_auth_otp_api_v1_auth_otp_verify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthVerifyOtpRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthTokenPairResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/issuers": {
+      "get": {
+        "summary": "List Issuers",
+        "description": "List registered government issuer adapters and capabilities.",
+        "operationId": "list_issuers_api_v1_issuers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response List Issuers Api V1 Issuers Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/documents": {
+      "get": {
+        "summary": "List Documents",
+        "description": "Intent-first search over the safe mock catalogue.",
+        "operationId": "list_documents_api_v1_documents_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80,
+              "default": "",
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentOption"
+                  },
+                  "title": "Response List Documents Api V1 Documents Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/documents/{document_id}": {
+      "get": {
+        "summary": "Read Document",
+        "operationId": "read_document_api_v1_documents__document_id__get",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentOption"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/wallet/documents": {
+      "get": {
+        "summary": "List Wallet Documents",
+        "description": "Retrieve all citizen wallet documents with full 5-signal trust models.",
+        "operationId": "list_wallet_documents_api_v1_wallet_documents_get",
+        "parameters": [
+          {
+            "name": "subject_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "subj_demo_5c7b90",
+              "title": "Subject Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WalletDocument"
+                  },
+                  "title": "Response List Wallet Documents Api V1 Wallet Documents Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios": {
+      "get": {
+        "summary": "Scenarios",
+        "operationId": "scenarios_api_v1_scenarios_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ScenarioSummary"
+                  },
+                  "type": "array",
+                  "title": "Response Scenarios Api V1 Scenarios Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/{transaction_id}/diagnosis": {
+      "get": {
+        "summary": "Transaction Diagnosis",
+        "operationId": "transaction_diagnosis_api_v1_transactions__transaction_id__diagnosis_get",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Transaction Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionDiagnosis"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/{transaction_id}/support-summary": {
+      "get": {
+        "summary": "Transaction Support Summary",
+        "description": "Generate a printable, PII-free facilitation report with an opaque support code.",
+        "operationId": "transaction_support_summary_api_v1_transactions__transaction_id__support_summary_get",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Transaction Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupportSafeSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/diagnostics/{scenario_id}": {
+      "get": {
+        "summary": "Legacy Diagnostic",
+        "description": "Compatibility route; use the transaction diagnosis endpoint for new clients.",
+        "operationId": "legacy_diagnostic_api_v1_diagnostics__scenario_id__get",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionDiagnosis"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/{transaction_id}/retry": {
+      "post": {
+        "summary": "Targeted Retry",
+        "description": "Prototype-only targeted retry; no external system is contacted.",
+        "operationId": "targeted_retry_api_v1_transactions__transaction_id__retry_post",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Transaction Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionDiagnosis"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/diagnostics/{scenario_id}/retry": {
+      "post": {
+        "summary": "Legacy Retry",
+        "operationId": "legacy_retry_api_v1_diagnostics__scenario_id__retry_post",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionDiagnosis"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/issuers/health": {
+      "get": {
+        "summary": "List Issuer Health",
+        "operationId": "list_issuer_health_api_v1_issuers_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/IssuerHealth"
+                  },
+                  "type": "array",
+                  "title": "Response List Issuer Health Api V1 Issuers Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/consents/preview": {
+      "get": {
+        "summary": "Get Consent Preview",
+        "operationId": "get_consent_preview_api_v1_consents_preview_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentPreview"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verification/request": {
+      "get": {
+        "summary": "Verification Requests",
+        "operationId": "verification_requests_api_v1_verification_request_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VerificationRequestRecord"
+                  },
+                  "type": "array",
+                  "title": "Response Verification Requests Api V1 Verification Request Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Proof Request",
+        "description": "Create a purpose-bound verification request from a requester portal.",
+        "operationId": "create_proof_request_api_v1_verification_request_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerificationRequestCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationRequestRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verification/request/demo-exam": {
+      "post": {
+        "summary": "Create Demo Exam Request",
+        "description": "Create a synthetic multi-credential exam eligibility request.",
+        "operationId": "create_demo_exam_request_api_v1_verification_request_demo_exam_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationRequestRecord"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verification/request/{request_id}": {
+      "get": {
+        "summary": "Read Verification Request",
+        "operationId": "read_verification_request_api_v1_verification_request__request_id__get",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationRequestRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verification/request/{request_id}/authorize": {
+      "post": {
+        "summary": "Authorize Proof Request",
+        "operationId": "authorize_proof_request_api_v1_verification_request__request_id__authorize_post",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerificationAuthorization"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verification/request/{request_id}/status": {
+      "get": {
+        "summary": "Verification Request Status",
+        "operationId": "verification_request_status_api_v1_verification_request__request_id__status_get",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Verification Request Status Api V1 Verification Request  Request Id  Status Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verification/result/{verification_id}": {
+      "get": {
+        "summary": "Read Verification Result",
+        "operationId": "read_verification_result_api_v1_verification_result__verification_id__get",
+        "parameters": [
+          {
+            "name": "verification_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Verification Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verification/token/{verification_id}": {
+      "get": {
+        "summary": "Read Verification Token",
+        "operationId": "read_verification_token_api_v1_verification_token__verification_id__get",
+        "parameters": [
+          {
+            "name": "verification_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Verification Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Read Verification Token Api V1 Verification Token  Verification Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verification/introspect": {
+      "post": {
+        "summary": "Introspect Proof Token",
+        "operationId": "introspect_proof_token_api_v1_verification_introspect_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProofTokenIntrospectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProofTokenIntrospection"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/consent": {
+      "get": {
+        "summary": "Get Consents",
+        "description": "Retrieve all active, revoked, and historical consents for a citizen.",
+        "operationId": "get_consents_api_v1_consent_get",
+        "parameters": [
+          {
+            "name": "subject_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "subj_demo_5c7b90",
+              "title": "Subject Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConsentRecord"
+                  },
+                  "title": "Response Get Consents Api V1 Consent Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/consent/{verification_id}/revoke": {
+      "post": {
+        "summary": "Revoke Consent",
+        "description": "Cryptographically revokes an active proof token issued to a relying party.",
+        "operationId": "revoke_consent_api_v1_consent__verification_id__revoke_post",
+        "parameters": [
+          {
+            "name": "verification_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Verification Id"
+            }
+          },
+          {
+            "name": "subject_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "subj_demo_5c7b90",
+              "title": "Subject Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeConsentPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audit/events": {
+      "get": {
+        "summary": "Get Audit Events",
+        "description": "Retrieves full filterable platform audit trail of sovereign domain events.",
+        "operationId": "get_audit_events_api_v1_audit_events_get",
+        "parameters": [
+          {
+            "name": "event_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Event Type"
+            }
+          },
+          {
+            "name": "aggregate_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Aggregate Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DomainEvent"
+                  },
+                  "title": "Response Get Audit Events Api V1 Audit Events Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/platform/snapshot": {
+      "get": {
+        "summary": "Read Platform Snapshot",
+        "description": "Read the current synthetic platform state: flags, policies, integrations and events.",
+        "operationId": "read_platform_snapshot_api_v1_platform_snapshot_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformSnapshot"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/documents/upload": {
+      "post": {
+        "summary": "Create Uploaded Document",
+        "description": "Create citizen-uploaded document metadata; no real file is accepted in the prototype.",
+        "operationId": "create_uploaded_document_api_v1_documents_upload_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentUploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadedDocument"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/documents/{document_id}/classify": {
+      "post": {
+        "summary": "Classify Uploaded Document",
+        "operationId": "classify_uploaded_document_api_v1_documents__document_id__classify_post",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadedDocument"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/documents/{document_id}/verification-case": {
+      "post": {
+        "summary": "Open Verification Case",
+        "operationId": "open_verification_case_api_v1_documents__document_id__verification_case_post",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationCase"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verification/cases/{case_id}/decision": {
+      "post": {
+        "summary": "Decide Case",
+        "operationId": "decide_case_api_v1_verification_cases__case_id__decision_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GovernmentReviewDecision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationCase"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/documents/{document_id}/corrections": {
+      "post": {
+        "summary": "Request Document Correction",
+        "description": "Submit a formal citizen correction request for an official or uploaded document.",
+        "operationId": "request_document_correction_api_v1_documents__document_id__corrections_post",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorrectionRequestCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionRequestRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get Corrections For Document",
+        "description": "List all correction requests associated with a specific document.",
+        "operationId": "get_corrections_for_document_api_v1_documents__document_id__corrections_get",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CorrectionRequestRecord"
+                  },
+                  "title": "Response Get Corrections For Document Api V1 Documents  Document Id  Corrections Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/documents/{document_id}/versions": {
+      "get": {
+        "summary": "Get Versions For Document",
+        "description": "Retrieve the complete, immutable version history chain for a document.",
+        "operationId": "get_versions_for_document_api_v1_documents__document_id__versions_get",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentVersionRecord"
+                  },
+                  "title": "Response Get Versions For Document Api V1 Documents  Document Id  Versions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/corrections/{request_id}": {
+      "get": {
+        "summary": "Read Correction Request",
+        "operationId": "read_correction_request_api_v1_corrections__request_id__get",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionRequestRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/corrections/{request_id}/decision": {
+      "post": {
+        "summary": "Review Correction",
+        "description": "Record an authorized officer decision on a correction request and issue a new version if approved.",
+        "operationId": "review_correction_api_v1_corrections__request_id__decision_post",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorrectionReviewDecision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionRequestRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/platform/demo/student": {
+      "post": {
+        "summary": "Run Student Vertical Slice",
+        "description": "Run the canonical student upload -> government verification -> requester proof demo.",
+        "operationId": "run_student_vertical_slice_api_v1_platform_demo_student_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentDemoResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verifier/queues": {
+      "get": {
+        "summary": "Verifier Queues",
+        "description": "List multi-tenant verifier queues with live pending and verified counts.",
+        "operationId": "verifier_queues_api_v1_verifier_queues_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VerifierQueueSummary"
+                  },
+                  "type": "array",
+                  "title": "Response Verifier Queues Api V1 Verifier Queues Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verifier/cases": {
+      "get": {
+        "summary": "Verifier Cases",
+        "description": "List verification cases with optional department queue and status filters.",
+        "operationId": "verifier_cases_api_v1_verifier_cases_get",
+        "parameters": [
+          {
+            "name": "queue_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/VerifierQueueId"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Queue Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VerificationCase"
+                  },
+                  "title": "Response Verifier Cases Api V1 Verifier Cases Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verifier/cases/{case_id}/comparison": {
+      "get": {
+        "summary": "Verifier Case Comparison",
+        "description": "Fetch side-by-side evidence diff comparison for a specific verification case.",
+        "operationId": "verifier_case_comparison_api_v1_verifier_cases__case_id__comparison_get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceComparisonDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/verifier/cases/{case_id}/decision": {
+      "post": {
+        "summary": "Submit Verifier Decision",
+        "description": "Record an official government verifier decision (Verify, Reject, Request Evidence, Transfer).",
+        "operationId": "submit_verifier_decision_api_v1_verifier_cases__case_id__decision_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GovernmentReviewDecision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationCase"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ekyc/generate-otp": {
+      "post": {
+        "summary": "Ekyc Generate Otp",
+        "description": "Generate simulated Aadhaar eKYC OTP sent to citizen's registered mobile number.",
+        "operationId": "ekyc_generate_otp_api_v1_ekyc_generate_otp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EkycOtpRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EkycOtpResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ekyc/verify-otp": {
+      "post": {
+        "summary": "Ekyc Verify Otp",
+        "description": "Verify 6-digit eKYC OTP, produce signed Ed25519 assertion, and elevate document trust level.",
+        "operationId": "ekyc_verify_otp_api_v1_ekyc_verify_otp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EkycVerifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EkycVerifyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ekyc/match-demographics": {
+      "post": {
+        "summary": "Ekyc Match Demographics",
+        "description": "Perform 1:1 fuzzy demographic match between document claims and UIDAI central registry fixtures.",
+        "operationId": "ekyc_match_demographics_api_v1_ekyc_match_demographics_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EkycMatchDemographicsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EkycMatchResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthSendOtpRequest": {
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "title": "Phonenumber"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "SMS",
+              "WHATSAPP"
+            ],
+            "title": "Channel",
+            "default": "SMS"
+          }
+        },
+        "type": "object",
+        "required": [
+          "phoneNumber"
+        ],
+        "title": "AuthSendOtpRequest"
+      },
+      "AuthSendOtpResponse": {
+        "properties": {
+          "challengeId": {
+            "type": "string",
+            "title": "Challengeid"
+          },
+          "maskedPhone": {
+            "type": "string",
+            "title": "Maskedphone"
+          },
+          "expiresInSeconds": {
+            "type": "integer",
+            "title": "Expiresinseconds",
+            "default": 300
+          },
+          "demoOtpHint": {
+            "type": "string",
+            "title": "Demootphint",
+            "default": "123456"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "challengeId",
+          "maskedPhone",
+          "message"
+        ],
+        "title": "AuthSendOtpResponse"
+      },
+      "AuthTokenPairResponse": {
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "title": "Accesstoken"
+          },
+          "refreshToken": {
+            "type": "string",
+            "title": "Refreshtoken"
+          },
+          "tokenType": {
+            "type": "string",
+            "title": "Tokentype",
+            "default": "Bearer"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "title": "Expiresin",
+            "default": 900
+          },
+          "subjectId": {
+            "type": "string",
+            "title": "Subjectid"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "default": "CITIZEN"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "subjectId"
+        ],
+        "title": "AuthTokenPairResponse"
+      },
+      "AuthVerifyOtpRequest": {
+        "properties": {
+          "challengeId": {
+            "type": "string",
+            "title": "Challengeid"
+          },
+          "otpCode": {
+            "type": "string",
+            "title": "Otpcode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "challengeId",
+          "otpCode"
+        ],
+        "title": "AuthVerifyOtpRequest"
+      },
+      "AuthenticityStatus": {
+        "type": "string",
+        "enum": [
+          "VERIFIED",
+          "UNKNOWN",
+          "REJECTED"
+        ],
+        "title": "AuthenticityStatus"
+      },
+      "ConsentCreate": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "title": "Decision"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "ConsentCreate"
+      },
+      "ConsentPreview": {
+        "properties": {
+          "requesterName": {
+            "type": "string",
+            "title": "Requestername"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "scopes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Scopes"
+          },
+          "access": {
+            "type": "string",
+            "title": "Access"
+          },
+          "retentionNotice": {
+            "type": "string",
+            "title": "Retentionnotice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "requesterName",
+          "purpose",
+          "scopes",
+          "access",
+          "retentionNotice"
+        ],
+        "title": "ConsentPreview"
+      },
+      "ConsentRecord": {
+        "properties": {
+          "consentId": {
+            "type": "string",
+            "title": "Consentid"
+          },
+          "verificationId": {
+            "type": "string",
+            "title": "Verificationid"
+          },
+          "requestId": {
+            "type": "string",
+            "title": "Requestid"
+          },
+          "subjectId": {
+            "type": "string",
+            "title": "Subjectid"
+          },
+          "requesterName": {
+            "type": "string",
+            "title": "Requestername"
+          },
+          "clientId": {
+            "type": "string",
+            "title": "Clientid"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "audience": {
+            "type": "string",
+            "title": "Audience"
+          },
+          "disclosureLevel": {
+            "$ref": "#/components/schemas/DisclosureLevel"
+          },
+          "credentialsVerified": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Credentialsverified"
+          },
+          "predicateCount": {
+            "type": "integer",
+            "title": "Predicatecount"
+          },
+          "maskedAttributesCount": {
+            "type": "integer",
+            "title": "Maskedattributescount"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "REVOKED",
+              "EXPIRED"
+            ],
+            "title": "Status"
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Issuedat"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiresat"
+          },
+          "revokedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revokedat"
+          },
+          "revocationReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revocationreason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "consentId",
+          "verificationId",
+          "requestId",
+          "subjectId",
+          "requesterName",
+          "clientId",
+          "purpose",
+          "audience",
+          "disclosureLevel",
+          "credentialsVerified",
+          "predicateCount",
+          "maskedAttributesCount",
+          "status",
+          "issuedAt",
+          "expiresAt"
+        ],
+        "title": "ConsentRecord"
+      },
+      "CorrectionCreate": {
+        "properties": {
+          "issue_type": {
+            "type": "string",
+            "title": "Issue Type"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "document_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "issue_type",
+          "description"
+        ],
+        "title": "CorrectionCreate"
+      },
+      "CorrectionDecisionType": {
+        "type": "string",
+        "enum": [
+          "APPROVE",
+          "REJECT",
+          "REQUEST_EVIDENCE"
+        ],
+        "title": "CorrectionDecisionType"
+      },
+      "CorrectionRequestCreate": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Field"
+          },
+          "currentValue": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Currentvalue"
+          },
+          "proposedValue": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Proposedvalue"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Reason"
+          },
+          "evidenceDescription": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidencedescription"
+          },
+          "evidenceReference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidencereference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field",
+          "currentValue",
+          "proposedValue",
+          "reason"
+        ],
+        "title": "CorrectionRequestCreate"
+      },
+      "CorrectionRequestRecord": {
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "title": "Requestid"
+          },
+          "documentId": {
+            "type": "string",
+            "title": "Documentid"
+          },
+          "subjectId": {
+            "type": "string",
+            "title": "Subjectid"
+          },
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "currentValue": {
+            "type": "string",
+            "title": "Currentvalue"
+          },
+          "proposedValue": {
+            "type": "string",
+            "title": "Proposedvalue"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "evidenceDescription": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidencedescription"
+          },
+          "evidenceReference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidencereference"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CorrectionStatus"
+          },
+          "resultingVersion": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resultingversion"
+          },
+          "reviewerId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewerid"
+          },
+          "reviewerNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewernote"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "requestId",
+          "documentId",
+          "subjectId",
+          "field",
+          "currentValue",
+          "proposedValue",
+          "reason",
+          "status",
+          "createdAt"
+        ],
+        "title": "CorrectionRequestRecord"
+      },
+      "CorrectionReviewDecision": {
+        "properties": {
+          "decision": {
+            "$ref": "#/components/schemas/CorrectionDecisionType"
+          },
+          "reviewerId": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 3,
+            "title": "Reviewerid",
+            "default": "officer_mock_cbse_01"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Note",
+            "default": "Reviewed and verified against secondary official records."
+          },
+          "correctedFields": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Correctedfields"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "CorrectionReviewDecision"
+      },
+      "CorrectionStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING_REVIEW",
+          "APPROVED",
+          "REJECTED",
+          "MORE_INFO_REQUIRED"
+        ],
+        "title": "CorrectionStatus"
+      },
+      "CredentialCreate": {
+        "properties": {
+          "credential_type": {
+            "type": "string",
+            "title": "Credential Type"
+          },
+          "issuer_id": {
+            "type": "string",
+            "title": "Issuer Id"
+          },
+          "holder_name": {
+            "type": "string",
+            "title": "Holder Name"
+          },
+          "passing_year": {
+            "type": "integer",
+            "title": "Passing Year"
+          }
+        },
+        "type": "object",
+        "required": [
+          "credential_type",
+          "issuer_id",
+          "holder_name",
+          "passing_year"
+        ],
+        "title": "CredentialCreate"
+      },
+      "CredentialOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "credential_type": {
+            "type": "string",
+            "title": "Credential Type"
+          },
+          "issuer_id": {
+            "type": "string",
+            "title": "Issuer Id"
+          },
+          "holder_name": {
+            "type": "string",
+            "title": "Holder Name"
+          },
+          "passing_year": {
+            "type": "integer",
+            "title": "Passing Year"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "verification_level": {
+            "type": "integer",
+            "title": "Verification Level"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "credential_type",
+          "issuer_id",
+          "holder_name",
+          "passing_year",
+          "status",
+          "verification_level",
+          "created_at"
+        ],
+        "title": "CredentialOut"
+      },
+      "CredentialProofResult": {
+        "properties": {
+          "credential": {
+            "type": "string",
+            "title": "Credential"
+          },
+          "verified": {
+            "type": "boolean",
+            "title": "Verified"
+          },
+          "status": {
+            "$ref": "#/components/schemas/VerificationStatus"
+          },
+          "issuer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issuer"
+          },
+          "level": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Level"
+          },
+          "disclosedAttributes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Disclosedattributes"
+          },
+          "predicateResults": {
+            "items": {
+              "$ref": "#/components/schemas/PredicateProofResult"
+            },
+            "type": "array",
+            "title": "Predicateresults"
+          },
+          "maskedAttributes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Maskedattributes"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "credential",
+          "verified",
+          "status",
+          "level",
+          "message"
+        ],
+        "title": "CredentialProofResult"
+      },
+      "DirectUploadPayload": {
+        "properties": {
+          "ownerSubjectId": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 6,
+            "title": "Ownersubjectid",
+            "default": "subj_demo_5c7b90"
+          },
+          "filename": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Filename",
+            "default": "uploaded_document.pdf"
+          },
+          "documentTypeHint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Documenttypehint"
+          },
+          "simulatedContent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simulatedcontent"
+          }
+        },
+        "type": "object",
+        "title": "DirectUploadPayload"
+      },
+      "DisclosureLevel": {
+        "type": "string",
+        "enum": [
+          "BOOLEAN",
+          "ATTRIBUTE",
+          "DOCUMENT"
+        ],
+        "title": "DisclosureLevel"
+      },
+      "DisclosureMode": {
+        "type": "string",
+        "enum": [
+          "MINIMUM",
+          "ATTRIBUTE",
+          "DOCUMENT_REQUIRED"
+        ],
+        "title": "DisclosureMode"
+      },
+      "DocumentClassificationResult": {
+        "properties": {
+          "documentId": {
+            "type": "string",
+            "title": "Documentid"
+          },
+          "documentType": {
+            "type": "string",
+            "title": "Documenttype"
+          },
+          "confidenceScore": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Confidencescore"
+          },
+          "extractedFields": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Extractedfields"
+          },
+          "detectedIssuer": {
+            "type": "string",
+            "title": "Detectedissuer"
+          },
+          "suggestedQueue": {
+            "type": "string",
+            "title": "Suggestedqueue"
+          },
+          "classificationNotes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Classificationnotes"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          },
+          "fileSizeKb": {
+            "type": "integer",
+            "title": "Filesizekb",
+            "default": 150
+          }
+        },
+        "type": "object",
+        "required": [
+          "documentId",
+          "documentType",
+          "confidenceScore",
+          "detectedIssuer",
+          "suggestedQueue",
+          "sha256"
+        ],
+        "title": "DocumentClassificationResult"
+      },
+      "DocumentOption": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "trustLabel": {
+            "type": "string",
+            "enum": [
+              "Government issued",
+              "User uploaded",
+              "Pending verification"
+            ],
+            "title": "Trustlabel"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "category",
+          "trustLabel"
+        ],
+        "title": "DocumentOption"
+      },
+      "DocumentSource": {
+        "type": "string",
+        "enum": [
+          "GOVERNMENT_ISSUED",
+          "CITIZEN_UPLOAD",
+          "LEGACY_RECORD"
+        ],
+        "title": "DocumentSource"
+      },
+      "DocumentUploadRequest": {
+        "properties": {
+          "ownerSubjectId": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 6,
+            "title": "Ownersubjectid",
+            "default": "subj_demo_5c7b90"
+          },
+          "filename": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Filename",
+            "default": "class-xii-marksheet.pdf"
+          },
+          "documentType": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 3,
+            "title": "Documenttype",
+            "default": "CLASS_XII"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "CITIZEN_UPLOAD",
+              "LEGACY_RECORD"
+            ],
+            "title": "Source",
+            "default": "CITIZEN_UPLOAD"
+          }
+        },
+        "type": "object",
+        "title": "DocumentUploadRequest"
+      },
+      "DocumentVersionRecord": {
+        "properties": {
+          "versionId": {
+            "type": "string",
+            "title": "Versionid"
+          },
+          "versionNumber": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Versionnumber"
+          },
+          "documentId": {
+            "type": "string",
+            "title": "Documentid"
+          },
+          "parentVersionId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parentversionid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DocumentVersionStatus",
+            "default": "ACTIVE"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          },
+          "changeSummary": {
+            "type": "string",
+            "title": "Changesummary"
+          },
+          "authority": {
+            "type": "string",
+            "title": "Authority"
+          },
+          "evidenceReference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidencereference"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "supersededAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supersededat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "versionId",
+          "versionNumber",
+          "documentId",
+          "changeSummary",
+          "authority",
+          "createdAt"
+        ],
+        "title": "DocumentVersionRecord"
+      },
+      "DocumentVersionStatus": {
+        "type": "string",
+        "enum": [
+          "ACTIVE",
+          "SUPERSEDED",
+          "ARCHIVED",
+          "REVOKED"
+        ],
+        "title": "DocumentVersionStatus"
+      },
+      "DomainEvent": {
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "title": "Eventid"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "aggregateId": {
+            "type": "string",
+            "title": "Aggregateid"
+          },
+          "actor": {
+            "type": "string",
+            "title": "Actor"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "eventId",
+          "type",
+          "aggregateId",
+          "actor",
+          "message",
+          "createdAt"
+        ],
+        "title": "DomainEvent"
+      },
+      "EkycIdentitySnapshot": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "dob": {
+            "type": "string",
+            "title": "Dob"
+          },
+          "gender": {
+            "type": "string",
+            "title": "Gender"
+          },
+          "maskedAadhaar": {
+            "type": "string",
+            "title": "Maskedaadhaar"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "pincode": {
+            "type": "string",
+            "title": "Pincode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "dob",
+          "gender",
+          "maskedAadhaar",
+          "state",
+          "district",
+          "pincode"
+        ],
+        "title": "EkycIdentitySnapshot"
+      },
+      "EkycMatchDemographicsRequest": {
+        "properties": {
+          "claimedName": {
+            "type": "string",
+            "title": "Claimedname"
+          },
+          "claimedDob": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimeddob"
+          },
+          "claimedState": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimedstate"
+          },
+          "aadhaarRef": {
+            "type": "string",
+            "title": "Aadhaarref"
+          }
+        },
+        "type": "object",
+        "required": [
+          "claimedName",
+          "aadhaarRef"
+        ],
+        "title": "EkycMatchDemographicsRequest"
+      },
+      "EkycMatchResult": {
+        "properties": {
+          "nameMatch": {
+            "type": "boolean",
+            "title": "Namematch"
+          },
+          "dobMatch": {
+            "type": "boolean",
+            "title": "Dobmatch"
+          },
+          "stateMatch": {
+            "type": "boolean",
+            "title": "Statematch"
+          },
+          "score": {
+            "type": "integer",
+            "title": "Score"
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "EXACT_MATCH",
+              "HIGH_CONFIDENCE_MATCH",
+              "PARTIAL_MATCH",
+              "MISMATCH"
+            ],
+            "title": "Verdict"
+          },
+          "claimedValues": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Claimedvalues"
+          },
+          "officialValues": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Officialvalues"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nameMatch",
+          "dobMatch",
+          "stateMatch",
+          "score",
+          "verdict"
+        ],
+        "title": "EkycMatchResult"
+      },
+      "EkycOtpRequest": {
+        "properties": {
+          "aadhaarRef": {
+            "type": "string",
+            "title": "Aadhaarref"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose",
+            "default": "Citizen Identity Verification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "aadhaarRef"
+        ],
+        "title": "EkycOtpRequest"
+      },
+      "EkycOtpResponse": {
+        "properties": {
+          "txnId": {
+            "type": "string",
+            "title": "Txnid"
+          },
+          "maskedMobile": {
+            "type": "string",
+            "title": "Maskedmobile"
+          },
+          "expiresInSeconds": {
+            "type": "integer",
+            "title": "Expiresinseconds",
+            "default": 600
+          },
+          "demoOtpHint": {
+            "type": "string",
+            "title": "Demootphint"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "txnId",
+          "maskedMobile",
+          "demoOtpHint",
+          "message"
+        ],
+        "title": "EkycOtpResponse"
+      },
+      "EkycVerifyRequest": {
+        "properties": {
+          "txnId": {
+            "type": "string",
+            "title": "Txnid"
+          },
+          "otp": {
+            "type": "string",
+            "title": "Otp"
+          },
+          "documentId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Documentid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "txnId",
+          "otp"
+        ],
+        "title": "EkycVerifyRequest"
+      },
+      "EkycVerifyResponse": {
+        "properties": {
+          "txnId": {
+            "type": "string",
+            "title": "Txnid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "VERIFIED",
+              "FAILED",
+              "EXPIRED"
+            ],
+            "title": "Status"
+          },
+          "identitySnapshot": {
+            "$ref": "#/components/schemas/EkycIdentitySnapshot"
+          },
+          "matchResult": {
+            "$ref": "#/components/schemas/EkycMatchResult"
+          },
+          "elevatedDocumentLevel": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elevateddocumentlevel"
+          },
+          "ekycProofToken": {
+            "type": "string",
+            "title": "Ekycprooftoken"
+          },
+          "keyId": {
+            "type": "string",
+            "title": "Keyid"
+          },
+          "algorithm": {
+            "type": "string",
+            "const": "EdDSA",
+            "title": "Algorithm",
+            "default": "EdDSA"
+          },
+          "verifiedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Verifiedat"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "txnId",
+          "status",
+          "identitySnapshot",
+          "matchResult",
+          "ekycProofToken",
+          "keyId",
+          "verifiedAt",
+          "message"
+        ],
+        "title": "EkycVerifyResponse"
+      },
+      "EvidenceComparisonDetail": {
+        "properties": {
+          "caseId": {
+            "type": "string",
+            "title": "Caseid"
+          },
+          "documentId": {
+            "type": "string",
+            "title": "Documentid"
+          },
+          "documentType": {
+            "type": "string",
+            "title": "Documenttype"
+          },
+          "subjectId": {
+            "type": "string",
+            "title": "Subjectid"
+          },
+          "verifierQueue": {
+            "$ref": "#/components/schemas/VerifierQueueId"
+          },
+          "claimedIssuer": {
+            "type": "string",
+            "title": "Claimedissuer"
+          },
+          "overallMatchScore": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Overallmatchscore"
+          },
+          "recommendedAction": {
+            "type": "string",
+            "title": "Recommendedaction"
+          },
+          "citizenClaims": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Citizenclaims"
+          },
+          "officialRegistryClaims": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Officialregistryclaims"
+          },
+          "fieldComparisons": {
+            "items": {
+              "$ref": "#/components/schemas/FieldComparison"
+            },
+            "type": "array",
+            "title": "Fieldcomparisons"
+          },
+          "caseStatus": {
+            "type": "string",
+            "title": "Casestatus"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "caseId",
+          "documentId",
+          "documentType",
+          "subjectId",
+          "verifierQueue",
+          "claimedIssuer",
+          "overallMatchScore",
+          "recommendedAction",
+          "caseStatus",
+          "createdAt"
+        ],
+        "title": "EvidenceComparisonDetail"
+      },
+      "FailureCode": {
+        "type": "string",
+        "enum": [
+          "IDENTITY_MISMATCH",
+          "ISSUER_TIMEOUT",
+          "CALLBACK_FAILED",
+          "JOURNEY_COMPLETE"
+        ],
+        "title": "FailureCode"
+      },
+      "FeatureFlag": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "enabled",
+          "description"
+        ],
+        "title": "FeatureFlag"
+      },
+      "FieldComparison": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "citizenValue": {
+            "type": "string",
+            "title": "Citizenvalue"
+          },
+          "registryValue": {
+            "type": "string",
+            "title": "Registryvalue"
+          },
+          "isMatch": {
+            "type": "boolean",
+            "title": "Ismatch"
+          },
+          "matchConfidence": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Matchconfidence"
+          },
+          "discrepancyNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Discrepancynote"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field",
+          "label",
+          "citizenValue",
+          "registryValue",
+          "isMatch",
+          "matchConfidence"
+        ],
+        "title": "FieldComparison"
+      },
+      "GovernmentReviewDecision": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "VERIFY",
+              "REJECT",
+              "REQUEST_MORE_EVIDENCE",
+              "TRANSFER",
+              "MARK_DUPLICATE"
+            ],
+            "title": "Decision"
+          },
+          "verifierId": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 3,
+            "title": "Verifierid",
+            "default": "officer_mock_cbse_01"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Note",
+            "default": "Synthetic verifier decision for local platform demo."
+          },
+          "transferQueue": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifierQueueId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "GovernmentReviewDecision"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "IssuerHealth": {
+        "properties": {
+          "issuerId": {
+            "type": "string",
+            "title": "Issuerid"
+          },
+          "issuerName": {
+            "type": "string",
+            "title": "Issuername"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "degraded",
+              "unavailable"
+            ],
+            "title": "Status"
+          },
+          "latencyMs": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latencyms"
+          },
+          "lastCheckedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Lastcheckedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "issuerId",
+          "issuerName",
+          "status",
+          "lastCheckedAt"
+        ],
+        "title": "IssuerHealth"
+      },
+      "JwkKey": {
+        "properties": {
+          "kty": {
+            "type": "string",
+            "title": "Kty"
+          },
+          "kid": {
+            "type": "string",
+            "title": "Kid"
+          },
+          "use": {
+            "type": "string",
+            "title": "Use",
+            "default": "sig"
+          },
+          "alg": {
+            "type": "string",
+            "title": "Alg"
+          },
+          "crv": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crv"
+          },
+          "x": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "X"
+          },
+          "n": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N"
+          },
+          "e": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "E"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kty",
+          "kid",
+          "alg"
+        ],
+        "title": "JwkKey"
+      },
+      "JwksResponse": {
+        "properties": {
+          "keys": {
+            "items": {
+              "$ref": "#/components/schemas/JwkKey"
+            },
+            "type": "array",
+            "title": "Keys"
+          }
+        },
+        "type": "object",
+        "required": [
+          "keys"
+        ],
+        "title": "JwksResponse"
+      },
+      "LoginRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
+      "MockIntegrationState": {
+        "properties": {
+          "integrationId": {
+            "type": "string",
+            "title": "Integrationid"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "supportedCredentials": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Supportedcredentials"
+          },
+          "scenarios": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Scenarios"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "degraded",
+              "unavailable"
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "integrationId",
+          "name",
+          "domain",
+          "supportedCredentials",
+          "scenarios",
+          "status"
+        ],
+        "title": "MockIntegrationState"
+      },
+      "PipelineUploadResponse": {
+        "properties": {
+          "document": {
+            "$ref": "#/components/schemas/UploadedDocument"
+          },
+          "classification": {
+            "$ref": "#/components/schemas/DocumentClassificationResult"
+          },
+          "verificationCase": {
+            "$ref": "#/components/schemas/VerificationCase"
+          },
+          "walletDocument": {
+            "$ref": "#/components/schemas/WalletDocument"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document",
+          "classification",
+          "verificationCase",
+          "walletDocument",
+          "message"
+        ],
+        "title": "PipelineUploadResponse"
+      },
+      "PlatformSnapshot": {
+        "properties": {
+          "featureFlags": {
+            "items": {
+              "$ref": "#/components/schemas/FeatureFlag"
+            },
+            "type": "array",
+            "title": "Featureflags"
+          },
+          "policies": {
+            "items": {
+              "$ref": "#/components/schemas/PolicyDefinition"
+            },
+            "type": "array",
+            "title": "Policies"
+          },
+          "mockIntegrations": {
+            "items": {
+              "$ref": "#/components/schemas/MockIntegrationState"
+            },
+            "type": "array",
+            "title": "Mockintegrations"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/UploadedDocument"
+            },
+            "type": "array",
+            "title": "Documents"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentVersionRecord"
+            },
+            "type": "array",
+            "title": "Versions"
+          },
+          "verificationCases": {
+            "items": {
+              "$ref": "#/components/schemas/VerificationCase"
+            },
+            "type": "array",
+            "title": "Verificationcases"
+          },
+          "corrections": {
+            "items": {
+              "$ref": "#/components/schemas/CorrectionRequestRecord"
+            },
+            "type": "array",
+            "title": "Corrections"
+          },
+          "transactions": {
+            "items": {
+              "$ref": "#/components/schemas/PlatformTransaction"
+            },
+            "type": "array",
+            "title": "Transactions"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/DomainEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "featureFlags",
+          "policies",
+          "mockIntegrations",
+          "documents",
+          "verificationCases",
+          "transactions",
+          "events"
+        ],
+        "title": "PlatformSnapshot"
+      },
+      "PlatformTransaction": {
+        "properties": {
+          "transactionId": {
+            "type": "string",
+            "title": "Transactionid"
+          },
+          "actor": {
+            "type": "string",
+            "title": "Actor"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "requestedCredentials": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Requestedcredentials"
+          },
+          "currentStage": {
+            "type": "string",
+            "title": "Currentstage"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "RUNNING",
+              "COMPLETED",
+              "FAILED"
+            ],
+            "title": "State"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "completedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completedat"
+          },
+          "failureReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failurereason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "transactionId",
+          "actor",
+          "purpose",
+          "requestedCredentials",
+          "currentStage",
+          "state",
+          "createdAt"
+        ],
+        "title": "PlatformTransaction"
+      },
+      "PolicyDefinition": {
+        "properties": {
+          "policyId": {
+            "type": "string",
+            "title": "Policyid"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "requesterName": {
+            "type": "string",
+            "title": "Requestername"
+          },
+          "disclosureMode": {
+            "$ref": "#/components/schemas/DisclosureMode"
+          },
+          "requirements": {
+            "items": {
+              "$ref": "#/components/schemas/PolicyRequirement"
+            },
+            "type": "array",
+            "title": "Requirements"
+          }
+        },
+        "type": "object",
+        "required": [
+          "policyId",
+          "purpose",
+          "requesterName",
+          "disclosureMode",
+          "requirements"
+        ],
+        "title": "PolicyDefinition"
+      },
+      "PolicyRequirement": {
+        "properties": {
+          "credential": {
+            "type": "string",
+            "title": "Credential"
+          },
+          "minimumLevel": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Minimumlevel"
+          },
+          "attributes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Attributes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "credential",
+          "minimumLevel"
+        ],
+        "title": "PolicyRequirement"
+      },
+      "PredicateProofResult": {
+        "properties": {
+          "predicateId": {
+            "type": "string",
+            "title": "Predicateid"
+          },
+          "claimName": {
+            "type": "string",
+            "title": "Claimname"
+          },
+          "expression": {
+            "type": "string",
+            "title": "Expression"
+          },
+          "satisfied": {
+            "type": "boolean",
+            "title": "Satisfied"
+          },
+          "proofType": {
+            "type": "string",
+            "const": "DERIVED_ZERO_KNOWLEDGE_PREDICATE",
+            "title": "Prooftype",
+            "default": "DERIVED_ZERO_KNOWLEDGE_PREDICATE"
+          },
+          "maskedAttributes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Maskedattributes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "predicateId",
+          "claimName",
+          "expression",
+          "satisfied"
+        ],
+        "title": "PredicateProofResult"
+      },
+      "ProofTokenIntrospection": {
+        "properties": {
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "TRUSTED_PROOF",
+              "INVALID_PROOF",
+              "EXPIRED",
+              "AUDIENCE_MISMATCH",
+              "REVOKED"
+            ],
+            "title": "Status"
+          },
+          "verificationId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verificationid"
+          },
+          "subjectId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subjectid"
+          },
+          "audience": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audience"
+          },
+          "purpose": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purpose"
+          },
+          "expiresAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expiresat"
+          },
+          "claims": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Claims"
+          },
+          "keyId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keyid"
+          },
+          "algorithm": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Algorithm"
+          },
+          "cryptoVerified": {
+            "type": "boolean",
+            "title": "Cryptoverified",
+            "default": true
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "active",
+          "status",
+          "message"
+        ],
+        "title": "ProofTokenIntrospection"
+      },
+      "ProofTokenIntrospectionRequest": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "audience": {
+            "type": "string",
+            "title": "Audience"
+          },
+          "nonce": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nonce"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "audience"
+        ],
+        "title": "ProofTokenIntrospectionRequest"
+      },
+      "RecoveryAction": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "retry_later",
+              "correct_record",
+              "return_to_requester",
+              "official_fallback"
+            ],
+            "title": "Type"
+          },
+          "guidance": {
+            "type": "string",
+            "title": "Guidance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "type",
+          "guidance"
+        ],
+        "title": "RecoveryAction"
+      },
+      "RefreshRequest": {
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "refresh_token"
+        ],
+        "title": "RefreshRequest"
+      },
+      "RegisterRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "RegisterRequest"
+      },
+      "RevokeConsentPayload": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Reason",
+            "default": "Citizen requested credential revocation."
+          }
+        },
+        "type": "object",
+        "title": "RevokeConsentPayload"
+      },
+      "ScenarioSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{3,64}$",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description"
+        ],
+        "title": "ScenarioSummary"
+      },
+      "SelectiveDisclosurePreference": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "PREDICATE_ONLY",
+              "SELECTIVE_ATTRIBUTES",
+              "FULL_DOCUMENT"
+            ],
+            "title": "Mode",
+            "default": "PREDICATE_ONLY"
+          },
+          "selectedAttributes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Selectedattributes"
+          },
+          "selectedPredicates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Selectedpredicates"
+          }
+        },
+        "type": "object",
+        "title": "SelectiveDisclosurePreference"
+      },
+      "StudentDemoResult": {
+        "properties": {
+          "document": {
+            "$ref": "#/components/schemas/UploadedDocument"
+          },
+          "verificationCase": {
+            "$ref": "#/components/schemas/VerificationCase"
+          },
+          "transaction": {
+            "$ref": "#/components/schemas/PlatformTransaction"
+          },
+          "proofRequest": {
+            "$ref": "#/components/schemas/VerificationRequestRecord"
+          },
+          "proofResult": {
+            "$ref": "#/components/schemas/VerificationResult"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/DomainEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document",
+          "verificationCase",
+          "transaction",
+          "proofRequest",
+          "proofResult",
+          "events"
+        ],
+        "title": "StudentDemoResult"
+      },
+      "SupportSafeSummary": {
+        "properties": {
+          "supportCode": {
+            "type": "string",
+            "title": "Supportcode"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "scenarioId": {
+            "type": "string",
+            "title": "Scenarioid"
+          },
+          "failureStage": {
+            "type": "string",
+            "title": "Failurestage"
+          },
+          "diagnosticTitle": {
+            "type": "string",
+            "title": "Diagnostictitle"
+          },
+          "plainLanguageExplanation": {
+            "type": "string",
+            "title": "Plainlanguageexplanation"
+          },
+          "affectedAuthority": {
+            "type": "string",
+            "title": "Affectedauthority"
+          },
+          "issuerStatus": {
+            "type": "string",
+            "title": "Issuerstatus"
+          },
+          "correlationId": {
+            "type": "string",
+            "title": "Correlationid"
+          },
+          "guidanceForCitizen": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Guidanceforcitizen"
+          },
+          "guidanceForDeskOfficer": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Guidancefordeskofficer"
+          },
+          "securityNotice": {
+            "type": "string",
+            "title": "Securitynotice"
+          },
+          "qrDigest": {
+            "type": "string",
+            "title": "Qrdigest"
+          }
+        },
+        "type": "object",
+        "required": [
+          "supportCode",
+          "timestamp",
+          "scenarioId",
+          "failureStage",
+          "diagnosticTitle",
+          "plainLanguageExplanation",
+          "affectedAuthority",
+          "issuerStatus",
+          "correlationId",
+          "securityNotice",
+          "qrDigest"
+        ],
+        "title": "SupportSafeSummary"
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "Bearer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "refresh_token"
+        ],
+        "title": "TokenResponse"
+      },
+      "TransactionDiagnosis": {
+        "properties": {
+          "transactionId": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{8,64}$",
+            "title": "Transactionid"
+          },
+          "documentLabel": {
+            "type": "string",
+            "title": "Documentlabel"
+          },
+          "trustLabel": {
+            "type": "string",
+            "enum": [
+              "Government issued",
+              "User uploaded",
+              "Pending verification"
+            ],
+            "title": "Trustlabel"
+          },
+          "state": {
+            "$ref": "#/components/schemas/TransactionState"
+          },
+          "overallStatus": {
+            "type": "string",
+            "enum": [
+              "resolved",
+              "action_required",
+              "unavailable"
+            ],
+            "title": "Overallstatus"
+          },
+          "issueCode": {
+            "$ref": "#/components/schemas/FailureCode"
+          },
+          "issuerStatus": {
+            "type": "string",
+            "enum": [
+              "available",
+              "unavailable",
+              "not_checked"
+            ],
+            "title": "Issuerstatus"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/TransactionStep"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "recovery": {
+            "$ref": "#/components/schemas/RecoveryAction"
+          },
+          "fallbackAvailable": {
+            "type": "boolean",
+            "title": "Fallbackavailable"
+          },
+          "supportReference": {
+            "type": "string",
+            "title": "Supportreference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "transactionId",
+          "documentLabel",
+          "trustLabel",
+          "state",
+          "overallStatus",
+          "issueCode",
+          "issuerStatus",
+          "summary",
+          "steps",
+          "recovery",
+          "fallbackAvailable",
+          "supportReference"
+        ],
+        "title": "TransactionDiagnosis"
+      },
+      "TransactionState": {
+        "type": "string",
+        "enum": [
+          "created",
+          "authenticated",
+          "consented",
+          "issuer_lookup",
+          "fetching",
+          "received",
+          "verifying",
+          "completed",
+          "failed"
+        ],
+        "title": "TransactionState"
+      },
+      "TransactionStep": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "attention",
+              "blocked",
+              "not_started"
+            ],
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner"
+          },
+          "nextAction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nextaction"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "status",
+          "message",
+          "owner"
+        ],
+        "title": "TransactionStep"
+      },
+      "UploadedDocument": {
+        "properties": {
+          "documentId": {
+            "type": "string",
+            "title": "Documentid"
+          },
+          "ownerSubjectId": {
+            "type": "string",
+            "title": "Ownersubjectid"
+          },
+          "documentType": {
+            "type": "string",
+            "title": "Documenttype"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "CITIZEN_UPLOAD",
+              "GOVERNMENT_ISSUED",
+              "LEGACY_RECORD"
+            ],
+            "title": "Source"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "UPLOADED",
+              "CLASSIFIED",
+              "PENDING_VERIFICATION",
+              "VERIFIED",
+              "REJECTED"
+            ],
+            "title": "Status"
+          },
+          "authenticity": {
+            "type": "string",
+            "enum": [
+              "UNKNOWN",
+              "VERIFIED",
+              "REJECTED"
+            ],
+            "title": "Authenticity"
+          },
+          "verificationLevel": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Verificationlevel"
+          },
+          "currentVersion": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Currentversion",
+            "default": 1
+          },
+          "extractedMetadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Extractedmetadata"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "documentId",
+          "ownerSubjectId",
+          "documentType",
+          "source",
+          "filename",
+          "status",
+          "authenticity",
+          "verificationLevel",
+          "createdAt"
+        ],
+        "title": "UploadedDocument"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "ValidityStatus": {
+        "type": "string",
+        "enum": [
+          "ACTIVE",
+          "EXPIRED",
+          "REVOKED",
+          "SUPERSEDED"
+        ],
+        "title": "ValidityStatus"
+      },
+      "VerificationAuthorization": {
+        "properties": {
+          "allow": {
+            "type": "boolean",
+            "title": "Allow",
+            "default": true
+          },
+          "subjectId": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 6,
+            "title": "Subjectid",
+            "default": "subj_demo_5c7b90"
+          },
+          "customDisclosure": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SelectiveDisclosurePreference"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "VerificationAuthorization"
+      },
+      "VerificationCase": {
+        "properties": {
+          "caseId": {
+            "type": "string",
+            "title": "Caseid"
+          },
+          "documentId": {
+            "type": "string",
+            "title": "Documentid"
+          },
+          "claimedIssuer": {
+            "type": "string",
+            "title": "Claimedissuer"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "OCR_COMPLETE",
+              "ISSUER_MATCHED",
+              "UNDER_REVIEW",
+              "VERIFIED",
+              "REJECTED",
+              "NEEDS_EVIDENCE"
+            ],
+            "title": "Status"
+          },
+          "automatedMatchScore": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Automatedmatchscore"
+          },
+          "recommendedAction": {
+            "type": "string",
+            "title": "Recommendedaction"
+          },
+          "verifierQueue": {
+            "$ref": "#/components/schemas/VerifierQueueId",
+            "default": "queue_cbse"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "decidedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decidedat"
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GovernmentReviewDecision"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "caseId",
+          "documentId",
+          "claimedIssuer",
+          "status",
+          "automatedMatchScore",
+          "recommendedAction",
+          "createdAt"
+        ],
+        "title": "VerificationCase"
+      },
+      "VerificationCreate": {
+        "properties": {
+          "requester_name": {
+            "type": "string",
+            "title": "Requester Name"
+          },
+          "credential_type": {
+            "type": "string",
+            "title": "Credential Type"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          }
+        },
+        "type": "object",
+        "required": [
+          "requester_name",
+          "credential_type",
+          "purpose"
+        ],
+        "title": "VerificationCreate"
+      },
+      "VerificationDisclosure": {
+        "properties": {
+          "mode": {
+            "$ref": "#/components/schemas/DisclosureMode",
+            "default": "MINIMUM"
+          },
+          "attributes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Attributes"
+          },
+          "documentAccessJustification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Documentaccessjustification"
+          }
+        },
+        "type": "object",
+        "title": "VerificationDisclosure"
+      },
+      "VerificationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "requester_name": {
+            "type": "string",
+            "title": "Requester Name"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "credential_type": {
+            "type": "string",
+            "title": "Credential Type"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "requester_name",
+          "user_id",
+          "credential_type",
+          "purpose",
+          "status",
+          "created_at"
+        ],
+        "title": "VerificationOut"
+      },
+      "VerificationPredicate": {
+        "properties": {
+          "attribute": {
+            "type": "string",
+            "title": "Attribute"
+          },
+          "operator": {
+            "type": "string",
+            "enum": [
+              "EQ",
+              "GTE",
+              "LTE",
+              "IN",
+              "EXISTS"
+            ],
+            "title": "Operator"
+          },
+          "value": {
+            "title": "Value"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "attribute",
+          "operator"
+        ],
+        "title": "VerificationPredicate"
+      },
+      "VerificationProof": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "signed_verification_token",
+            "title": "Type",
+            "default": "signed_verification_token"
+          },
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "algorithm": {
+            "type": "string",
+            "enum": [
+              "EdDSA",
+              "RS256",
+              "HS256"
+            ],
+            "title": "Algorithm",
+            "default": "EdDSA"
+          },
+          "keyId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keyid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "VerificationProof"
+      },
+      "VerificationReceipt": {
+        "properties": {
+          "verificationId": {
+            "type": "string",
+            "title": "Verificationid"
+          },
+          "requesterName": {
+            "type": "string",
+            "title": "Requestername"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "status": {
+            "$ref": "#/components/schemas/VerificationStatus"
+          },
+          "shared": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Shared"
+          },
+          "documentShared": {
+            "type": "boolean",
+            "title": "Documentshared"
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Issuedat"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiresat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "verificationId",
+          "requesterName",
+          "purpose",
+          "status",
+          "shared",
+          "documentShared",
+          "issuedAt",
+          "expiresAt"
+        ],
+        "title": "VerificationReceipt"
+      },
+      "VerificationRequestCreate": {
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 3,
+            "title": "Clientid"
+          },
+          "requesterName": {
+            "type": "string",
+            "maxLength": 140,
+            "minLength": 2,
+            "title": "Requestername"
+          },
+          "purpose": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Purpose"
+          },
+          "audience": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Audience"
+          },
+          "requirements": {
+            "items": {
+              "$ref": "#/components/schemas/VerificationRequirement"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Requirements"
+          },
+          "disclosure": {
+            "$ref": "#/components/schemas/VerificationDisclosure"
+          },
+          "ttlMinutes": {
+            "type": "integer",
+            "maximum": 240.0,
+            "minimum": 5.0,
+            "title": "Ttlminutes",
+            "default": 30
+          }
+        },
+        "type": "object",
+        "required": [
+          "clientId",
+          "requesterName",
+          "purpose",
+          "audience",
+          "requirements"
+        ],
+        "title": "VerificationRequestCreate"
+      },
+      "VerificationRequestRecord": {
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 3,
+            "title": "Clientid"
+          },
+          "requesterName": {
+            "type": "string",
+            "maxLength": 140,
+            "minLength": 2,
+            "title": "Requestername"
+          },
+          "purpose": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Purpose"
+          },
+          "audience": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 3,
+            "title": "Audience"
+          },
+          "requirements": {
+            "items": {
+              "$ref": "#/components/schemas/VerificationRequirement"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Requirements"
+          },
+          "disclosure": {
+            "$ref": "#/components/schemas/VerificationDisclosure"
+          },
+          "ttlMinutes": {
+            "type": "integer",
+            "maximum": 240.0,
+            "minimum": 5.0,
+            "title": "Ttlminutes",
+            "default": 30
+          },
+          "requestId": {
+            "type": "string",
+            "title": "Requestid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING_CONSENT",
+              "AUTHORIZED",
+              "DECLINED",
+              "EXPIRED"
+            ],
+            "title": "Status"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiresat"
+          },
+          "consentText": {
+            "type": "string",
+            "title": "Consenttext"
+          }
+        },
+        "type": "object",
+        "required": [
+          "clientId",
+          "requesterName",
+          "purpose",
+          "audience",
+          "requirements",
+          "requestId",
+          "status",
+          "createdAt",
+          "expiresAt",
+          "consentText"
+        ],
+        "title": "VerificationRequestRecord"
+      },
+      "VerificationRequirement": {
+        "properties": {
+          "credential": {
+            "type": "string",
+            "title": "Credential"
+          },
+          "required": {
+            "type": "boolean",
+            "title": "Required",
+            "default": true
+          },
+          "minimumLevel": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Minimumlevel",
+            "default": 3
+          },
+          "attributes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Attributes"
+          },
+          "jurisdiction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jurisdiction"
+          },
+          "predicate": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerificationPredicate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "credential"
+        ],
+        "title": "VerificationRequirement"
+      },
+      "VerificationResult": {
+        "properties": {
+          "verificationId": {
+            "type": "string",
+            "title": "Verificationid"
+          },
+          "requestId": {
+            "type": "string",
+            "title": "Requestid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/VerificationStatus"
+          },
+          "subjectId": {
+            "type": "string",
+            "title": "Subjectid"
+          },
+          "audience": {
+            "type": "string",
+            "title": "Audience"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "disclosureLevel": {
+            "$ref": "#/components/schemas/DisclosureLevel"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/CredentialProofResult"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "predicateProofs": {
+            "items": {
+              "$ref": "#/components/schemas/PredicateProofResult"
+            },
+            "type": "array",
+            "title": "Predicateproofs"
+          },
+          "maskedAttributesSummary": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Maskedattributessummary"
+          },
+          "proof": {
+            "$ref": "#/components/schemas/VerificationProof"
+          },
+          "receipt": {
+            "$ref": "#/components/schemas/VerificationReceipt"
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Issuedat"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expiresat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "verificationId",
+          "requestId",
+          "status",
+          "subjectId",
+          "audience",
+          "purpose",
+          "disclosureLevel",
+          "results",
+          "proof",
+          "receipt",
+          "issuedAt",
+          "expiresAt"
+        ],
+        "title": "VerificationResult"
+      },
+      "VerificationStatus": {
+        "type": "string",
+        "enum": [
+          "VERIFIED",
+          "NOT_VERIFIED",
+          "PENDING",
+          "EXPIRED",
+          "REVOKED",
+          "NOT_FOUND",
+          "ISSUER_UNAVAILABLE",
+          "IDENTITY_MISMATCH",
+          "INSUFFICIENT_EVIDENCE",
+          "PARTIAL"
+        ],
+        "title": "VerificationStatus"
+      },
+      "VerifierQueueId": {
+        "type": "string",
+        "enum": [
+          "queue_cbse",
+          "queue_revenue",
+          "queue_transport",
+          "queue_general"
+        ],
+        "title": "VerifierQueueId"
+      },
+      "VerifierQueueSummary": {
+        "properties": {
+          "queueId": {
+            "$ref": "#/components/schemas/VerifierQueueId"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "department": {
+            "type": "string",
+            "title": "Department"
+          },
+          "pendingCount": {
+            "type": "integer",
+            "title": "Pendingcount",
+            "default": 0
+          },
+          "verifiedCount": {
+            "type": "integer",
+            "title": "Verifiedcount",
+            "default": 0
+          },
+          "totalCount": {
+            "type": "integer",
+            "title": "Totalcount",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "queueId",
+          "name",
+          "department"
+        ],
+        "title": "VerifierQueueSummary"
+      },
+      "VerifyOut": {
+        "properties": {
+          "result": {
+            "type": "string",
+            "title": "Result"
+          },
+          "verification_level": {
+            "type": "integer",
+            "title": "Verification Level"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "proof_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proof Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "result",
+          "verification_level"
+        ],
+        "title": "VerifyOut"
+      },
+      "WalletDocument": {
+        "properties": {
+          "documentId": {
+            "type": "string",
+            "title": "Documentid"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "documentType": {
+            "type": "string",
+            "title": "Documenttype"
+          },
+          "source": {
+            "$ref": "#/components/schemas/DocumentSource"
+          },
+          "authenticity": {
+            "$ref": "#/components/schemas/AuthenticityStatus"
+          },
+          "validityStatus": {
+            "$ref": "#/components/schemas/ValidityStatus"
+          },
+          "verificationLevel": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Verificationlevel"
+          },
+          "verificationMethod": {
+            "type": "string",
+            "title": "Verificationmethod"
+          },
+          "currentVersion": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Currentversion",
+            "default": 1
+          },
+          "issuer": {
+            "type": "string",
+            "title": "Issuer"
+          },
+          "validUntil": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validuntil"
+          },
+          "extractedMetadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Extractedmetadata"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "documentId",
+          "title",
+          "documentType",
+          "source",
+          "authenticity",
+          "validityStatus",
+          "verificationLevel",
+          "verificationMethod",
+          "issuer",
+          "createdAt"
+        ],
+        "title": "WalletDocument"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
