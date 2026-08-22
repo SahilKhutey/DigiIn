@@ -1,4 +1,4 @@
-"""Verification rules and policy definitions."""
+"""Verification rules and zero-knowledge predicate evaluation definitions."""
 
 from __future__ import annotations
 
@@ -11,6 +11,14 @@ class MatchingRule:
     field_name: str
     weight: float
     fuzzy: bool = False
+    tolerance: float = 0.0
+
+
+@dataclass
+class PredicateRule:
+    attribute: str
+    operator: str  # "GTE", "LTE", "EQUALS", "IN", "EXISTS", "BETWEEN"
+    value: Any
     tolerance: float = 0.0
 
 
@@ -35,3 +43,34 @@ def score_evidence_match(citizen_data: dict[str, Any], registry_data: dict[str, 
         elif rule.fuzzy and (c_val in r_val or r_val in c_val):
             total_score += rule.weight * 80.0
     return min(100.0, total_score)
+
+
+def evaluate_predicate_condition(rule: PredicateRule, attributes: dict[str, Any]) -> bool:
+    """Evaluate a zero-knowledge predicate assertion without exposing underlying sensitive raw values."""
+    actual = attributes.get(rule.attribute)
+    if actual is None:
+        return False
+
+    op = rule.operator.upper()
+    try:
+        if op in ["GTE", ">="]:
+            return float(actual) >= float(rule.value)
+        elif op in ["LTE", "<="]:
+            return float(actual) <= float(rule.value)
+        elif op in ["GT", ">"]:
+            return float(actual) > float(rule.value)
+        elif op in ["LT", "<"]:
+            return float(actual) < float(rule.value)
+        elif op in ["EQUALS", "EQ", "=="]:
+            return str(actual).strip().upper() == str(rule.value).strip().upper()
+        elif op in ["IN", "IN_SET"]:
+            val_set = [str(x).strip().upper() for x in (rule.value if isinstance(rule.value, list) else [rule.value])]
+            return str(actual).strip().upper() in val_set
+        elif op == "BETWEEN" and isinstance(rule.value, (list, tuple)) and len(rule.value) == 2:
+            return float(rule.value[0]) <= float(actual) <= float(rule.value[1])
+        elif op == "EXISTS":
+            return actual is not None and str(actual).strip() != ""
+    except (ValueError, TypeError):
+        return False
+
+    return False
