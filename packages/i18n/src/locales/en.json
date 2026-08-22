@@ -1,0 +1,39 @@
+{
+  "app": {
+    "title": "DigiLocker X",
+    "tagline": "Sovereign Digital Credentials & Verification Authority",
+    "verifiedZeroTransfer": "Verified with Zero Raw File Transfer"
+  },
+  "nav": {
+    "wallet": "Document Wallet",
+    "verification": "Verification Inquiries",
+    "pipeline": "Document Upload & OCR",
+    "ekyc": "eKYC Gateway",
+    "audit": "Sovereign Audit Stream",
+    "profile": "Profile & Security"
+  },
+  "wallet": {
+    "title": "Citizen Document Wallet",
+    "level0": "Self-Uploaded (Unverified)",
+    "level1": "Automated OCR Extracted",
+    "level2": "Issuer Matched",
+    "level3": "Cryptographically Sealed",
+    "level4": "Authoritative Sovereign Credential"
+  },
+  "consent": {
+    "title": "Verification Consent Request",
+    "purpose": "Declared Purpose",
+    "requester": "Requesting Authority",
+    "policy": "Disclosure Policy",
+    "grant": "Authorize & Generate Proof",
+    "deny": "Decline Request",
+    "revoke": "Instant Revoke Consent"
+  },
+  "proof": {
+    "trusted": "Cryptographically Trusted Proof Token",
+    "algorithm": "Signature Algorithm",
+    "keyId": "Public Key Identifier",
+    "zkpProved": "Zero-Knowledge Predicates Proved",
+    "rawBytes": "0 bytes transferred"
+  }
+}
