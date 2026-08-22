@@ -56,15 +56,36 @@ The API documentation is available at `http://localhost:8000/docs`; the web app 
 | Health | `GET /health` |
 | Document discovery | `GET /api/v1/documents?q=` and `GET /api/v1/documents/{id}` |
 | Scenarios | `GET /api/v1/scenarios` |
-| Transaction diagnosis | `GET /api/v1/transactions/{id}/diagnosis` |
+| Transaction diagnosis | `GET /api/v1/transactions/{id}/diagnosis` and `GET /api/v1/transactions/{id}/support-summary` |
 | Recovery retry | `POST /api/v1/transactions/{id}/retry` |
+
 | Trust context | `GET /api/v1/issuers/health` and `GET /api/v1/consents/preview` |
 | Verification gateway | `POST /api/v1/verification/request`, `POST /api/v1/verification/request/{id}/authorize`, `GET /api/v1/verification/result/{id}` |
 | Proof validation | `GET /api/v1/verification/token/{id}` and `POST /api/v1/verification/introspect` |
+| Public JWKS discovery | `GET /.well-known/jwks.json` and `GET /api/v1/.well-known/jwks.json` |
 | Platform foundation | `GET /api/v1/platform/snapshot` and `POST /api/v1/platform/demo/student` |
+
 | Upload and review demo | `POST /api/v1/documents/upload`, `POST /api/v1/documents/{id}/classify`, `POST /api/v1/documents/{id}/verification-case`, `POST /api/v1/verification/cases/{id}/decision` |
+| Correction & versioning | `POST /api/v1/documents/{id}/corrections`, `GET /api/v1/documents/{id}/versions`, `GET /api/v1/corrections`, `POST /api/v1/corrections/{id}/decision` |
+| Citizen wallet & trust signals | `GET /api/v1/wallet/documents` |
+| Document upload & OCR pipeline | `POST /api/v1/documents/upload-pipeline` |
+| Government verifier console | `GET /api/v1/verifier/queues`, `GET /api/v1/verifier/cases`, `GET /api/v1/verifier/cases/{id}/comparison`, `POST /api/v1/verifier/cases/{id}/decision` |
+| Consent & token revocation | `GET /api/v1/consent`, `POST /api/v1/consent/{id}/revoke` |
+| Sovereign audit trail | `GET /api/v1/audit/events` |
+
+
+
+
+
+
+## Database & Storage
+
+DigiIn includes a persistent relational database layer built with **SQLAlchemy 2.0**:
+- **SQLite (Default)**: Out-of-the-box local storage file `./digiin_database.db` with automated table initialization and seed fixtures.
+- **PostgreSQL**: Configure `DIGIIN_DATABASE_URL="postgresql://user:password@localhost:5432/digiin"` in your environment.
 
 ## Engineering guardrails
+
 
 - Use anonymised/synthetic fixtures in development and test environments.
 - Treat government integrations as explicit, consented adapters—not screen-scraping targets.
