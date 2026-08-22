@@ -557,6 +557,59 @@ def test_consent_listing_and_token_revocation() -> None:
     assert "revoked by the citizen" in intro_after.message
 
 
+def test_ekyc_otp_generation_verification_and_demographic_matching() -> None:
+    # 1. Generate eKYC OTP for valid Virtual ID
+    otp_req = {"aadhaarRef": "9100-2026-9921", "purpose": "Exam Application Identity Verification"}
+    otp_res = client.post("/api/v1/ekyc/generate-otp", json=otp_req)
+    assert otp_res.status_code == 200
+    otp_data = otp_res.json()
+    assert "txnId" in otp_data
+    assert otp_data["demoOtpHint"] == "202601"
+    assert otp_data["maskedMobile"] == "+91 ******9921"
+    txn_id = otp_data["txnId"]
+
+    # 2. Test Invalid OTP rejection (Security boundary)
+    bad_verify = client.post(
+        "/api/v1/ekyc/verify-otp",
+        json={"txnId": txn_id, "otp": "000000"},
+    )
+    assert bad_verify.status_code == 400
+    assert "Invalid OTP entered" in bad_verify.json()["detail"]
+
+    # 3. Test Valid OTP verification & Demographic matching
+    good_verify = client.post(
+        "/api/v1/ekyc/verify-otp",
+        json={"txnId": txn_id, "otp": "202601", "documentId": "doc_cbse_xii_2026"},
+    )
+    assert good_verify.status_code == 200
+    verify_data = good_verify.json()
+    assert verify_data["status"] == "VERIFIED"
+    assert verify_data["identitySnapshot"]["name"] == "SAHIL KHUTEY"
+    assert verify_data["identitySnapshot"]["maskedAadhaar"] == "XXXXXXXX9921"
+    assert verify_data["matchResult"]["nameMatch"] is True
+    assert verify_data["matchResult"]["score"] >= 90
+    assert verify_data["elevatedDocumentLevel"] == 4
+    assert "ekycProofToken" in verify_data
+    assert verify_data["algorithm"] == "EdDSA"
+
+    # 4. Test Standalone Demographics Match Endpoint (Fuzzy Match)
+    fuzzy_match_res = client.post(
+        "/api/v1/ekyc/match-demographics",
+        json={
+            "aadhaarRef": "9100-2026-9921",
+            "claimedName": "SAHIL KHTEY",  # 1-char spelling discrepancy
+            "claimedDob": "2006-05-14",
+            "claimedState": "Chhattisgarh",
+        },
+    )
+    assert fuzzy_match_res.status_code == 200
+    fuzzy_data = fuzzy_match_res.json()
+    assert fuzzy_data["nameMatch"] is True
+    assert fuzzy_data["dobMatch"] is True
+    assert fuzzy_data["score"] >= 85
+
+
+
 
 
 

@@ -19,6 +19,12 @@ from app.domain.models import (
     DocumentUploadRequest,
     DocumentVersionRecord,
     DomainEvent,
+    EkycMatchDemographicsRequest,
+    EkycMatchResult,
+    EkycOtpRequest,
+    EkycOtpResponse,
+    EkycVerifyRequest,
+    EkycVerifyResponse,
     EvidenceComparisonDetail,
     GovernmentReviewDecision,
     IssuerHealth,
@@ -43,6 +49,13 @@ from app.domain.models import (
     WalletDocument,
 )
 from app.services.crypto import get_public_jwks
+from app.services.ekyc import (
+    calculate_demographics_match,
+    generate_ekyc_otp,
+    verify_ekyc_otp_and_match,
+    MOCK_UIDAI_IDENTITIES,
+)
+
 from app.services.platform import (
     classify_document,
     create_correction_request,
@@ -429,5 +442,45 @@ def submit_verifier_decision(
     if case is None:
         raise HTTPException(status_code=404, detail="Verification case not found")
     return case
+
+
+# --- Aadhaar / eKYC Mock Gateway Endpoints ---
+
+
+@app.post("/api/v1/ekyc/generate-otp", response_model=EkycOtpResponse)
+def ekyc_generate_otp(payload: EkycOtpRequest) -> EkycOtpResponse:
+    """Generate simulated Aadhaar eKYC OTP sent to citizen's registered mobile number."""
+    return generate_ekyc_otp(payload.aadhaarRef, payload.purpose)
+
+
+@app.post("/api/v1/ekyc/verify-otp", response_model=EkycVerifyResponse)
+def ekyc_verify_otp(payload: EkycVerifyRequest) -> EkycVerifyResponse:
+    """Verify 6-digit eKYC OTP, produce signed Ed25519 assertion, and elevate document trust level."""
+    return verify_ekyc_otp_and_match(
+        txn_id=payload.txnId,
+        otp=payload.otp,
+        document_id=payload.documentId,
+    )
+
+
+
+@app.post("/api/v1/ekyc/match-demographics", response_model=EkycMatchResult)
+def ekyc_match_demographics(payload: EkycMatchDemographicsRequest) -> EkycMatchResult:
+    """Perform 1:1 fuzzy demographic match between document claims and UIDAI central registry fixtures."""
+    clean_ref = payload.aadhaarRef.strip().replace(" ", "").replace("-", "")
+    identity = MOCK_UIDAI_IDENTITIES.get(
+        payload.aadhaarRef,
+        MOCK_UIDAI_IDENTITIES.get(clean_ref, {"name": "SAHIL KHUTEY", "dob": "2006-05-14", "state": "Chhattisgarh"}),
+    )
+
+    return calculate_demographics_match(
+        claimed_name=payload.claimedName,
+        official_name=identity["name"],
+        claimed_dob=payload.claimedDob,
+        official_dob=identity.get("dob"),
+        claimed_state=payload.claimedState,
+        official_state=identity.get("state"),
+    )
+
 
 

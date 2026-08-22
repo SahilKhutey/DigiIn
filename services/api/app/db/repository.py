@@ -606,3 +606,23 @@ def seed_default_data_if_empty() -> None:
 
         for c in case_seeds:
             save_verification_case(c, s)
+
+
+def update_document_verification_level(
+    document_id: str,
+    level: int = 4,
+    authenticity: str = "VERIFIED",
+    method: str = "Authorised Aadhaar eKYC Demographics & Registry Match",
+) -> None:
+    """Elevates document and wallet verification level in persistent storage upon eKYC verification."""
+    with get_db_session() as s:
+        d = s.get(DocumentModel, document_id)
+        if d:
+            d.verification_level = level
+            d.authenticity = authenticity
+        w = s.get(WalletDocumentModel, document_id)
+        if w:
+            w.verification_level = level
+            w.authenticity = authenticity
+            w.verification_method = method
+
