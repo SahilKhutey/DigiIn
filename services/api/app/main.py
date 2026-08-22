@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import uuid
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.api.v1 import (
     auth as auth_router,
@@ -111,7 +113,23 @@ from app.services.verification import (
 # Initialize database tables and initial seed fixtures on module load / startup
 init_db()
 
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Hardened security headers & correlation ID injection middleware."""
+
+    async def dispatch(self, request: Request, call_next):  # type: ignore
+        req_id = request.headers.get("X-Request-ID") or f"req_{uuid.uuid4().hex[:12]}"
+        response: Response = await call_next(request)
+        response.headers["X-Request-ID"] = req_id
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        return response
+
+
 app = FastAPI(title="DigiLocker X API", version="0.5.0")
+app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -124,6 +142,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 app.include_router(health_router.router, prefix="/api/v1")
 app.include_router(auth_router.router, prefix="/api/v1")

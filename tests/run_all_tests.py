@@ -50,6 +50,7 @@ def main():
         ("Backend Pytest Matrix", ["python", "-m", "pytest", "-v", "--tb=short"], root_dir / "services" / "api"),
         ("Consoles & ZK Rules Test", ["python", "tests/test_consoles_and_verification_rules.py"], root_dir),
         ("Standalone Core Services (Audit & Catalogue)", ["python", "tests/test_standalone_services.py"], root_dir),
+        ("Core Foundation & Security Hardening", ["python", "tests/test_foundation_hardening.py"], root_dir),
         ("Background Worker & Mobile Integration", ["python", "tests/test_mobile_and_worker_integration.py"], root_dir),
         ("Document Pipeline 9-Step E2E", ["python", "tests/test_document_pipeline_e2e.py"], root_dir),
         ("Core Verification Flow E2E", ["python", "tests/e2e_verification_flow.py"], root_dir),
