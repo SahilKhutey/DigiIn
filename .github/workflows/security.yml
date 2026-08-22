@@ -71,7 +71,9 @@ jobs:
           assert len(jwks['keys']) == 2, 'JWKS must expose both Ed25519 and RSA public keys'
           tok, kid, alg = sign_proof_token({'sub': 'test', 'aud': 'TEST', 'status': 'VERIFIED'})
           assert alg == 'EdDSA', 'Default sovereign algorithm must be Ed25519 (EdDSA)'
-          verified, claims, err = verify_proof_token(tok, 'TEST')
-          assert verified, f'Cryptographic verification failed: {err}'
+          claims, verified_kid, verified_alg = verify_proof_token(tok)
+          assert claims is not None, 'Cryptographic verification failed: claims is None'
+          assert claims['sub'] == 'test'
           print('✅ Sovereign Cryptographic Audit Passed: Ed25519 & JWKS compliant.')
+
           "

@@ -2,9 +2,14 @@
 
 [![CI Pipeline](https://github.com/SahilKhutey/DigiIn/actions/workflows/ci.yml/badge.svg)](https://github.com/SahilKhutey/DigiIn/actions/workflows/ci.yml)
 [![Security Audit](https://github.com/SahilKhutey/DigiIn/actions/workflows/security.yml/badge.svg)](https://github.com/SahilKhutey/DigiIn/actions/workflows/security.yml)
+[![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![Python: 3.11 | 3.12](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/)
+[![TypeScript: 5.x](https://img.shields.io/badge/TypeScript-5.x-3178C6.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-DigiLocker X is a citizen-centric **credential and verification platform** for Indian public digital services. It enforces sovereign data ownership, minimum disclosure, and zero raw document transfers by exchanging **cryptographically signed verifiable claims** over raw document files.
+DigiLocker X is a citizen-centric **credential and verification platform** for Indian public digital services. It enforces sovereign data ownership, minimum disclosure, and zero raw document transfers by exchanging **cryptographically signed verifiable claims** over raw document files:
+
+$$\text{Upload / Request} \longrightarrow \text{OCR \& Extraction} \longrightarrow \text{Issuer Adapter / Gov Review} \longrightarrow \text{Citizen Consent} \longrightarrow \text{Signed Proof} \longrightarrow \text{Proof Introspection}$$
 
 ---
 
@@ -38,7 +43,7 @@ digilocker-x/
 │   └── UI-UX.md
 │
 ├── apps/                      # Frontends & Consoles
-│   ├── web/                   # Citizen web application (React / Next.js ready)
+│   ├── web/                   # Citizen web application (React 19 / Next.js / Vite)
 │   ├── mobile/                # Citizen mobile app (React Native / Expo)
 │   ├── issuer-console/        # Government Issuer portal (CBSE, State Boards)
 │   ├── verifier-console/      # Requester verification query portal (NTA, Universities)
@@ -62,6 +67,7 @@ digilocker-x/
 │   └── postgres/init.sql      # Database DDL initialization script
 │
 ├── tests/                     # Monorepo Integration & E2E Test Suites
+│   ├── test_document_pipeline_e2e.py
 │   └── e2e_verification_flow.py
 │
 └── README.md
@@ -69,46 +75,91 @@ digilocker-x/
 
 ---
 
-## 🚀 Quick Start
+## 🔗 Platform Endpoint Mappings
 
-### 1. Run the Backend API (`services/api`)
+### 1. eKYC & Identity Verification Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/api/v1/ekyc/otp/generate` | Generate simulated 6-digit OTP challenge against UIDAI reference |
+| `POST` | `/api/v1/ekyc/otp/verify` | Verify OTP, execute demographic matching, and sign eKYC assertion |
+| `POST` | `/api/v1/ekyc/match-demographics` | Calculate confidence match score between Aadhaar and document claims |
+| `GET` | `/.well-known/jwks.json` | Public RFC 7517 JSON Web Key Set for offline asymmetric verification |
+
+### 2. Document Pipeline & Government Review Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/api/v1/documents/upload-pipeline` | Secure file upload, SHA-256 integrity hash, OCR entity extraction, and case enqueuing |
+| `GET` | `/api/v1/government/queues` | Summary metrics across departmental review queues (CBSE, Revenue, Transport) |
+| `GET` | `/api/v1/government/cases` | List pending document discrepancy verification cases |
+| `GET` | `/api/v1/government/cases/{id}/comparison` | Side-by-side comparison of citizen OCR claims vs official state registry |
+| `POST` | `/api/v1/government/cases/{id}/decision` | Submit officer adjudication (`VERIFY`, `REJECT`, `TRANSFER`), elevating to Level 4 |
+
+### 3. Verification, Consent & Proof Validation Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/api/v1/verification/requests` | Inbound verification query ingestion by accredited requesting entity |
+| `POST` | `/api/v1/verification/requests/{id}/consent` | Citizen authorization with selective disclosure or zero-knowledge mode |
+| `POST` | `/api/v1/verification/requests/{id}/run` | Execute adapter verification and generate signed proof token |
+| `GET` | `/api/v1/proofs/{id}/verify` | Cryptographically validate proof token signature and payload claims |
+| `POST` | `/api/v1/verification/introspect` | Online and offline RFC 7519 proof introspection with audience verification |
+
+---
+
+## 🧪 Automated Testing & CI Execution
+
+### 1. Run Backend Pytest Suite & Linter (`services/api`)
 
 ```powershell
 cd services/api
-python -m pytest               # Runs 21 unit & adapter tests
-uvicorn app.main:app --reload --port 8000
-```
-API Documentation is available at `http://localhost:8000/docs`.
 
-### 2. Run the Citizen Web App (`apps/web`)
+# Run Ruff linter
+python -m ruff check app/ tests/
+
+# Run complete pytest test suite (22 tests)
+python -m pytest -v --tb=short
+```
+
+### 2. Run Monorepo End-to-End Integration Tests
+
+```powershell
+# Document Pipeline E2E (Upload ➔ OCR ➔ Gov Review ➔ Officer Approve ➔ Mint Credential ➔ Proof)
+python tests/test_document_pipeline_e2e.py
+
+# Core Verification Flow E2E (Request ➔ Consent ➔ Mock Issuer ➔ Proof Token ➔ Introspect)
+python tests/e2e_verification_flow.py
+```
+
+### 3. Run Frontend Web Application & Build (`apps/web`)
 
 ```powershell
 cd apps/web
+
+# Install dependencies & run development server
 npm install
 npm run dev
-```
-The citizen web application runs at `http://localhost:5173`.
 
-### 3. Run the End-to-End Verification Test (`tests/`)
-
-Executes the complete vertical slice: `Request Creation` ➔ `Citizen Consent` ➔ `Issuer Verification` ➔ `Signed Proof Generation` ➔ `Proof Introspection`.
-
-```powershell
-python tests/e2e_verification_flow.py
+# Run TypeScript typecheck & production bundle build
+npm run build
 ```
 
 ---
 
 ## 🛡️ Core Verification Milestone Status
 
-- [x] **Web Application**: Accessible citizen interface with 8 UI states (`apps/web`)
+- [x] **Web Application**: Accessible citizen interface with 8 universal UI states (`apps/web`)
 - [x] **Mobile Shell**: 5-tab React Native / Expo application (`apps/mobile`)
-- [x] **Authentication**: Passwordless OTP challenge & rotating refresh tokens (`/api/v1/auth/otp/*`)
+- [x] **Authentication**: Passwordless OTP challenges, JWT access tokens & rotating refresh sessions (`/api/v1/auth/*`)
+- [x] **eKYC Integration**: Aadhaar OTP verification, demographic matching algorithm, and Ed25519 signed assertions (`/api/v1/ekyc/*`)
+- [x] **Document Pipeline**: Secure upload, MIME validation, SHA-256 hashing, and OCR entity extraction
+- [x] **Government Review Console**: Review queues, side-by-side claim comparison, and officer decision workflow (`/api/v1/government/*`)
 - [x] **Document Wallet**: Multi-tier trust badges with Level 0-4 verification (`/api/v1/wallet/documents`)
-- [x] **Issuer Adapters**: Standardized `IssuerAdapter` protocol with mock CBSE, State Board & University implementations
+- [x] **Issuer Adapters**: Standardized `IssuerAdapter` protocol with CBSE, State Board & University implementations
 - [x] **Verification Request Gateway**: Purpose-bound query ingestion with minimum disclosure configuration
 - [x] **Citizen Consent Flow**: Explicit attribute authorization and instant one-click revocation
-- [x] **Proof Engine**: Asymmetrically signed JWS/JWT proof generation and public JWKS discovery
+- [x] **Proof Engine**: Asymmetrically signed JWS/JWT proof generation and public JWKS discovery (`/.well-known/jwks.json`)
 - [x] **Requester Introspection**: Third-party offline and online proof validation (`/api/v1/verification/introspect`)
 - [x] **Sovereign Audit Trail**: Append-only tamper-evident domain event ledger (`/api/v1/audit/events`)
 
