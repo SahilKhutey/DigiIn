@@ -1,0 +1,140 @@
+import { useState } from "react";
+import type { SupportSafeSummary } from "../../types";
+
+type PrintableSupportSheetProps = {
+  summary: SupportSafeSummary | null;
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export function PrintableSupportSheet({
+  summary,
+  isOpen,
+  onClose,
+}: PrintableSupportSheetProps) {
+  const [copied, setCopied] = useState(false);
+
+  if (!isOpen || !summary) return null;
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(summary.supportCode).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  return (
+    <div className="modal-overlay support-sheet-overlay" role="dialog" aria-modal="true">
+      <div className="modal-content support-sheet-modal">
+        {/* Top Screen-Only Actions */}
+        <div className="screen-only-actions">
+          <div className="action-buttons-group">
+            <button type="button" className="primary-action print-btn" onClick={handlePrint}>
+              🖨️ Print / Save as PDF
+            </button>
+            <button type="button" className="secondary-action" onClick={handleCopyCode}>
+              {copied ? "✓ Copied!" : "📋 Copy Support Code"}
+            </button>
+          </div>
+          <button type="button" className="modal-close" onClick={onClose} aria-label="Close modal">
+            &times;
+          </button>
+        </div>
+
+        {/* Printable Paper Document */}
+        <div className="printable-sheet-paper" id="printable-support-sheet">
+          {/* Header */}
+          <div className="sheet-header">
+            <div className="sheet-brand">
+              <h2>DigiIn • Public Digital Infrastructure</h2>
+              <p>Official Verification Facilitation & Diagnostic Recovery Summary</p>
+            </div>
+            <div className="sheet-timestamp">
+              <span>Generated at:</span>
+              <strong>{new Date(summary.timestamp).toLocaleString("en-IN")}</strong>
+            </div>
+          </div>
+
+          {/* Large Support Code Box */}
+          <div className="sheet-code-banner">
+            <div>
+              <span className="code-eyebrow">FACILITATION DESK REFERENCE CODE</span>
+              <h1 className="support-code-text">{summary.supportCode}</h1>
+              <span className="corr-id">Correlation: {summary.correlationId}</span>
+            </div>
+            <div className="safe-badge">
+              <span>ZERO PII</span>
+              <span>CREDENTIAL FREE</span>
+            </div>
+          </div>
+
+          {/* Diagnostic Stage & Authority Health */}
+          <div className="sheet-grid-two">
+            <div className="sheet-info-box">
+              <h4>Failure Stage & Classification</h4>
+              <p className="stage-tag"><code>{summary.failureStage}</code></p>
+              <p className="diag-title"><strong>{summary.diagnosticTitle}</strong></p>
+            </div>
+
+            <div className="sheet-info-box">
+              <h4>Affected Authority & Upstream Health</h4>
+              <p>Authority: <strong>{summary.affectedAuthority}</strong></p>
+              <p>Gateway Status: <span className="status-tag">{summary.issuerStatus}</span></p>
+            </div>
+          </div>
+
+          {/* Plain Language Explanation */}
+          <div className="sheet-section">
+            <h4>Plain-Language Explanation</h4>
+            <p className="plain-explanation">{summary.plainLanguageExplanation}</p>
+          </div>
+
+          {/* Citizen Steps & Operator Checklist */}
+          <div className="sheet-grid-two">
+            <div className="sheet-guidance-box citizen-box">
+              <h4>Instructions for Citizen</h4>
+              <ol>
+                {summary.guidanceForCitizen.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="sheet-guidance-box operator-box">
+              <h4>Verification Desk Operator Checklist</h4>
+              <ul>
+                {summary.guidanceForDeskOfficer.map((item, idx) => (
+                  <li key={idx}>
+                    <span className="check-box">☐</span> {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Security Guarantee Notice */}
+          <div className="sheet-security-banner">
+            <strong>Security & Privacy Guarantee:</strong>
+            <p>{summary.securityNotice}</p>
+          </div>
+
+          {/* Footer QR Digest */}
+          <div className="sheet-footer">
+            <div className="qr-digest-block">
+              <span>Cryptographic Proof Digest:</span>
+              <code>{summary.qrDigest}</code>
+            </div>
+            <p className="official-disclaimer">
+              This document is an authentic automated diagnostic output generated by DigiIn Sovereign Trust
+              Platform. It is safe for submission at government counters, admissions offices, and public facilitation desks.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
