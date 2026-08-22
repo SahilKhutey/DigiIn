@@ -4,6 +4,10 @@ import type {
   Diagnostic,
   DirectUploadPayload,
   DocumentOption,
+  EkycMatchDemographicsRequest,
+  EkycMatchResult,
+  EkycOtpResponse,
+  EkycVerifyResponse,
   EvidenceComparisonDetail,
   GovernmentDecisionPayload,
   JwksResponse,
@@ -22,6 +26,7 @@ import type {
   VerifierQueueSummary,
   WalletDocument,
 } from "../types";
+
 
 
 
@@ -262,4 +267,53 @@ export async function fetchAuditEvents(
   if (!res.ok) throw new Error("Failed to fetch audit events");
   return res.json();
 }
+
+export async function generateEkycOtp(
+  aadhaarRef: string,
+  purpose: string = "Citizen Identity Verification"
+): Promise<EkycOtpResponse> {
+  const res = await fetch(`${API_BASE}/api/v1/ekyc/generate-otp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ aadhaarRef, purpose }),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Failed to generate eKYC OTP");
+  }
+  return res.json();
+}
+
+export async function verifyEkycOtp(
+  txnId: string,
+  otp: string,
+  documentId?: string
+): Promise<EkycVerifyResponse> {
+  const res = await fetch(`${API_BASE}/api/v1/ekyc/verify-otp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ txnId, otp, documentId }),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Failed to verify eKYC OTP");
+  }
+  return res.json();
+}
+
+export async function matchEkycDemographics(
+  payload: EkycMatchDemographicsRequest
+): Promise<EkycMatchResult> {
+  const res = await fetch(`${API_BASE}/api/v1/ekyc/match-demographics`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Failed to perform demographic match");
+  }
+  return res.json();
+}
+
 

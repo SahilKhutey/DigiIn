@@ -4,13 +4,16 @@ type WalletCardProps = {
   document: WalletDocument;
   onInspectTrust: (doc: WalletDocument) => void;
   onSelectForCorrection: (docId: string) => void;
+  onEkycVerify?: (doc: WalletDocument) => void;
 };
 
 export function WalletCard({
   document,
   onInspectTrust,
   onSelectForCorrection,
+  onEkycVerify,
 }: WalletCardProps) {
+
   const sourceLabel =
     document.source === "GOVERNMENT_ISSUED"
       ? "Government Issued"
@@ -128,6 +131,16 @@ export function WalletCard({
         >
           Inspect Trust Signals
         </button>
+        {onEkycVerify && (
+          <button
+            type="button"
+            className="secondary-action btn-ekyc-trigger"
+            onClick={() => onEkycVerify(document)}
+            style={{ background: "#f0fdf4", color: "#166534", borderColor: "#bbf7d0" }}
+          >
+            🔐 eKYC Verify
+          </button>
+        )}
         <button
           type="button"
           className="primary-action"
@@ -137,5 +150,6 @@ export function WalletCard({
         </button>
       </div>
     </article>
+
   );
 }

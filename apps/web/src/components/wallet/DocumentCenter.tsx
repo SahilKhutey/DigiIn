@@ -9,6 +9,7 @@ type DocumentCenterProps = {
   onSelectForCorrection: (docId: string) => void;
   onRefreshWallet?: () => void;
   onSwitchToVerifier?: () => void;
+  onEkycVerify?: (doc: WalletDocument) => void;
 };
 
 export function DocumentCenter({
@@ -16,7 +17,9 @@ export function DocumentCenter({
   onSelectForCorrection,
   onRefreshWallet,
   onSwitchToVerifier,
+  onEkycVerify,
 }: DocumentCenterProps) {
+
   const [filter, setFilter] = useState<string>("ALL");
   const [inspectedDoc, setInspectedDoc] = useState<WalletDocument | null>(null);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -143,9 +146,11 @@ export function DocumentCenter({
             document={doc}
             onInspectTrust={setInspectedDoc}
             onSelectForCorrection={onSelectForCorrection}
+            onEkycVerify={onEkycVerify}
           />
         ))}
       </div>
+
 
       {/* Detailed Modal */}
       <TrustSignalModal document={inspectedDoc} onClose={() => setInspectedDoc(null)} />

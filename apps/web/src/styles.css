@@ -496,6 +496,47 @@ header { min-height: 72px; display: flex; align-items: center; justify-content: 
 .masked-assurance-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; font-size: .78rem; color: #475569; }
 .masked-label { font-weight: 700; color: #1e293b; }
 
+/* --- Aadhaar eKYC Gateway Modal & Stepper --- */
+.ekyc-modal-content { max-width: 640px; }
+.ekyc-stepper { display: flex; align-items: center; justify-content: space-between; margin: 16px 0 20px; padding: 0 10px; }
+.step-item { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 700; color: #94a3b8; }
+.step-item.active { color: #1d4ed8; }
+.step-item.completed { color: #16a34a; }
+.step-circle { width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800; }
+.step-item.active .step-circle { background: #eff6ff; border-color: #2563eb; color: #1d4ed8; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+.step-item.completed .step-circle { background: #f0fdf4; border-color: #16a34a; color: #16a34a; }
+.step-connector { flex: 1; height: 2px; background: #e2e8f0; margin: 0 8px -18px 8px; }
+
+.privacy-assurance-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 14px; font-size: 0.82rem; color: #334155; line-height: 1.45; margin-bottom: 16px; }
+.privacy-assurance-box strong { color: #0f172a; }
+
+.otp-sent-banner { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 10px 14px; font-size: 0.85rem; color: #1e40af; display: flex; justify-content: space-between; align-items: center; }
+.otp-countdown { font-weight: 700; color: #dc2626; font-size: 0.82rem; }
+.otp-input { font-size: 1.5rem !important; letter-spacing: 0.4em !important; text-align: center !important; font-weight: 800 !important; width: 220px !important; margin: 0 auto !important; padding: 8px !important; }
+.demo-hint-box { background: #fefce8; border: 1px solid #fef08a; border-radius: 6px; padding: 8px 12px; font-size: 0.82rem; color: #854d0e; display: flex; align-items: center; justify-content: center; margin-top: 10px; }
+.demo-hint-box code { background: #fef9c3; padding: 2px 6px; border-radius: 4px; font-weight: 800; font-size: 0.9rem; }
+
+.ekyc-success-banner { display: flex; align-items: center; gap: 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px; }
+.ekyc-success-banner .success-icon { width: 36px; height: 36px; border-radius: 50%; background: #16a34a; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 900; flex-shrink: 0; }
+.ekyc-success-banner h4 { margin: 0 0 2px 0; font-size: 0.95rem; color: #166534; }
+.ekyc-success-banner p { margin: 0; font-size: 0.8rem; color: #15803d; }
+.match-score-badge { margin-left: auto; text-align: center; background: #dcfce7; border: 1px solid #86efac; border-radius: 6px; padding: 4px 10px; }
+.match-score-badge .score-num { display: block; font-size: 1.2rem; font-weight: 900; color: #15803d; }
+.match-score-badge .score-label { font-size: 0.65rem; font-weight: 800; color: #166534; text-transform: uppercase; }
+
+.elevation-alert-box { background: #ecfdf5; border-left: 4px solid #10b981; padding: 10px 14px; margin-top: 12px; border-radius: 0 6px 6px 0; font-size: 0.85rem; color: #065f46; }
+
+.demographics-diff-table { border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; font-size: 0.82rem; margin-top: 8px; }
+.diff-header-row { display: grid; grid-template-columns: 1.2fr 1.5fr 1.5fr 1fr; background: #f8fafc; padding: 8px 12px; font-weight: 700; color: #64748b; border-bottom: 1px solid #e2e8f0; }
+.diff-data-row { display: grid; grid-template-columns: 1.2fr 1.5fr 1.5fr 1fr; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; align-items: center; }
+.diff-data-row:last-child { border-bottom: none; }
+.diff-data-row .attr-name { font-weight: 700; color: #334155; }
+.diff-data-row .badge-match { font-size: 0.72rem; font-weight: 800; color: #16a34a; background: #f0fdf4; padding: 2px 6px; border-radius: 4px; border: 1px solid #bbf7d0; display: inline-block; width: fit-content; }
+
+.ekyc-crypto-token-box { background: #0f172a; color: #94a3b8; border-radius: 6px; padding: 10px 12px; margin-top: 14px; font-size: 0.75rem; }
+.ekyc-crypto-token-box code { display: block; color: #38bdf8; word-break: break-all; margin-top: 4px; font-family: monospace; font-size: 0.72rem; max-height: 48px; overflow-y: auto; }
+
+
 
 
 

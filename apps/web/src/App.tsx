@@ -15,6 +15,9 @@ import { ProofGateway } from "./components/verification/ProofGateway";
 import { VerifierDashboard } from "./components/verifier/VerifierDashboard";
 import { DocumentCenter } from "./components/wallet/DocumentCenter";
 import { OfflineScannerModal } from "./components/scanner/OfflineScannerModal";
+import { EkycVerificationModal } from "./components/ekyc/EkycVerificationModal";
+
+
 
 import type {
   CorrectionRequestRecord,
@@ -124,8 +127,18 @@ export function App() {
     setIsScannerOpen(true);
   };
 
+  // Aadhaar eKYC Gateway Modal State
+  const [isEkycOpen, setIsEkycOpen] = useState(false);
+  const [ekycTargetDoc, setEkycTargetDoc] = useState<WalletDocument | null>(null);
+
+  const handleOpenEkyc = (doc?: WalletDocument) => {
+    setEkycTargetDoc(doc || null);
+    setIsEkycOpen(true);
+  };
+
   // Citizen Wallet Documents State (5 Discrete Trust Signals)
   const [walletDocuments, setWalletDocuments] = useState<WalletDocument[]>([]);
+
 
 
 
@@ -373,7 +386,9 @@ export function App() {
             onSelectForCorrection={handleSelectForCorrection}
             onRefreshWallet={refreshWallet}
             onSwitchToVerifier={() => setViewMode("VERIFIER")}
+            onEkycVerify={handleOpenEkyc}
           />
+
 
 
 
@@ -441,7 +456,19 @@ export function App() {
         initialToken={scannerInitialToken}
       />
 
+      <EkycVerificationModal
+        isOpen={isEkycOpen}
+        onClose={() => setIsEkycOpen(false)}
+        documentId={ekycTargetDoc?.documentId}
+        documentTitle={ekycTargetDoc?.title}
+        onVerificationSuccess={() => {
+          refreshWallet();
+          setNotice("Aadhaar eKYC identity verified! Document trust level elevated to Level 4 (Government Verified).");
+        }}
+      />
+
       <PrivacyFooter />
     </main>
   );
 }
+
