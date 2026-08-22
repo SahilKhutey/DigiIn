@@ -3,12 +3,34 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.domain.models import ConsentPreview, DocumentOption, IssuerHealth, ScenarioSummary, TransactionDiagnosis
+from app.domain.models import (
+    ConsentPreview,
+    DocumentOption,
+    IssuerHealth,
+    ProofTokenIntrospection,
+    ProofTokenIntrospectionRequest,
+    ScenarioSummary,
+    TransactionDiagnosis,
+    VerificationAuthorization,
+    VerificationRequestCreate,
+    VerificationRequestRecord,
+    VerificationResult,
+)
 from app.services.catalogue import get_document, search_documents
 from app.services.recovery import get_diagnosis, list_scenarios
 from app.services.trust import consent_preview, issuer_health
+from app.services.verification import (
+    authorize_verification_request,
+    create_verification_request,
+    demo_exam_request,
+    get_verification_request,
+    get_verification_result,
+    introspect_token,
+    list_verification_requests,
+    result_for_request,
+)
 
-app = FastAPI(title="DigiIn Prototype API", version="0.3.0")
+app = FastAPI(title="DigiIn Prototype API", version="0.4.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -75,3 +97,80 @@ def list_issuer_health() -> list[IssuerHealth]:
 @app.get("/api/v1/consents/preview", response_model=ConsentPreview)
 def get_consent_preview() -> ConsentPreview:
     return consent_preview()
+
+
+@app.post("/api/v1/verification/request", response_model=VerificationRequestRecord)
+def create_proof_request(payload: VerificationRequestCreate) -> VerificationRequestRecord:
+    """Create a purpose-bound verification request from a requester portal."""
+    return create_verification_request(payload)
+
+
+@app.post("/api/v1/verification/request/demo-exam", response_model=VerificationRequestRecord)
+def create_demo_exam_request() -> VerificationRequestRecord:
+    """Create a synthetic multi-credential exam eligibility request."""
+    return create_verification_request(demo_exam_request())
+
+
+@app.get("/api/v1/verification/request", response_model=list[VerificationRequestRecord])
+def verification_requests() -> list[VerificationRequestRecord]:
+    return list_verification_requests()
+
+
+@app.get("/api/v1/verification/request/{request_id}", response_model=VerificationRequestRecord)
+def read_verification_request(request_id: str) -> VerificationRequestRecord:
+    request = get_verification_request(request_id)
+    if request is None:
+        raise HTTPException(status_code=404, detail="Verification request not found")
+    return request
+
+
+@app.post("/api/v1/verification/request/{request_id}/authorize", response_model=VerificationResult)
+def authorize_proof_request(
+    request_id: str, payload: VerificationAuthorization
+) -> VerificationResult:
+    result = authorize_verification_request(request_id, payload)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Verification request not found")
+    return result
+
+
+@app.get("/api/v1/verification/request/{request_id}/status")
+def verification_request_status(request_id: str) -> dict[str, str]:
+    request = get_verification_request(request_id)
+    if request is None:
+        raise HTTPException(status_code=404, detail="Verification request not found")
+    result = result_for_request(request_id)
+    return {
+        "requestId": request.requestId,
+        "requestStatus": request.status,
+        "verificationId": result.verificationId if result else "",
+        "verificationStatus": result.status if result else "PENDING",
+    }
+
+
+@app.get("/api/v1/verification/result/{verification_id}", response_model=VerificationResult)
+def read_verification_result(verification_id: str) -> VerificationResult:
+    result = get_verification_result(verification_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Verification result not found")
+    return result
+
+
+@app.get("/api/v1/verification/token/{verification_id}")
+def read_verification_token(verification_id: str) -> dict[str, str]:
+    result = get_verification_result(verification_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Verification result not found")
+    return {
+        "verificationId": result.verificationId,
+        "type": result.proof.type,
+        "token": result.proof.token,
+        "algorithm": result.proof.algorithm,
+    }
+
+
+@app.post("/api/v1/verification/introspect", response_model=ProofTokenIntrospection)
+def introspect_proof_token(
+    payload: ProofTokenIntrospectionRequest,
+) -> ProofTokenIntrospection:
+    return introspect_token(payload.token, payload.audience, payload.nonce)

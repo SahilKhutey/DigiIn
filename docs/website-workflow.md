@@ -24,7 +24,7 @@ Document center
 | Verify uploaded document | "Make this old or uploaded document trusted." | Create a verification case, route to issuer/registry/human review and produce a verification result. | Future module. |
 | Digitize legacy record | "This record exists only on paper or in archives." | OCR, classify, identify authority, match archive and submit for government review. | Future module. |
 | Correct official record | "The government record has an error." | Create a correction case with evidence and issue a new version if approved. | Future module. |
-| Share proof | "I need to prove something to a requester." | Share minimum necessary verification result or selected fields with consent. | Future module. |
+| Share proof | "I need to prove something to a requester." | Share minimum necessary verification result or selected fields with consent. | Implemented with mock exam request. |
 
 ## Screens and behaviours
 
@@ -38,6 +38,7 @@ Document center
 | Verification case | Submit evidence for authority review | Not implemented | Must separate AI recommendations from officer decisions. |
 | Correction case | Request a corrected or reissued version | Not implemented | Must preserve prior versions and evidence references. |
 | Share proof | Share claim or verification result | Not implemented | Must minimise disclosure and require consent. |
+| Proof token validation | Requester validates proof | Implemented with synthetic HMAC token introspection | Must verify audience, expiry, nonce and signature. |
 
 ## State model
 
@@ -87,6 +88,7 @@ Every document card should show separate signals:
 | Bring Your Document | Future upload-to-verification flow for old and citizen-held records. |
 | My Record Is Wrong | Future correction and versioning flow controlled by the responsible authority. |
 | Prove Without Oversharing | Future requester flow returns verification results or selected claims, not always raw files. |
+| Verification ID | Every proof response has a verification ID, receipt and short-lived token. |
 
 ## Production integration boundary
 

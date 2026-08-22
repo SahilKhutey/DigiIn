@@ -58,6 +58,8 @@ The API documentation is available at `http://localhost:8000/docs`; the web app 
 | Transaction diagnosis | `GET /api/v1/transactions/{id}/diagnosis` |
 | Recovery retry | `POST /api/v1/transactions/{id}/retry` |
 | Trust context | `GET /api/v1/issuers/health` and `GET /api/v1/consents/preview` |
+| Verification gateway | `POST /api/v1/verification/request`, `POST /api/v1/verification/request/{id}/authorize`, `GET /api/v1/verification/result/{id}` |
+| Proof validation | `GET /api/v1/verification/token/{id}` and `POST /api/v1/verification/introspect` |
 
 ## Engineering guardrails
 
@@ -65,6 +67,7 @@ The API documentation is available at `http://localhost:8000/docs`; the web app 
 - Treat government integrations as explicit, consented adapters—not screen-scraping targets.
 - Keep document, file, verification result and version history separate.
 - Never present a citizen-uploaded file as government-issued or government-verified.
+- Prefer purpose-bound proof tokens over raw document transfer.
 - Build accessibility to WCAG 2.2 AA and use clear, multilingual-ready content.
 - Keep diagnostic events auditable while minimising personal data.
 

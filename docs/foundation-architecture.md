@@ -273,11 +273,35 @@ User
 | `POST /api/v1/transactions/{id}/retry` | Mock targeted retry |
 | `GET /api/v1/issuers/health` | Mock issuer health monitoring |
 | `GET /api/v1/consents/preview` | Plain-language consent preview |
+| `POST /api/v1/verification/request` | Create a purpose-bound proof request |
+| `POST /api/v1/verification/request/demo-exam` | Create a synthetic multi-credential exam request |
+| `POST /api/v1/verification/request/{id}/authorize` | Citizen authorises or declines the request |
+| `GET /api/v1/verification/request/{id}/status` | Inspect request and verification status |
+| `GET /api/v1/verification/result/{id}` | Read a verification result and receipt |
+| `GET /api/v1/verification/token/{id}` | Read the signed proof token for a result |
+| `POST /api/v1/verification/introspect` | Validate signature, audience, expiry and purpose |
+
+## Implemented verification gateway slice
+
+The current implementation supports the new "proof, not document" pattern with synthetic credentials:
+
+```text
+Requester portal
+  -> creates verification request
+  -> citizen reviews consent
+  -> DigiIn evaluates mock credentials
+  -> DigiIn returns a signed, short-lived, audience-bound proof token
+  -> requester introspects token
+  -> citizen receives a receipt
+```
+
+Implemented demo credentials include Class XII, domicile, age over 18, graduation and category certificate. The gateway supports boolean and attribute disclosure modes and keeps document retrieval separate from verification.
 
 ## Next modules requiring authorised integration
 
 - OIDC/PKCE session identity and device management.
 - Persistent PostgreSQL transaction, document, verification and audit storage.
+- Production-grade proof signing with managed keys, rotation, replay protection and requester registration.
 - Citizen upload processing with malware scanning, OCR and metadata extraction.
 - Digital signature, QR, URI, registry and hash verification.
 - Government verifier console with queue, evidence review and officer audit.
