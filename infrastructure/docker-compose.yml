@@ -14,6 +14,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U digilocker -d digilocker_x"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
@@ -34,7 +39,23 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  worker:
+    build:
+      context: ../services/api
+      dockerfile: Dockerfile
+    container_name: digilocker-worker
+    restart: unless-stopped
+    command: ["python", "-m", "services.worker.main"]
+    environment:
+      DIGIIN_DATABASE_URL: "postgresql://digilocker:digilocker_dev_password@postgres:5432/digilocker_x"
+      REDIS_URL: "redis://redis:6379/0"
+    depends_on:
+      - api
       - redis
 
   web:
