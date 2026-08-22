@@ -14,6 +14,8 @@ import { PlatformRunner } from "./components/platform/PlatformRunner";
 import { ProofGateway } from "./components/verification/ProofGateway";
 import { VerifierDashboard } from "./components/verifier/VerifierDashboard";
 import { DocumentCenter } from "./components/wallet/DocumentCenter";
+import { OfflineScannerModal } from "./components/scanner/OfflineScannerModal";
+
 import type {
   CorrectionRequestRecord,
   Diagnostic,
@@ -113,9 +115,18 @@ export function App() {
   // View Mode: Citizen Wallet vs Government Verifier Console vs Consent Dashboard
   const [viewMode, setViewMode] = useState<"CITIZEN" | "VERIFIER" | "CONSENT">("CITIZEN");
 
+  // Offline QR Code Scanner Modal State
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [scannerInitialToken, setScannerInitialToken] = useState("");
+
+  const handleOpenScanner = (tokenToScan?: string) => {
+    setScannerInitialToken(tokenToScan || verificationResult?.proof?.token || "");
+    setIsScannerOpen(true);
+  };
 
   // Citizen Wallet Documents State (5 Discrete Trust Signals)
   const [walletDocuments, setWalletDocuments] = useState<WalletDocument[]>([]);
+
 
 
   // Platform & Student Slice State
@@ -342,7 +353,11 @@ export function App() {
 
   return (
     <main>
-      <Header viewMode={viewMode} onViewModeChange={setViewMode} />
+      <Header
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        onOpenScanner={() => handleOpenScanner()}
+      />
       <Hero />
       <NoticeBanner notice={notice} />
 
@@ -351,6 +366,7 @@ export function App() {
       ) : viewMode === "CONSENT" ? (
         <ConsentManagerDashboard onNotice={setNotice} />
       ) : (
+
         <>
           <DocumentCenter
             walletDocuments={walletDocuments}
@@ -394,6 +410,7 @@ export function App() {
             onCreateRequest={handleCreateProofRequest}
             onAuthorize={handleAuthorizeVerification}
             onIntrospect={handleIntrospectProof}
+            onOpenScanner={() => handleOpenScanner()}
           />
 
           <DocumentPicker
@@ -418,8 +435,13 @@ export function App() {
         </>
       )}
 
+      <OfflineScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        initialToken={scannerInitialToken}
+      />
+
       <PrivacyFooter />
     </main>
   );
 }
-

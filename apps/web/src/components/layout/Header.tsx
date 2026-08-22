@@ -1,9 +1,10 @@
 type HeaderProps = {
   viewMode: "CITIZEN" | "VERIFIER" | "CONSENT";
   onViewModeChange: (mode: "CITIZEN" | "VERIFIER" | "CONSENT") => void;
+  onOpenScanner?: () => void;
 };
 
-export function Header({ viewMode, onViewModeChange }: HeaderProps) {
+export function Header({ viewMode, onViewModeChange, onOpenScanner }: HeaderProps) {
   return (
     <header>
       <p className="brand">
@@ -33,7 +34,18 @@ export function Header({ viewMode, onViewModeChange }: HeaderProps) {
         >
           🛡️ Consent & Audit
         </button>
+        {onOpenScanner && (
+          <button
+            type="button"
+            className="scanner-header-btn"
+            onClick={onOpenScanner}
+            title="Air-gapped offline asymmetric cryptographic proof verification"
+          >
+            📷 Offline QR Scanner
+          </button>
+        )}
       </div>
+
 
       {viewMode === "CITIZEN" && (
         <nav aria-label="Main navigation">

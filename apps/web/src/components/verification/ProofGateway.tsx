@@ -8,6 +8,7 @@ import type {
 import { JwksViewerModal } from "./JwksViewerModal";
 import { SelectiveDisclosureCustomizer } from "./SelectiveDisclosureCustomizer";
 import { TokenIntrospect } from "./TokenIntrospect";
+import { QrCodeModal } from "../qr/QrCodeModal";
 
 type ProofGatewayProps = {
   verificationRequest: VerificationRequest | null;
@@ -16,6 +17,7 @@ type ProofGatewayProps = {
   onCreateRequest: () => void;
   onAuthorize: (customDisclosure?: SelectiveDisclosurePreference) => void;
   onIntrospect: () => void;
+  onOpenScanner?: () => void;
 };
 
 export function ProofGateway({
@@ -25,9 +27,12 @@ export function ProofGateway({
   onCreateRequest,
   onAuthorize,
   onIntrospect,
+  onOpenScanner,
 }: ProofGatewayProps) {
   const [isJwksOpen, setIsJwksOpen] = useState(false);
+  const [showQrModal, setShowQrModal] = useState(false);
   const [disclosurePref, setDisclosurePref] = useState<SelectiveDisclosurePreference | undefined>(undefined);
+
 
   return (
     <section id="proof" className="card proof-card" aria-labelledby="proof-title">
@@ -74,7 +79,17 @@ export function ProofGateway({
         >
           Validate proof token
         </button>
+        {verificationResult && (
+          <button
+            className="primary-action qr-trigger-btn"
+            type="button"
+            onClick={() => setShowQrModal(true)}
+          >
+            📱 View Verifiable QR Code
+          </button>
+        )}
       </div>
+
 
       {verificationRequest && !verificationResult && (
         <section className="consent-panel" aria-label="Consent request">
@@ -201,8 +216,24 @@ export function ProofGateway({
       <TokenIntrospect tokenCheck={tokenCheck} onOpenJwks={() => setIsJwksOpen(true)} />
 
       <JwksViewerModal isOpen={isJwksOpen} onClose={() => setIsJwksOpen(false)} />
+
+      {verificationResult && (
+        <QrCodeModal
+          isOpen={showQrModal}
+          onClose={() => setShowQrModal(false)}
+          onOpenScanner={onOpenScanner}
+          title="Verifiable Examination Eligibility Proof"
+          token={verificationResult.proof.token}
+          metadata={{
+            purpose: verificationRequest?.purpose,
+            audience: verificationRequest?.audience,
+            algorithm: verificationResult.proof.algorithm,
+          }}
+        />
+      )}
     </section>
   );
 }
+
 
 
