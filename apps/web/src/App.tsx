@@ -16,6 +16,8 @@ import { VerifierDashboard } from "./components/verifier/VerifierDashboard";
 import { DocumentCenter } from "./components/wallet/DocumentCenter";
 import { OfflineScannerModal } from "./components/scanner/OfflineScannerModal";
 import { EkycVerificationModal } from "./components/ekyc/EkycVerificationModal";
+import { DirectVerificationFlow } from "./components/verification/DirectVerificationFlow";
+
 
 
 
@@ -388,6 +390,9 @@ export function App() {
             onSwitchToVerifier={() => setViewMode("VERIFIER")}
             onEkycVerify={handleOpenEkyc}
           />
+
+          <DirectVerificationFlow />
+
 
 
 

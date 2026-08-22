@@ -1,0 +1,7 @@
+{
+  "name": "@digilocker-x/config",
+  "version": "0.1.0",
+  "description": "Shared TypeScript and tooling configurations for DigiLocker X monorepo",
+  "main": "index.js",
+  "license": "MIT"
+}

@@ -1,0 +1,11 @@
+[project]
+name = "digilocker-x-worker"
+version = "0.1.0"
+description = "DigiLocker X Background Task Worker for OCR, Classification, and Event Processing"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"

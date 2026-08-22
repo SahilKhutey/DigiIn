@@ -1,3 +1,49 @@
+export type UserRole = "CITIZEN" | "ISSUER" | "OFFICER" | "REQUESTER" | "ADMIN";
+
+export type UserStatus = "ACTIVE" | "SUSPENDED" | "PENDING_VERIFICATION";
+
+export type User = {
+  id: string;
+  phoneNumber?: string;
+  email?: string;
+  fullName: string;
+  dateOfBirth?: string;
+  gender?: string;
+  status: UserStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OrganizationType = "ISSUER" | "REQUESTER" | "HYBRID" | "GOV_DEPARTMENT";
+
+export type Organization = {
+  id: string;
+  name: string;
+  code: string;
+  type: OrganizationType;
+  verificationAuthorityLevel: number;
+  status: "ACTIVE" | "SUSPENDED";
+  publicKeyPem?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CredentialStatus = "ACTIVE" | "SUSPENDED" | "REVOKED" | "EXPIRED";
+
+export type CredentialRecord = {
+  id: string;
+  userId: string;
+  issuerId?: string;
+  documentId?: string;
+  credentialType: string;
+  status: CredentialStatus;
+  verificationLevel: number;
+  claims: Record<string, unknown>;
+  signature?: string;
+  issuedAt: string;
+  expiresAt?: string | null;
+};
+
 export type VerificationStatus =
   | "VERIFIED"
   | "NOT_VERIFIED"
@@ -8,7 +54,8 @@ export type VerificationStatus =
   | "ISSUER_UNAVAILABLE"
   | "IDENTITY_MISMATCH"
   | "INSUFFICIENT_EVIDENCE"
-  | "PARTIAL";
+  | "PARTIAL"
+  | "REQUIRES_REVIEW";
 
 export type DisclosureMode = "MINIMUM" | "ATTRIBUTE" | "DOCUMENT_REQUIRED";
 
@@ -32,7 +79,6 @@ export type FeatureFlag = {
   enabled: boolean;
   description: string;
 };
-
 
 export type DomainEvent = {
   eventId: string;
@@ -106,8 +152,6 @@ export type WalletDocument = {
   createdAt: string;
 };
 
-
-
 export type UploadedDocument = {
   documentId: string;
   ownerSubjectId: string;
@@ -121,7 +165,6 @@ export type UploadedDocument = {
   extractedMetadata: Record<string, unknown>;
   createdAt: string;
 };
-
 
 export type CorrectionStatus = "PENDING_REVIEW" | "APPROVED" | "REJECTED" | "MORE_INFO_REQUIRED";
 
@@ -224,7 +267,6 @@ export type VerificationCase = {
   } | null;
 };
 
-
 export type VerificationPredicate = {
   attribute: string;
   operator: "EQ" | "GTE" | "LTE" | "IN" | "EXISTS";
@@ -251,6 +293,31 @@ export type VerificationAuthorization = {
   allow: boolean;
   subjectId: string;
   customDisclosure?: SelectiveDisclosurePreference;
+};
+
+export type VerificationRequestCreate = {
+  clientId: string;
+  requesterName: string;
+  purpose: string;
+  audience: string;
+  credentialType: string;
+  requestedAttributes: string[];
+  disclosureMode?: DisclosureMode;
+  ttlMinutes?: number;
+};
+
+export type VerificationRequestRecord = {
+  requestId: string;
+  clientId: string;
+  requesterName: string;
+  purpose: string;
+  audience: string;
+  credentialType: string;
+  requestedAttributes: string[];
+  disclosureMode: DisclosureMode;
+  status: "PENDING" | "APPROVED" | "REJECTED" | "EXPIRED" | "REVOKED";
+  createdAt: string;
+  expiresAt: string;
 };
 
 export type CredentialProofResult = {
@@ -295,7 +362,6 @@ export type VerificationResult = {
   issuedAt: string;
   expiresAt: string;
 };
-
 
 export type StudentDemoResult = {
   document: UploadedDocument;
@@ -439,5 +505,16 @@ export type EkycMatchDemographicsRequest = {
   aadhaarRef: string;
 };
 
+export type AuthTokenPair = {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: "Bearer";
+  expiresIn: number;
+};
 
-
+export type OtpChallenge = {
+  challengeId: string;
+  maskedPhone: string;
+  expiresInSeconds: number;
+  message: string;
+};

@@ -1,0 +1,31 @@
+from app.models.entities import (
+    AuditEvent,
+    Consent,
+    CorrectionCase,
+    Credential,
+    Document,
+    DocumentVersion,
+    Notification,
+    Organization,
+    RefreshSession,
+    User,
+    VerificationProof,
+    VerificationRequest,
+    VerificationResult,
+)
+
+__all__ = [
+    "AuditEvent",
+    "Consent",
+    "CorrectionCase",
+    "Credential",
+    "Document",
+    "DocumentVersion",
+    "Notification",
+    "Organization",
+    "RefreshSession",
+    "User",
+    "VerificationProof",
+    "VerificationRequest",
+    "VerificationResult",
+]

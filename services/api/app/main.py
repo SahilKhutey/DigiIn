@@ -7,8 +7,27 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-
+from app.api.v1 import (
+    auth as auth_router,
+)
+from app.api.v1 import (
+    citizen as citizen_router,
+)
+from app.api.v1 import (
+    government as government_router,
+)
+from app.api.v1 import (
+    health as health_router,
+)
+from app.api.v1 import (
+    proofs as proofs_router,
+)
+from app.db.session import check_db_health, init_db
 from app.domain.models import (
+    AuthSendOtpRequest,
+    AuthSendOtpResponse,
+    AuthTokenPairResponse,
+    AuthVerifyOtpRequest,
     ConsentPreview,
     ConsentRecord,
     CorrectionRequestCreate,
@@ -48,14 +67,14 @@ from app.domain.models import (
     VerifierQueueSummary,
     WalletDocument,
 )
+from app.services.catalogue import get_document, search_documents
 from app.services.crypto import get_public_jwks
 from app.services.ekyc import (
+    MOCK_UIDAI_IDENTITIES,
     calculate_demographics_match,
     generate_ekyc_otp,
     verify_ekyc_otp_and_match,
-    MOCK_UIDAI_IDENTITIES,
 )
-
 from app.services.platform import (
     classify_document,
     create_correction_request,
@@ -74,8 +93,6 @@ from app.services.platform import (
     upload_and_classify_pipeline,
     upload_document,
 )
-
-from app.services.catalogue import get_document, search_documents
 from app.services.recovery import generate_support_summary, get_diagnosis, list_scenarios
 from app.services.trust import consent_preview, issuer_health
 from app.services.verification import (
@@ -91,21 +108,30 @@ from app.services.verification import (
     revoke_verification_consent,
 )
 
-
-
-from app.db.session import check_db_health, init_db
-
 # Initialize database tables and initial seed fixtures on module load / startup
 init_db()
 
-app = FastAPI(title="DigiIn Prototype API", version="0.4.0")
+app = FastAPI(title="DigiLocker X API", version="0.5.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=False,
-    allow_methods=["GET", "POST"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(health_router.router, prefix="/api/v1")
+app.include_router(auth_router.router, prefix="/api/v1")
+app.include_router(citizen_router.router, prefix="/api/v1")
+app.include_router(government_router.router, prefix="/api/v1")
+app.include_router(proofs_router.router, prefix="/api/v1")
+
+
 
 
 @app.get("/health")
@@ -124,6 +150,53 @@ def health() -> dict[str, Any]:
 def jwks() -> JwksResponse:
     """RFC 7517 JSON Web Key Set discovery endpoint for offline third-party proof verification."""
     return JwksResponse(**get_public_jwks())
+
+
+@app.post("/api/v1/auth/otp/send", response_model=AuthSendOtpResponse)
+def send_auth_otp(payload: AuthSendOtpRequest) -> AuthSendOtpResponse:
+    """Passwordless mobile OTP challenge generation."""
+    phone = payload.phoneNumber.strip()
+    masked = f"+91 {phone[-10:-4]}****{phone[-2:]}" if len(phone) >= 10 else "+91 98****10"
+    challenge_id = f"otp_ch_{phone[-4:] if len(phone)>=4 else 'demo'}"
+    return AuthSendOtpResponse(
+        challengeId=challenge_id,
+        maskedPhone=masked,
+        expiresInSeconds=300,
+        demoOtpHint="123456",
+        message="OTP challenge dispatched. In prototype mode, use 123456.",
+    )
+
+
+@app.post("/api/v1/auth/otp/verify", response_model=AuthTokenPairResponse)
+def verify_auth_otp(payload: AuthVerifyOtpRequest) -> AuthTokenPairResponse:
+    """Verify OTP challenge and return sovereign session tokens."""
+    if payload.otpCode not in {"123456", "000000"}:
+        raise HTTPException(status_code=400, detail="Invalid OTP code. Please enter 123456.")
+    return AuthTokenPairResponse(
+        accessToken="eyJhbGciOiJFZERTQSI...demo_access_token",
+        refreshToken="rft_demo_rotatable_token_9f8a",
+        tokenType="Bearer",
+        expiresIn=900,
+        subjectId="subj_demo_5c7b90",
+        role="CITIZEN",
+    )
+
+
+@app.get("/api/v1/issuers")
+def list_issuers() -> list[dict[str, Any]]:
+    """List registered government issuer adapters and capabilities."""
+    from app.integrations.issuer import issuer_registry
+
+    return [
+        {
+            "issuerId": a.issuer_id,
+            "name": a.name,
+            "health": a.health().model_dump(by_alias=True, mode="json"),
+            "capabilities": list(a.capabilities()),
+        }
+        for a in issuer_registry.list_all()
+    ]
+
 
 
 
@@ -200,6 +273,7 @@ def get_consent_preview() -> ConsentPreview:
 
 
 @app.post("/api/v1/verification/request", response_model=VerificationRequestRecord)
+@app.post("/api/v1/verification/requests", response_model=VerificationRequestRecord)
 def create_proof_request(payload: VerificationRequestCreate) -> VerificationRequestRecord:
     """Create a purpose-bound verification request from a requester portal."""
     return create_verification_request(payload)
@@ -212,8 +286,10 @@ def create_demo_exam_request() -> VerificationRequestRecord:
 
 
 @app.get("/api/v1/verification/request", response_model=list[VerificationRequestRecord])
+@app.get("/api/v1/verification/requests", response_model=list[VerificationRequestRecord])
 def verification_requests() -> list[VerificationRequestRecord]:
     return list_verification_requests()
+
 
 
 @app.get("/api/v1/verification/request/{request_id}", response_model=VerificationRequestRecord)

@@ -652,4 +652,32 @@ class EkycMatchDemographicsRequest(BaseModel):
     aadhaarRef: str
 
 
+class AuthSendOtpRequest(BaseModel):
+    phoneNumber: str
+    channel: Literal["SMS", "WHATSAPP"] = "SMS"
+
+
+class AuthSendOtpResponse(BaseModel):
+    challengeId: str
+    maskedPhone: str
+    expiresInSeconds: int = 300
+    demoOtpHint: str = "123456"
+    message: str
+
+
+class AuthVerifyOtpRequest(BaseModel):
+    challengeId: str
+    otpCode: str
+
+
+class AuthTokenPairResponse(BaseModel):
+    accessToken: str
+    refreshToken: str
+    tokenType: str = "Bearer"
+    expiresIn: int = 900
+    subjectId: str
+    role: str = "CITIZEN"
+
+
+
 

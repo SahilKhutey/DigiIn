@@ -1,0 +1,1 @@
+"""DigiLocker X Pydantic schemas."""

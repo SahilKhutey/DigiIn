@@ -1,125 +1,119 @@
-# DigiIn
+# DigiLocker X (DigiIn)
 
 [![CI Pipeline](https://github.com/SahilKhutey/DigiIn/actions/workflows/ci.yml/badge.svg)](https://github.com/SahilKhutey/DigiIn/actions/workflows/ci.yml)
 [![Security Audit](https://github.com/SahilKhutey/DigiIn/actions/workflows/security.yml/badge.svg)](https://github.com/SahilKhutey/DigiIn/actions/workflows/security.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-DigiIn is a citizen-side **document lifecycle and trust platform** for Indian public digital services. It helps a person receive, upload, verify, correct, recover and share trusted documents with clear provenance, consent and auditability.
+DigiLocker X is a citizen-centric **credential and verification platform** for Indian public digital services. It enforces sovereign data ownership, minimum disclosure, and zero raw document transfers by exchanging **cryptographically signed verifiable claims** over raw document files.
 
+---
 
-## Status
+## 📖 Authoritative Engineering Specifications (`docs/`)
 
-This is a professional prototype foundation for Build What Moves India. It uses only fictional records and mock service states so the product flow can be designed, tested and improved safely before any authorised integration work.
+The single source of truth for the entire platform implementation:
 
-## Product boundary
+| Specification | Description |
+|---|---|
+| [**Workflow.md**](docs/Workflow.md) | Platform behavior, citizen journeys, government issuance, OCR pipeline, verification rules, consent-controlled sharing, and cryptographic proof schemas. |
+| [**Principles.md**](docs/Principles.md) | The 15 mandatory engineering principles (Citizen First, Verify Don't Copy, Minimum Disclosure, Explicit Consent, Purpose Limitation, Security by Default, Accessibility WCAG 2.2 AA). |
+| [**Services.md**](docs/Services.md) | Detailed boundaries and interfaces for all 13 platform services (Identity, Document, Credential, Verification, Consent, Proof, Issuer, Requester, Review, Notification, Audit, Search, Integration). |
+| [**CoreFoundation.md**](docs/CoreFoundation.md) | Architectural layout, technology stack (FastAPI, Next.js, React Native, PostgreSQL 16, Redis, S3), and layer isolation rules. |
+| [**Database.md**](docs/Database.md) | Entity-relationship models, PostgreSQL DDL schemas, constraints, version chains, and immutable domain events. |
+| [**Auth.md**](docs/Auth.md) | Multi-factor passwordless auth (Mobile OTP, Passkeys, eKYC), token architecture (15m JWT, rotating refresh tokens), OAuth 2.0 / OIDC delegation, and RBAC matrix. |
+| [**UI-UX.md**](docs/UI-UX.md) | Information architecture, 8 universal UI states, ASCII wireframes for all 23 screens, and WCAG 2.2 AA accessibility guidelines. |
 
-The first product slice is a **DigiLocker-style document recovery experience**:
+---
 
-1. A citizen selects a document and issuer.
-2. DigiIn evaluates a diagnostic journey (identity, issuer lookup, document fetch, consent and destination callback).
-3. The citizen receives a plain-language status, a responsible system layer and an appropriate recovery action.
+## 🏛️ Monorepo Workspace Structure
 
-This repository contains mock diagnostic data only. It must not collect Aadhaar numbers, OTPs, passwords, or government-account credentials.
+```text
+digilocker-x/
+├── docs/                      # The 7 authoritative single-source-of-truth specifications
+│   ├── Workflow.md
+│   ├── Principles.md
+│   ├── Services.md
+│   ├── CoreFoundation.md
+│   ├── Database.md
+│   ├── Auth.md
+│   └── UI-UX.md
+│
+├── apps/                      # Frontends & Consoles
+│   ├── web/                   # Citizen web application (React / Next.js ready)
+│   ├── mobile/                # Citizen mobile app (React Native / Expo)
+│   ├── issuer-console/        # Government Issuer portal (CBSE, State Boards)
+│   ├── verifier-console/      # Requester verification query portal (NTA, Universities)
+│   └── admin/                 # Platform administration & system governance
+│
+├── services/                  # Backend Modular Services & Workers
+│   ├── api/                   # Core FastAPI modular monolith with Issuer Adapters & Proof Engine
+│   ├── worker/                # Background async task queue for OCR & virus scanning
+│   ├── verification/          # Standalone verification evaluation rules engine
+│   └── notification/          # Multi-channel notification dispatcher (SMS, WhatsApp, Push)
+│
+├── packages/                  # Shared Isomorphic TypeScript Packages
+│   ├── ui/                    # Accessible UI components & universal StateContainer
+│   ├── types/                 # Shared TypeScript models & domain entities
+│   ├── schemas/               # Authoritative JSON Schemas (RFC 7515/7519 Proofs)
+│   ├── api-client/            # Isomorphic typed SDK for Web, Mobile, and Consoles
+│   └── config/                # Shared TSConfig and linting rules
+│
+├── infrastructure/            # Production & Local Infrastructure
+│   ├── docker-compose.yml     # PostgreSQL 16, Redis, API, and Web containers
+│   └── postgres/init.sql      # Database DDL initialization script
+│
+├── tests/                     # Monorepo Integration & E2E Test Suites
+│   └── e2e_verification_flow.py
+│
+└── README.md
+```
 
-The broader architecture treats recovery as one lifecycle path. Future authorised modules may support citizen uploads, government verification, legacy digitization, correction/version history and minimum-disclosure requester proofs.
+---
 
-## Workspace layout
+## 🚀 Quick Start
 
-| Path | Purpose |
-| --- | --- |
-| `apps/web` | Accessible React citizen interface |
-| `services/api` | Modular FastAPI service for discovery, transactions, recovery, issuer health and consent previews |
-| `packages/contracts` | Versioned cross-service JSON schemas |
-| `packages/types` | Shared TypeScript contracts for web and future mobile clients |
-| `data/examples` | Safe, fictional development fixtures |
-| `docs` | Product, system, security and delivery decisions |
-
-## Quick start
-
-Copy `.env.example` to `.env`, then run the API and web app in separate terminals.
+### 1. Run the Backend API (`services/api`)
 
 ```powershell
 cd services/api
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -e .[dev]
+python -m pytest               # Runs 21 unit & adapter tests
 uvicorn app.main:app --reload --port 8000
 ```
+API Documentation is available at `http://localhost:8000/docs`.
+
+### 2. Run the Citizen Web App (`apps/web`)
 
 ```powershell
 cd apps/web
 npm install
 npm run dev
 ```
+The citizen web application runs at `http://localhost:5173`.
 
-The API documentation is available at `http://localhost:8000/docs`; the web app runs at `http://localhost:5173`.
+### 3. Run the End-to-End Verification Test (`tests/`)
 
-## Implemented API modules
+Executes the complete vertical slice: `Request Creation` ➔ `Citizen Consent` ➔ `Issuer Verification` ➔ `Signed Proof Generation` ➔ `Proof Introspection`.
 
-| Area | Endpoint |
-| --- | --- |
-| Health | `GET /health` |
-| Document discovery | `GET /api/v1/documents?q=` and `GET /api/v1/documents/{id}` |
-| Scenarios | `GET /api/v1/scenarios` |
-| Transaction diagnosis | `GET /api/v1/transactions/{id}/diagnosis` and `GET /api/v1/transactions/{id}/support-summary` |
-| Recovery retry | `POST /api/v1/transactions/{id}/retry` |
+```powershell
+python tests/e2e_verification_flow.py
+```
 
-| Trust context | `GET /api/v1/issuers/health` and `GET /api/v1/consents/preview` |
-| Verification gateway | `POST /api/v1/verification/request`, `POST /api/v1/verification/request/{id}/authorize`, `GET /api/v1/verification/result/{id}` |
-| Proof validation | `GET /api/v1/verification/token/{id}` and `POST /api/v1/verification/introspect` |
-| Public JWKS discovery | `GET /.well-known/jwks.json` and `GET /api/v1/.well-known/jwks.json` |
-| Platform foundation | `GET /api/v1/platform/snapshot` and `POST /api/v1/platform/demo/student` |
+---
 
-| Upload and review demo | `POST /api/v1/documents/upload`, `POST /api/v1/documents/{id}/classify`, `POST /api/v1/documents/{id}/verification-case`, `POST /api/v1/verification/cases/{id}/decision` |
-| Correction & versioning | `POST /api/v1/documents/{id}/corrections`, `GET /api/v1/documents/{id}/versions`, `GET /api/v1/corrections`, `POST /api/v1/corrections/{id}/decision` |
-| Citizen wallet & trust signals | `GET /api/v1/wallet/documents` |
-| Document upload & OCR pipeline | `POST /api/v1/documents/upload-pipeline` |
-| Government verifier console | `GET /api/v1/verifier/queues`, `GET /api/v1/verifier/cases`, `GET /api/v1/verifier/cases/{id}/comparison`, `POST /api/v1/verifier/cases/{id}/decision` |
-| Aadhaar eKYC gateway | `POST /api/v1/ekyc/generate-otp`, `POST /api/v1/ekyc/verify-otp`, `POST /api/v1/ekyc/match-demographics` |
-| Consent & token revocation | `GET /api/v1/consent`, `POST /api/v1/consent/{id}/revoke` |
-| Sovereign audit trail | `GET /api/v1/audit/events` |
+## 🛡️ Core Verification Milestone Status
 
-## Continuous Integration & Automated Testing
+- [x] **Web Application**: Accessible citizen interface with 8 UI states (`apps/web`)
+- [x] **Mobile Shell**: 5-tab React Native / Expo application (`apps/mobile`)
+- [x] **Authentication**: Passwordless OTP challenge & rotating refresh tokens (`/api/v1/auth/otp/*`)
+- [x] **Document Wallet**: Multi-tier trust badges with Level 0-4 verification (`/api/v1/wallet/documents`)
+- [x] **Issuer Adapters**: Standardized `IssuerAdapter` protocol with mock CBSE, State Board & University implementations
+- [x] **Verification Request Gateway**: Purpose-bound query ingestion with minimum disclosure configuration
+- [x] **Citizen Consent Flow**: Explicit attribute authorization and instant one-click revocation
+- [x] **Proof Engine**: Asymmetrically signed JWS/JWT proof generation and public JWKS discovery
+- [x] **Requester Introspection**: Third-party offline and online proof validation (`/api/v1/verification/introspect`)
+- [x] **Sovereign Audit Trail**: Append-only tamper-evident domain event ledger (`/api/v1/audit/events`)
 
-DigiIn includes a GitHub Actions CI pipeline running across matrix environments:
+---
 
-- **Backend Pytest Suite**: 18 unit & cryptographic validation tests (`pytest`).
-  ```powershell
-  cd services/api
-  $env:PYTHONPATH="."; python -m pytest
-  ```
-- **Frontend Typecheck & Production Build**:
-  ```powershell
-  cd apps/web
-  npm run build
-  ```
-- **Playwright End-to-End Browser Automation**: 11 full-journey user scenario specs.
-  ```powershell
-  cd apps/web
-  npx playwright test
-  ```
-
-## Database & Storage
-
-
-DigiIn includes a persistent relational database layer built with **SQLAlchemy 2.0**:
-- **SQLite (Default)**: Out-of-the-box local storage file `./digiin_database.db` with automated table initialization and seed fixtures.
-- **PostgreSQL**: Configure `DIGIIN_DATABASE_URL="postgresql://user:password@localhost:5432/digiin"` in your environment.
-
-## Engineering guardrails
-
-
-- Use anonymised/synthetic fixtures in development and test environments.
-- Treat government integrations as explicit, consented adapters—not screen-scraping targets.
-- Keep document, file, verification result and version history separate.
-- Never present a citizen-uploaded file as government-issued or government-verified.
-- Prefer purpose-bound proof tokens over raw document transfer.
-- Build every feature through UI, API, domain logic, transaction, event/audit and validation.
-- Build accessibility to WCAG 2.2 AA and use clear, multilingual-ready content.
-- Keep diagnostic events auditable while minimising personal data.
-
-## License
+## 📄 License
 
 Released under the [MIT License](LICENSE).
-
-Read the [documentation index](docs/README.md), [foundation architecture](docs/foundation-architecture.md), [principles](docs/principles.md), [security baseline](docs/security.md), and [product scope](docs/product-scope.md) before expanding the system.

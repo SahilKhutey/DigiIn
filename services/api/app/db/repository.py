@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
-from typing import Any
 
 from sqlalchemy import desc, select
 from sqlalchemy.orm import Session
@@ -15,14 +14,11 @@ from app.db.models import (
     DocumentVersionModel,
     DomainEventModel,
     VerificationCaseModel,
-    VerificationRequestModel,
-    VerificationResultModel,
     WalletDocumentModel,
 )
 from app.db.session import get_db_session
 from app.domain.models import (
     CorrectionRequestRecord,
-    CorrectionReviewDecision,
     CorrectionStatus,
     DocumentVersionRecord,
     DocumentVersionStatus,
@@ -30,13 +26,9 @@ from app.domain.models import (
     GovernmentReviewDecision,
     UploadedDocument,
     VerificationCase,
-    VerificationRequestCreate,
-    VerificationRequestRecord,
-    VerificationResult,
     VerifierQueueId,
     WalletDocument,
 )
-
 
 # --- Document Repository ---
 

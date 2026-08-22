@@ -7,9 +7,9 @@ and document trust signal elevation without storing raw Aadhaar numbers or OTPs.
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
-from difflib import SequenceMatcher
 import uuid
+from datetime import UTC, datetime, timedelta
+from difflib import SequenceMatcher
 from typing import Any
 
 from fastapi import HTTPException
@@ -188,7 +188,7 @@ def generate_ekyc_otp(aadhaar_ref: str, purpose: str = "Identity Verification") 
 
     txn_id = f"ekyc_txn_{uuid.uuid4().hex[:12]}"
     demo_otp = identity.get("demoOtp", "202601")
-    expires_at = datetime.now(timezone.utc) + timedelta(minutes=10)
+    expires_at = datetime.now(UTC) + timedelta(minutes=10)
 
     _ACTIVE_EKYC_TXNS[txn_id] = {
         "txn_id": txn_id,
@@ -222,7 +222,7 @@ def verify_ekyc_otp_and_match(
             detail="eKYC transaction not found or expired. Please generate a new OTP.",
         )
 
-    if datetime.now(timezone.utc) > txn["expires_at"]:
+    if datetime.now(UTC) > txn["expires_at"]:
         _ACTIVE_EKYC_TXNS.pop(txn_id, None)
         raise HTTPException(
             status_code=400,
@@ -236,7 +236,7 @@ def verify_ekyc_otp_and_match(
         )
 
     identity_data = txn["identity"]
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     # 1. Look up document if attached to verify demographic matching
     claimed_name = "SAHIL KHUTEY"
@@ -246,7 +246,11 @@ def verify_ekyc_otp_and_match(
     elevated_level = None
     if document_id:
         try:
-            from app.db.repository import get_document, get_wallet_document, update_document_verification_level
+            from app.db.repository import (
+                get_document,
+                get_wallet_document,
+                update_document_verification_level,
+            )
             doc = get_document(document_id) or get_wallet_document(document_id)
             if doc:
                 meta = doc.extractedMetadata or {}
@@ -297,7 +301,8 @@ def verify_ekyc_otp_and_match(
         "exp": (now + timedelta(hours=24)).isoformat(),
     }
 
-    signed_token, key_id, alg = sign_proof_token(assertion_claims, algorithm="EdDSA")
+    signed_token, key_id, _alg = sign_proof_token(assertion_claims, algorithm="EdDSA")
+
 
     # Clean up transaction
     _ACTIVE_EKYC_TXNS.pop(txn_id, None)

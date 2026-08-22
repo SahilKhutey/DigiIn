@@ -2,7 +2,6 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 
-
 client = TestClient(app)
 
 
@@ -322,8 +321,11 @@ def test_jwks_discovery_endpoint() -> None:
 
 
 def test_asymmetric_eddsa_and_rs256_cryptographic_verification() -> None:
+    from datetime import UTC, datetime, timedelta
+
     from app.services.crypto import sign_proof_token, verify_proof_token
 
+    now = datetime.now(UTC)
     # 1. Test Ed25519 Token Signing & Offline Verification
     claims = {
         "iss": "DigiIn Synthetic Verification Gateway",
@@ -332,12 +334,13 @@ def test_asymmetric_eddsa_and_rs256_cryptographic_verification() -> None:
         "purpose": "ADMISSION_VERIFICATION",
         "verification_id": "ver_crypto_test_01",
         "status": "VERIFIED",
-        "iat": "2026-08-22T12:00:00Z",
-        "exp": "2026-08-22T13:00:00Z",
+        "iat": now.isoformat(),
+        "exp": (now + timedelta(hours=2)).isoformat(),
     }
     ed_token, ed_kid, ed_alg = sign_proof_token(claims, algorithm="EdDSA")
     assert ed_alg == "EdDSA"
     assert ed_kid == "digiin-ed25519-key-2026"
+
 
     verified_claims, verified_kid, verified_alg = verify_proof_token(ed_token)
     assert verified_claims is not None
@@ -389,8 +392,9 @@ def test_database_health_endpoint() -> None:
 
 def test_database_persistence_and_repository_crud() -> None:
     from datetime import UTC, datetime
+
     from app.db import repository as repo
-    from app.domain.models import DocumentVersionStatus, UploadedDocument, DocumentVersionRecord
+    from app.domain.models import DocumentVersionRecord, DocumentVersionStatus, UploadedDocument
 
     now = datetime.now(UTC)
 
@@ -510,13 +514,13 @@ def test_selective_attribute_custom_mode_evaluation() -> None:
 
 
 def test_consent_listing_and_token_revocation() -> None:
+    from app.domain.models import VerificationAuthorization
     from app.services.verification import (
         authorize_verification_request,
         create_verification_request,
         demo_exam_request,
         introspect_token,
     )
-    from app.domain.models import VerificationAuthorization
 
     # 1. Authorize a verification request
     req = create_verification_request(demo_exam_request())

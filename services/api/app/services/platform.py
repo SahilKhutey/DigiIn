@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import hashlib
+import sys
 from datetime import UTC, datetime
+from typing import Any
 from uuid import uuid4
 
+import app.db.repository as repo
 from app.domain.models import (
     AuthenticityStatus,
     CorrectionDecisionType,
@@ -42,11 +45,7 @@ from app.domain.models import (
     VerifierQueueSummary,
     WalletDocument,
 )
-
-import app.db.repository as repo
 from app.services.verification import authorize_verification_request, create_verification_request
-
-
 
 DOCUMENTS: dict[str, UploadedDocument] = {}
 VERSIONS: dict[str, list[DocumentVersionRecord]] = {}
@@ -444,7 +443,24 @@ def upload_and_classify_pipeline(payload: DirectUploadPayload) -> PipelineUpload
     fn_lower = filename.lower()
     hint = (payload.documentTypeHint or "").upper()
 
-    if hint == "LAND_RECORD" or any(k in fn_lower for k in ["land", "deed", "revenue", "property"]):
+    if hint == "CLASS_XII" or (not hint and any(k in fn_lower for k in ["cbse", "xii", "marksheet", "school", "education"])):
+        doc_type = "CLASS_XII"
+        confidence = 94
+        issuer = "Central Board of Secondary Education (CBSE)"
+        queue = VerifierQueueId.QUEUE_CBSE
+        extracted = {
+            "student_name": "SAHIL KHUTEY",
+            "roll_number": "CBSE-2026-99214",
+            "passing_year": "2026",
+            "percentage": "94.2",
+            "qualification": "Class XII Science",
+            "institution": "Delhi Public Senior Secondary School",
+        }
+        notes = [
+            "Standard CBSE hologram watermark and QR digest verified.",
+            "All grade attributes and subjects successfully parsed.",
+        ]
+    elif hint == "LAND_RECORD" or (not hint and any(k in fn_lower for k in ["land", "deed", "revenue", "property"])):
         doc_type = "LAND_RECORD"
         confidence = 88
         issuer = "State Revenue & Land Records Department"
@@ -463,7 +479,7 @@ def upload_and_classify_pipeline(payload: DirectUploadPayload) -> PipelineUpload
             "Archival seal and revenue stamp detected with high fidelity.",
             "Historical tehsil boundaries mapped to 1998 gazette records.",
         ]
-    elif hint == "DRIVING_LICENCE" or any(k in fn_lower for k in ["dl", "licence", "driving", "transport"]):
+    elif hint == "DRIVING_LICENCE" or (not hint and any(k in fn_lower for k in ["dl", "licence", "driving", "transport"])):
         doc_type = "DRIVING_LICENCE"
         confidence = 82
         issuer = "Ministry of Road Transport & Highways (MoRTH)"
@@ -479,7 +495,7 @@ def upload_and_classify_pipeline(payload: DirectUploadPayload) -> PipelineUpload
             "Chip metadata extracted: DL format compliant with Sarathi portal standard.",
             "Notice: Document validity period shows expired on 2025-12-31.",
         ]
-    elif hint == "SKILL_CERTIFICATE" or any(k in fn_lower for k in ["skill", "course", "cert", "training"]):
+    elif hint == "SKILL_CERTIFICATE" or (not hint and any(k in fn_lower for k in ["skill", "course", "training"])):
         doc_type = "SKILL_CERTIFICATE"
         confidence = 55
         issuer = "Self-Issued / Private Vocational Institute"
@@ -494,23 +510,17 @@ def upload_and_classify_pipeline(payload: DirectUploadPayload) -> PipelineUpload
             "Unregistered issuer signature. OCR confidence moderate.",
             "Manual officer inspection required before trust elevation.",
         ]
-    else:  # Default CLASS_XII
-        doc_type = "CLASS_XII"
-        confidence = 94
-        issuer = "Central Board of Secondary Education (CBSE)"
-        queue = VerifierQueueId.QUEUE_CBSE
+    else:  # Fallback general document
+        doc_type = "GENERAL_DOCUMENT"
+        confidence = 65
+        issuer = "General Issuing Authority"
+        queue = VerifierQueueId.QUEUE_GENERAL
         extracted = {
-            "student_name": "SAHIL KHUTEY",
-            "roll_number": "CBSE-2026-99214",
-            "passing_year": "2026",
-            "percentage": "94.2",
-            "qualification": "Class XII Science",
-            "institution": "Delhi Public Senior Secondary School",
+            "document_title": filename,
+            "ingestion_date": now.isoformat()[:10],
         }
-        notes = [
-            "Standard CBSE hologram watermark and QR digest verified.",
-            "All grade attributes and subjects successfully parsed.",
-        ]
+        notes = ["General document queued for officer inspection."]
+
 
     # 1. Create UploadedDocument
     document = UploadedDocument(
@@ -624,13 +634,13 @@ def classify_document(document_id: str) -> UploadedDocument | None:
         }
     )
     DOCUMENTS[document_id] = updated
-    
+
     # Sync metadata to active version record
     doc_versions = VERSIONS.get(document_id, [])
     if doc_versions:
         active_ver = doc_versions[-1]
         doc_versions[-1] = active_ver.model_copy(update={"metadata": metadata})
-        
+
     _event("DocumentClassified", document_id, document.ownerSubjectId, "OCR and metadata extraction completed.")
     return updated
 
@@ -857,7 +867,57 @@ def decide_verification_case(
             )
             DOCUMENTS[case.documentId] = updated_doc
             repo.save_document(updated_doc)
+
+            # Mint verified Credential in database
+            try:
+                from app.db.session import SessionLocal
+                from app.models.entities import Credential as DbCredential
+                from app.models.entities import User as DbUser
+
+                with SessionLocal() as db_session:
+                    user = db_session.query(DbUser).filter(DbUser.id == document.ownerSubjectId).first()
+                    if not user:
+                        user = db_session.query(DbUser).first()
+                    if user:
+                        existing = (
+                            db_session.query(DbCredential)
+                            .filter(
+                                DbCredential.user_id == user.id,
+                                DbCredential.credential_type == document.documentType,
+                            )
+                            .first()
+                        )
+                        if not existing:
+                            holder = str(
+                                document.extractedMetadata.get("student_name")
+                                or document.extractedMetadata.get("holder_name")
+                                or "Rahul Sharma"
+                            )
+                            try:
+                                year = int(document.extractedMetadata.get("passing_year") or 2026)
+                            except (ValueError, TypeError):
+                                year = 2026
+                            issuer_key = "org_cbse_gov_in" if "CBSE" in case.claimedIssuer else case.claimedIssuer
+                            db_session.add(
+                                DbCredential(
+                                    user_id=user.id,
+                                    document_id=None,
+                                    credential_type=document.documentType,
+                                    issuer_id=issuer_key,
+                                    holder_name=holder,
+                                    passing_year=year,
+                                    status="VERIFIED",
+                                    verification_level=4,
+                                )
+                            )
+                            db_session.commit()
+            except Exception as e:
+                import traceback
+                print(f"[ERROR] Credential minting failed: {e}", file=sys.stderr)
+                traceback.print_exc()
         elif decision.decision in ["REJECT", "MARK_DUPLICATE"]:
+
+
             updated_doc = document.model_copy(
                 update={
                     "status": "REJECTED",

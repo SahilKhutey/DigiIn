@@ -1,0 +1,7 @@
+{
+  "name": "@digilocker-x/schemas",
+  "version": "0.1.0",
+  "description": "Authoritative JSON Schemas for DigiLocker X verification requests, proofs, credentials, and consents",
+  "main": "index.js",
+  "license": "MIT"
+}

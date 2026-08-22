@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://digilocker-x.gov.in/schemas/consent-manifest.schema.json",
+  "title": "ConsentManifest",
+  "type": "object",
+  "required": [
+    "consent_id",
+    "user_id",
+    "verification_request_id",
+    "decision",
+    "disclosed_attributes"
+  ],
+  "properties": {
+    "consent_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "verification_request_id": {
+      "type": "string"
+    },
+    "decision": {
+      "type": "string",
+      "enum": ["GRANTED", "DENIED", "REVOKED"]
+    },
+    "disclosed_attributes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "granted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revoked_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@digilocker-x/ui",
+  "version": "0.1.0",
+  "description": "Accessible, government-grade UI components for DigiLocker X",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@digilocker-x/types": "workspace:*",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@digilocker-x/config": "workspace:*",
+    "@types/react": "^18.2.43",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  },
+  "license": "MIT"
+}

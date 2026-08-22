@@ -29,4 +29,8 @@ Thumbs.db
 *.sqlite3
 test-results/
 playwright-report/
+data/
+digiIn-initial/
+digiIn-foundation/
+
 

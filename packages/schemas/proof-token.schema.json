@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://digilocker-x.gov.in/schemas/proof-token.schema.json",
+  "title": "VerificationProof",
+  "type": "object",
+  "required": [
+    "proof_id",
+    "subject",
+    "credential",
+    "issuer",
+    "verification_result",
+    "verification_level",
+    "audience",
+    "purpose",
+    "nonce",
+    "issued_at",
+    "expires_at",
+    "signature"
+  ],
+  "properties": {
+    "proof_id": {
+      "type": "string",
+      "pattern": "^prf_[a-zA-Z0-9_-]+$"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "credential": {
+      "type": "object",
+      "required": ["id", "type", "disclosed_attributes"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string" },
+        "disclosed_attributes": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "issuer": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "jurisdiction": { "type": "string" }
+      }
+    },
+    "verification_result": {
+      "type": "string",
+      "enum": [
+        "VERIFIED",
+        "REJECTED",
+        "PENDING",
+        "EXPIRED",
+        "REVOKED",
+        "NOT_FOUND",
+        "IDENTITY_MISMATCH",
+        "ISSUER_UNAVAILABLE",
+        "REQUIRES_REVIEW"
+      ]
+    },
+    "verification_level": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "audience": {
+      "type": "string"
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "nonce": {
+      "type": "string"
+    },
+    "issued_at": {
+      "type": "integer"
+    },
+    "expires_at": {
+      "type": "integer"
+    },
+    "signature": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

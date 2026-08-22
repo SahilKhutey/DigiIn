@@ -10,6 +10,9 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import uuid4
 
+from sqlalchemy.orm import Session
+
+from app.core.config import settings
 from app.domain.models import (
     ConsentRecord,
     CredentialProofResult,
@@ -27,6 +30,26 @@ from app.domain.models import (
     VerificationResult,
     VerificationStatus,
 )
+from app.integrations.issuer import IssuerRegistry
+from app.models.entities import (
+    Consent as DbConsent,
+)
+from app.models.entities import (
+    Credential as DbCredential,
+)
+from app.models.entities import (
+    Notification as DbNotification,
+)
+from app.models.entities import (
+    VerificationProof as DbVerificationProof,
+)
+from app.models.entities import (
+    VerificationRequest as DbVerificationRequest,
+)
+from app.models.entities import (
+    VerificationResult as DbVerificationResult,
+)
+from app.services.audit import audit
 from app.services.crypto import sign_proof_token, verify_proof_token
 
 DEMO_SIGNING_KEY = b"digiin-local-demo-signing-key"
@@ -732,3 +755,114 @@ def _terminal_result(
     )
     RESULTS[verification_id] = output
     return output
+
+
+class VerificationService:
+
+    def __init__(self, db: Session):
+        self.db = db
+        self.registry = IssuerRegistry()
+
+    def set_consent(self, request: DbVerificationRequest, user_id: str, decision: str):
+        existing = self.db.query(DbConsent).filter(DbConsent.request_id == request.id).first()
+        if existing:
+            existing.decision = decision
+        else:
+            self.db.add(
+                DbConsent(
+                    request_id=request.id,
+                    user_id=user_id,
+                    decision=decision,
+                )
+            )
+        request.status = "CONSENT_GRANTED" if decision == "GRANT" else "DENIED"
+        self.db.commit()
+        audit(self.db, user_id, f"CONSENT_{decision}", "verification_request", request.id)
+        return request
+
+    async def verify(self, request: DbVerificationRequest, actor_id: str):
+        consent = (
+            self.db.query(DbConsent)
+            .filter(DbConsent.request_id == request.id, DbConsent.decision == "GRANT")
+            .first()
+        )
+        if not consent:
+            raise ValueError("Explicit consent is required")
+
+        credential = (
+            self.db.query(DbCredential)
+            .filter(
+                DbCredential.user_id == request.user_id,
+                DbCredential.credential_type == request.credential_type,
+            )
+            .first()
+        )
+
+        if not credential:
+            result = DbVerificationResult(
+                request_id=request.id,
+                credential_id=None,
+                result="NOT_FOUND",
+                verification_level=0,
+                reason="Credential not found",
+            )
+            self.db.add(result)
+            request.status = "COMPLETED"
+            self.db.commit()
+            audit(self.db, actor_id, "VERIFICATION_NOT_FOUND", "verification_request", request.id)
+            return result, None
+
+        adapter = self.registry.get(credential.issuer_id)
+        if not adapter:
+            raise ValueError("Issuer integration unavailable")
+
+        issuer_result = await adapter.verify(credential.credential_type, {})
+        result = DbVerificationResult(
+            request_id=request.id,
+            credential_id=credential.id,
+            result="VERIFIED" if issuer_result.is_verified else "REJECTED",
+            verification_level=issuer_result.level,
+            reason=issuer_result.reason,
+        )
+        self.db.add(result)
+        request.status = "COMPLETED"
+
+        proof = None
+        if issuer_result.is_verified:
+            payload = {
+                "request_id": request.id,
+                "credential_type": credential.credential_type,
+                "verification": "VERIFIED",
+                "verification_level": issuer_result.level,
+                "purpose": request.purpose,
+                "audience": request.requester_name,
+            }
+            encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+            signature = hmac.new(
+                settings.proof_secret.encode(), encoded.encode(), hashlib.sha256
+            ).hexdigest()
+            proof = DbVerificationProof(
+                request_id=request.id,
+                proof_payload=encoded,
+                signature=signature,
+            )
+            self.db.add(proof)
+            self.db.add(
+                DbNotification(
+                    user_id=request.user_id,
+                    title="Verification completed",
+                    body=f"{request.requester_name} received a verified result for {credential.credential_type}.",
+                )
+            )
+
+        self.db.commit()
+        audit(
+            self.db,
+            actor_id,
+            "VERIFICATION_COMPLETED",
+            "verification_request",
+            request.id,
+            {"result": result.result},
+        )
+        return result, proof
+
