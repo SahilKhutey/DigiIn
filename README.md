@@ -110,7 +110,16 @@ digilocker-x/
 
 ## 🧪 Automated Testing & CI Execution
 
-### 1. Run Backend Pytest Suite & Linter (`services/api`)
+### 1. Run Complete Monorepo Test Suite (7 Layers)
+
+```powershell
+# Run unified test orchestrator (Ruff + Pytest + Consoles + Worker + Pipeline E2E + Core E2E + Offline CLI)
+python tests/run_all_tests.py
+# or via Makefile
+make test
+```
+
+### 2. Standalone Backend Pytest Suite & Linter (`services/api`)
 
 ```powershell
 cd services/api
@@ -122,17 +131,19 @@ python -m ruff check app/ tests/
 python -m pytest -v --tb=short
 ```
 
-### 2. Run Monorepo End-to-End Integration Tests
+### 3. Offline Cryptographic Proof Verifier CLI (`tests/`)
+
+Allows third parties to verify JWS proof tokens offline without server dependencies:
 
 ```powershell
-# Document Pipeline E2E (Upload ➔ OCR ➔ Gov Review ➔ Officer Approve ➔ Mint Credential ➔ Proof)
-python tests/test_document_pipeline_e2e.py
+# Run sample Ed25519 token generation & mathematical verification
+python tests/cli_proof_verifier.py --demo
 
-# Core Verification Flow E2E (Request ➔ Consent ➔ Mock Issuer ➔ Proof Token ➔ Introspect)
-python tests/e2e_verification_flow.py
+# Inspect public RFC 7517 JWKS discovery keys
+python tests/cli_proof_verifier.py --jwks
 ```
 
-### 3. Run Frontend Web Application & Build (`apps/web`)
+### 4. Run Frontend Web Application & Build (`apps/web`)
 
 ```powershell
 cd apps/web
@@ -144,6 +155,7 @@ npm run dev
 # Run TypeScript typecheck & production bundle build
 npm run build
 ```
+
 
 ---
 
