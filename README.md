@@ -1,6 +1,11 @@
 # DigiIn
 
+[![CI Pipeline](https://github.com/SahilKhutey/DigiIn/actions/workflows/ci.yml/badge.svg)](https://github.com/SahilKhutey/DigiIn/actions/workflows/ci.yml)
+[![Security Audit](https://github.com/SahilKhutey/DigiIn/actions/workflows/security.yml/badge.svg)](https://github.com/SahilKhutey/DigiIn/actions/workflows/security.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 DigiIn is a citizen-side **document lifecycle and trust platform** for Indian public digital services. It helps a person receive, upload, verify, correct, recover and share trusted documents with clear provenance, consent and auditability.
+
 
 ## Status
 
@@ -70,15 +75,32 @@ The API documentation is available at `http://localhost:8000/docs`; the web app 
 | Citizen wallet & trust signals | `GET /api/v1/wallet/documents` |
 | Document upload & OCR pipeline | `POST /api/v1/documents/upload-pipeline` |
 | Government verifier console | `GET /api/v1/verifier/queues`, `GET /api/v1/verifier/cases`, `GET /api/v1/verifier/cases/{id}/comparison`, `POST /api/v1/verifier/cases/{id}/decision` |
+| Aadhaar eKYC gateway | `POST /api/v1/ekyc/generate-otp`, `POST /api/v1/ekyc/verify-otp`, `POST /api/v1/ekyc/match-demographics` |
 | Consent & token revocation | `GET /api/v1/consent`, `POST /api/v1/consent/{id}/revoke` |
 | Sovereign audit trail | `GET /api/v1/audit/events` |
 
+## Continuous Integration & Automated Testing
 
+DigiIn includes a GitHub Actions CI pipeline running across matrix environments:
 
-
-
+- **Backend Pytest Suite**: 18 unit & cryptographic validation tests (`pytest`).
+  ```powershell
+  cd services/api
+  $env:PYTHONPATH="."; python -m pytest
+  ```
+- **Frontend Typecheck & Production Build**:
+  ```powershell
+  cd apps/web
+  npm run build
+  ```
+- **Playwright End-to-End Browser Automation**: 11 full-journey user scenario specs.
+  ```powershell
+  cd apps/web
+  npx playwright test
+  ```
 
 ## Database & Storage
+
 
 DigiIn includes a persistent relational database layer built with **SQLAlchemy 2.0**:
 - **SQLite (Default)**: Out-of-the-box local storage file `./digiin_database.db` with automated table initialization and seed fixtures.
