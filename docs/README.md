@@ -8,6 +8,7 @@ This folder records the current product, architecture, security and delivery dec
 | --- | --- |
 | [Product scope](product-scope.md) | Defines what DigiIn is, what it is not, and the first citizen problem being solved. |
 | [Foundation architecture](foundation-architecture.md) | Describes the implemented modular monolith, modules, APIs and integration boundaries. |
+| [Principles](principles.md) | Establishes platform, web experience and data rules for lifecycle trust. |
 | [Architecture](architecture.md) | Summarises system structure, data flow and workspace layout. |
 | [Website workflow](website-workflow.md) | Maps the citizen-facing web journey, states, recovery actions and trust labels. |
 | [Implementation plan](implementation-plan.md) | Tracks milestones, backlog and acceptance criteria. |
@@ -15,7 +16,7 @@ This folder records the current product, architecture, security and delivery dec
 
 ## Current implementation status
 
-DigiIn currently ships as a synthetic, local-first prototype:
+DigiIn currently ships as a synthetic, local-first recovery prototype inside a broader document lifecycle architecture:
 
 - React/Vite citizen web app under `apps/web`.
 - FastAPI modular service under `services/api`.

@@ -6,6 +6,9 @@
 - Use explicit consent before any future third-party data request; make scopes and retention understandable.
 - Encrypt data in transit and at rest; store only the minimum metadata required for recovery support.
 - Redact identifiers from logs and telemetry. Use a short-lived, opaque journey ID instead of personal identifiers.
+- Separate citizen-uploaded files from government records. Upload must not imply official authenticity.
+- Treat verification evidence, officer decisions and correction history as sensitive audit material.
+- Share verification results or selected claims when possible instead of full document files.
 - Enforce least privilege, service-to-service authentication, rate limits, dependency timeouts, and audit trails.
 - Complete a threat model, DPIA, accessibility review, and authorised integration review before pilot deployment.
 
