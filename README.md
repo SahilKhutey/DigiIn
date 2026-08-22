@@ -24,7 +24,8 @@ The broader architecture treats recovery as one lifecycle path. Future authorise
 | --- | --- |
 | `apps/web` | Accessible React citizen interface |
 | `services/api` | Modular FastAPI service for discovery, transactions, recovery, issuer health and consent previews |
-| `packages/contracts` | Versioned cross-service schemas |
+| `packages/contracts` | Versioned cross-service JSON schemas |
+| `packages/types` | Shared TypeScript contracts for web and future mobile clients |
 | `data/examples` | Safe, fictional development fixtures |
 | `docs` | Product, system, security and delivery decisions |
 
@@ -60,6 +61,8 @@ The API documentation is available at `http://localhost:8000/docs`; the web app 
 | Trust context | `GET /api/v1/issuers/health` and `GET /api/v1/consents/preview` |
 | Verification gateway | `POST /api/v1/verification/request`, `POST /api/v1/verification/request/{id}/authorize`, `GET /api/v1/verification/result/{id}` |
 | Proof validation | `GET /api/v1/verification/token/{id}` and `POST /api/v1/verification/introspect` |
+| Platform foundation | `GET /api/v1/platform/snapshot` and `POST /api/v1/platform/demo/student` |
+| Upload and review demo | `POST /api/v1/documents/upload`, `POST /api/v1/documents/{id}/classify`, `POST /api/v1/documents/{id}/verification-case`, `POST /api/v1/verification/cases/{id}/decision` |
 
 ## Engineering guardrails
 
@@ -68,6 +71,7 @@ The API documentation is available at `http://localhost:8000/docs`; the web app 
 - Keep document, file, verification result and version history separate.
 - Never present a citizen-uploaded file as government-issued or government-verified.
 - Prefer purpose-bound proof tokens over raw document transfer.
+- Build every feature through UI, API, domain logic, transaction, event/audit and validation.
 - Build accessibility to WCAG 2.2 AA and use clear, multilingual-ready content.
 - Keep diagnostic events auditable while minimising personal data.
 

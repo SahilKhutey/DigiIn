@@ -211,3 +211,119 @@ class ProofTokenIntrospection(BaseModel):
     expiresAt: datetime | None = None
     claims: dict[str, Any] = Field(default_factory=dict)
     message: str
+
+
+class FeatureFlag(BaseModel):
+    key: str
+    enabled: bool
+    description: str
+
+
+class DomainEvent(BaseModel):
+    eventId: str
+    type: str
+    aggregateId: str
+    actor: str
+    message: str
+    createdAt: datetime
+
+
+class PlatformTransaction(BaseModel):
+    transactionId: str
+    actor: str
+    purpose: str
+    requestedCredentials: list[str]
+    currentStage: str
+    state: Literal["PENDING", "RUNNING", "COMPLETED", "FAILED"]
+    createdAt: datetime
+    completedAt: datetime | None = None
+    failureReason: str | None = None
+
+
+class UploadedDocument(BaseModel):
+    documentId: str
+    ownerSubjectId: str
+    documentType: str
+    source: Literal["CITIZEN_UPLOAD", "GOVERNMENT_ISSUED", "LEGACY_RECORD"]
+    filename: str
+    status: Literal["UPLOADED", "CLASSIFIED", "PENDING_VERIFICATION", "VERIFIED", "REJECTED"]
+    authenticity: Literal["UNKNOWN", "VERIFIED", "REJECTED"]
+    verificationLevel: int = Field(ge=0, le=5)
+    extractedMetadata: dict[str, Any] = Field(default_factory=dict)
+    createdAt: datetime
+
+
+class DocumentUploadRequest(BaseModel):
+    ownerSubjectId: str = Field(default="subj_demo_5c7b90", min_length=6, max_length=80)
+    filename: str = Field(default="class-xii-marksheet.pdf", min_length=3, max_length=160)
+    documentType: str = Field(default="CLASS_XII", min_length=3, max_length=80)
+    source: Literal["CITIZEN_UPLOAD", "LEGACY_RECORD"] = "CITIZEN_UPLOAD"
+
+
+class GovernmentReviewDecision(BaseModel):
+    decision: Literal["VERIFY", "REJECT", "REQUEST_MORE_EVIDENCE", "TRANSFER", "MARK_DUPLICATE"]
+    verifierId: str = Field(default="officer_mock_cbse_01", min_length=3, max_length=80)
+    note: str = Field(default="Synthetic verifier decision for local platform demo.", max_length=500)
+
+
+class VerificationCase(BaseModel):
+    caseId: str
+    documentId: str
+    claimedIssuer: str
+    status: Literal[
+        "NEW",
+        "OCR_COMPLETE",
+        "ISSUER_MATCHED",
+        "UNDER_REVIEW",
+        "VERIFIED",
+        "REJECTED",
+        "NEEDS_EVIDENCE",
+    ]
+    automatedMatchScore: int = Field(ge=0, le=100)
+    recommendedAction: str
+    verifierQueue: str
+    createdAt: datetime
+    decidedAt: datetime | None = None
+    decision: GovernmentReviewDecision | None = None
+
+
+class PolicyRequirement(BaseModel):
+    credential: str
+    minimumLevel: int = Field(ge=0, le=5)
+    attributes: list[str] = Field(default_factory=list)
+
+
+class PolicyDefinition(BaseModel):
+    policyId: str
+    purpose: str
+    requesterName: str
+    disclosureMode: DisclosureMode
+    requirements: list[PolicyRequirement]
+
+
+class MockIntegrationState(BaseModel):
+    integrationId: str
+    name: str
+    domain: str
+    supportedCredentials: list[str]
+    scenarios: list[str]
+    status: Literal["healthy", "degraded", "unavailable"]
+
+
+class PlatformSnapshot(BaseModel):
+    featureFlags: list[FeatureFlag]
+    policies: list[PolicyDefinition]
+    mockIntegrations: list[MockIntegrationState]
+    documents: list[UploadedDocument]
+    verificationCases: list[VerificationCase]
+    transactions: list[PlatformTransaction]
+    events: list[DomainEvent]
+
+
+class StudentDemoResult(BaseModel):
+    document: UploadedDocument
+    verificationCase: VerificationCase
+    transaction: PlatformTransaction
+    proofRequest: VerificationRequestRecord
+    proofResult: VerificationResult
+    events: list[DomainEvent]

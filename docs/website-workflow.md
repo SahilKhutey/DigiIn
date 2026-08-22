@@ -25,6 +25,7 @@ Document center
 | Digitize legacy record | "This record exists only on paper or in archives." | OCR, classify, identify authority, match archive and submit for government review. | Future module. |
 | Correct official record | "The government record has an error." | Create a correction case with evidence and issue a new version if approved. | Future module. |
 | Share proof | "I need to prove something to a requester." | Share minimum necessary verification result or selected fields with consent. | Implemented with mock exam request. |
+| Student vertical slice | "Use one verified document across a service." | Upload metadata, classify, route review, approve, transact, audit and generate proof. | Implemented with synthetic state. |
 
 ## Screens and behaviours
 
@@ -36,6 +37,7 @@ Document center
 | Recovery action | Continue safely | Targeted retry guidance or official alternative route | No automatic retry against a real government system. |
 | Support evidence | Ask for help | Creates a minimised, copyable diagnostic reference | Contains only opaque journey ID and stage states. |
 | Verification case | Submit evidence for authority review | Not implemented | Must separate AI recommendations from officer decisions. |
+| Student demo | Run a complete upload-to-proof journey | Implemented | No real file, identity or government decision is processed. |
 | Correction case | Request a corrected or reissued version | Not implemented | Must preserve prior versions and evidence references. |
 | Share proof | Share claim or verification result | Not implemented | Must minimise disclosure and require consent. |
 | Proof token validation | Requester validates proof | Implemented with synthetic HMAC token introspection | Must verify audience, expiry, nonce and signature. |

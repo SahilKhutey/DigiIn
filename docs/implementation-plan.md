@@ -38,6 +38,7 @@ Build a demonstrable recovery layer for a citizen who cannot obtain or share an 
 - [x] Create an action catalogue: retry, wait, correct issuer data, use an official alternative route and contact requester.
 - [x] Define a privacy-minimised support-evidence reference (`journey_id`, opaque correlation ID and outcome).
 - [x] Add purpose-bound verification request, consent, proof result, receipt and token introspection demo.
+- [x] Add runnable student vertical slice: upload metadata, classify, create verification case, mock officer approval, transaction, audit events and proof generation.
 - [ ] Add a citizen-visible history mock and a support-safe export.
 - [ ] Define route ownership and service-level expectations with each participating body.
 
@@ -63,6 +64,10 @@ Build a demonstrable recovery layer for a citizen who cannot obtain or share an 
 | `POST /api/v1/verification/request` | Creates a synthetic requester proof request | None |
 | `POST /api/v1/verification/request/{id}/authorize` | Generates a synthetic proof after consent | None |
 | `POST /api/v1/verification/introspect` | Validates a synthetic proof token | None |
+| `GET /api/v1/platform/snapshot` | Shows synthetic platform configuration and state | None |
+| `POST /api/v1/platform/demo/student` | Runs the student upload-to-proof vertical slice | None |
+| `POST /api/v1/documents/upload` | Creates synthetic upload metadata only | No file content |
+| `POST /api/v1/verification/cases/{id}/decision` | Records a mock verifier decision | No real legal decision |
 
 Future production APIs must accept only consented, minimised opaque references. DigiIn must never proxy Aadhaar numbers, OTPs, passwords, security PINs, or full documents.
 

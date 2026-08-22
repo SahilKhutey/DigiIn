@@ -5,16 +5,30 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.domain.models import (
     ConsentPreview,
+    DocumentUploadRequest,
     DocumentOption,
+    GovernmentReviewDecision,
     IssuerHealth,
+    PlatformSnapshot,
     ProofTokenIntrospection,
     ProofTokenIntrospectionRequest,
     ScenarioSummary,
+    StudentDemoResult,
     TransactionDiagnosis,
+    UploadedDocument,
     VerificationAuthorization,
+    VerificationCase,
     VerificationRequestCreate,
     VerificationRequestRecord,
     VerificationResult,
+)
+from app.services.platform import (
+    classify_document,
+    create_verification_case,
+    decide_verification_case,
+    platform_snapshot,
+    run_student_demo,
+    upload_document,
 )
 from app.services.catalogue import get_document, search_documents
 from app.services.recovery import get_diagnosis, list_scenarios
@@ -174,3 +188,45 @@ def introspect_proof_token(
     payload: ProofTokenIntrospectionRequest,
 ) -> ProofTokenIntrospection:
     return introspect_token(payload.token, payload.audience, payload.nonce)
+
+
+@app.get("/api/v1/platform/snapshot", response_model=PlatformSnapshot)
+def read_platform_snapshot() -> PlatformSnapshot:
+    """Read the current synthetic platform state: flags, policies, integrations and events."""
+    return platform_snapshot()
+
+
+@app.post("/api/v1/documents/upload", response_model=UploadedDocument)
+def create_uploaded_document(payload: DocumentUploadRequest) -> UploadedDocument:
+    """Create citizen-uploaded document metadata; no real file is accepted in the prototype."""
+    return upload_document(payload)
+
+
+@app.post("/api/v1/documents/{document_id}/classify", response_model=UploadedDocument)
+def classify_uploaded_document(document_id: str) -> UploadedDocument:
+    document = classify_document(document_id)
+    if document is None:
+        raise HTTPException(status_code=404, detail="Uploaded document not found")
+    return document
+
+
+@app.post("/api/v1/documents/{document_id}/verification-case", response_model=VerificationCase)
+def open_verification_case(document_id: str) -> VerificationCase:
+    case = create_verification_case(document_id)
+    if case is None:
+        raise HTTPException(status_code=404, detail="Uploaded document not found")
+    return case
+
+
+@app.post("/api/v1/verification/cases/{case_id}/decision", response_model=VerificationCase)
+def decide_case(case_id: str, payload: GovernmentReviewDecision) -> VerificationCase:
+    case = decide_verification_case(case_id, payload)
+    if case is None:
+        raise HTTPException(status_code=404, detail="Verification case not found")
+    return case
+
+
+@app.post("/api/v1/platform/demo/student", response_model=StudentDemoResult)
+def run_student_vertical_slice() -> StudentDemoResult:
+    """Run the canonical student upload -> government verification -> requester proof demo."""
+    return run_student_demo()

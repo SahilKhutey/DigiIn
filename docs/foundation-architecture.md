@@ -280,6 +280,12 @@ User
 | `GET /api/v1/verification/result/{id}` | Read a verification result and receipt |
 | `GET /api/v1/verification/token/{id}` | Read the signed proof token for a result |
 | `POST /api/v1/verification/introspect` | Validate signature, audience, expiry and purpose |
+| `GET /api/v1/platform/snapshot` | Read feature flags, policies, integrations, transactions and audit events |
+| `POST /api/v1/documents/upload` | Create citizen-uploaded document metadata without accepting real files |
+| `POST /api/v1/documents/{id}/classify` | Run synthetic OCR/classification state transition |
+| `POST /api/v1/documents/{id}/verification-case` | Route a document into a government verifier queue |
+| `POST /api/v1/verification/cases/{id}/decision` | Record a mock officer decision and update trust state |
+| `POST /api/v1/platform/demo/student` | Run the canonical upload -> classify -> verify -> proof vertical slice |
 
 ## Implemented verification gateway slice
 
@@ -296,6 +302,35 @@ Requester portal
 ```
 
 Implemented demo credentials include Class XII, domicile, age over 18, graduation and category certificate. The gateway supports boolean and attribute disclosure modes and keeps document retrieval separate from verification.
+
+## Implemented platform vertical slice
+
+The current runnable product foundation includes an in-memory workflow that spans the layers required by the development rule:
+
+```text
+Web UI
+  -> API route
+  -> domain model
+  -> document state
+  -> verification case
+  -> mock government decision
+  -> transaction
+  -> audit event
+  -> signed proof
+  -> API validation
+```
+
+The canonical student demo proves the MVP path:
+
+```text
+Student uploads Class XII marksheet metadata
+  -> document classified
+  -> verification case routed to Mock CBSE
+  -> mock officer approves
+  -> document becomes VERIFIED at level 4
+  -> NTA-style requester receives signed eligibility proof
+  -> requester validates proof without receiving a raw document
+```
 
 ## Next modules requiring authorised integration
 
