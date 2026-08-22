@@ -20,6 +20,8 @@ This directory defines the **single source of truth** for the DigiLocker X engin
 
 ## 📚 Supporting Architectural Reference Documents
 
+- [**Task List & Status**](Task-List.md): Comprehensive implementation checklist across all 13 platform services and 11 testing suites.
 - [**Foundation Architecture**](foundation-architecture.md): Deep-dive into modular-monolith boundaries and local execution paths.
 - [**Product Scope**](product-scope.md): Scope boundaries and synthetic verification testing fixtures.
 - [**Security Baseline**](security.md): Cryptographic security, data minimization, and HSM key rotation policies.
+

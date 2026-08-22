@@ -161,22 +161,32 @@ npm run build
 
 ## 🛡️ Core Verification Milestone Status
 
+See [**docs/Task-List.md**](docs/Task-List.md) for the complete engineering task matrix.
+
 - [x] **Web Application**: Accessible citizen interface with 8 universal UI states (`apps/web`)
+- [x] **Government Issuer Console**: Departmental queues, OCR diff inspection & 1-click credential issuance (`apps/issuer-console`)
+- [x] **Requester Console**: Zero-Knowledge query builder & cryptographic JWS token introspector (`apps/verifier-console`)
+- [x] **Admin Console**: Sovereign audit stream, telemetry & public JWKS discovery (`apps/admin`)
 - [x] **Mobile Shell**: 5-tab React Native / Expo application (`apps/mobile`)
+- [x] **Multi-Language Modes**: Interactive English (`en`) & Hindi (`hi`) localization (`packages/i18n`)
 - [x] **Authentication**: Passwordless OTP challenges, JWT access tokens & rotating refresh sessions (`/api/v1/auth/*`)
 - [x] **eKYC Integration**: Aadhaar OTP verification, demographic matching algorithm, and Ed25519 signed assertions (`/api/v1/ekyc/*`)
 - [x] **Document Pipeline**: Secure upload, MIME validation, SHA-256 hashing, and OCR entity extraction
-- [x] **Government Review Console**: Review queues, side-by-side claim comparison, and officer decision workflow (`/api/v1/government/*`)
+- [x] **Security & Anti-Piracy**: Cryptographic watermarking, anti-replay nonces, counterfeit fingerprint registry & rate limiting
+- [x] **Latency & Telemetry**: Microsecond execution profiling with W3C `Server-Timing` and `X-Response-Time`
 - [x] **Document Wallet**: Multi-tier trust badges with Level 0-4 verification (`/api/v1/wallet/documents`)
 - [x] **Issuer Adapters**: Standardized `IssuerAdapter` protocol with CBSE, State Board & University implementations
 - [x] **Verification Request Gateway**: Purpose-bound query ingestion with minimum disclosure configuration
 - [x] **Citizen Consent Flow**: Explicit attribute authorization and instant one-click revocation
 - [x] **Proof Engine**: Asymmetrically signed JWS/JWT proof generation and public JWKS discovery (`/.well-known/jwks.json`)
 - [x] **Requester Introspection**: Third-party offline and online proof validation (`/api/v1/verification/introspect`)
-- [x] **Sovereign Audit Trail**: Append-only tamper-evident domain event ledger (`/api/v1/audit/events`)
+- [x] **Sovereign Audit Ledger**: Block-chained tamper-evident domain event ledger with SHA-256 hash chaining (`services/audit`)
+- [x] **Document Catalogue**: Dynamic credential schemas with ZK operator bindings (`services/catalogue`)
+- [x] **Automated CI/CD**: 11-suite monorepo test orchestrator (`tests/run_all_tests.py` / `make test`)
 
 ---
 
 ## 📄 License
 
 Released under the [MIT License](LICENSE).
+
