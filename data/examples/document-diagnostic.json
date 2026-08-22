@@ -1,0 +1,12 @@
+{
+  "journeyId": "demo-cbse-2026",
+  "documentLabel": "Class XII marksheet (demonstration)",
+  "overallStatus": "action_required",
+  "stages": [
+    { "name": "Account access", "status": "complete", "message": "The official sign-in step was completed.", "owner": "Citizen / official service" },
+    { "name": "Identity match", "status": "attention", "message": "The issuer could not match the details supplied for this request.", "owner": "Issuing organisation", "nextAction": "Check your name, date of birth and document year against the issuer record. Use the issuer's official correction route if they differ." },
+    { "name": "Issuer lookup", "status": "not_started", "message": "This step can continue after the identity record matches.", "owner": "Issuing organisation" },
+    { "name": "Document retrieval", "status": "not_started", "message": "No retrieval attempt was made after the matching issue.", "owner": "Document platform / issuer" },
+    { "name": "Destination handoff", "status": "not_started", "message": "No document was shared with another service.", "owner": "Requesting service" }
+  ]
+}

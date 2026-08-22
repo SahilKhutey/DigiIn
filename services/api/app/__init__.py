@@ -1,0 +1,1 @@
+"""DigiIn diagnostic API package."""
