@@ -1,0 +1,226 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             String         @id @default(uuid())
+  digiinId       String         @unique
+  email          String?        @unique
+  phone          String?        @unique
+  status         String         @default("ACTIVE")
+  identityStatus String         @default("VERIFIED")
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  sessions       Session[]
+  consents       Consent[]
+  documents      Document[]
+  permissions    Permission[]
+  notifications  Notification[]
+}
+
+model Organisation {
+  id             String                 @id @default(uuid())
+  organisationId String                 @unique
+  name           String
+  type           String
+  status         String                 @default("ACTIVE")
+  trustStatus    String                 @default("VERIFIED")
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  users          OrganisationUser[]
+  requests       VerificationRequest[]
+  consents       Consent[]
+  apiClients     ApiClient[]
+  webhooks       Webhook[]
+  proofs         VerificationProof[]
+}
+
+model OrganisationUser {
+  id             String       @id @default(uuid())
+  organisationId String
+  userId         String
+  role           String       @default("VERIFIER")
+  status         String       @default("ACTIVE")
+  createdAt      DateTime     @default(now())
+  organisation   Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id         String    @id @default(uuid())
+  userId     String
+  tokenHash  String    @unique
+  userAgent  String?
+  ipHash     String?
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime  @default(now())
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationRequest {
+  id             String         @id @default(uuid())
+  publicId       String         @unique
+  citizenId      String
+  organisationId String
+  purpose        String
+  status         String         @default("AWAITING_CONSENT")
+  expiresAt      DateTime
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  completedAt    DateTime?
+  organisation   Organisation   @relation(fields: [organisationId], references: [id])
+  verification   Verification?
+}
+
+model Consent {
+  id             String       @id @default(uuid())
+  requestId      String       @unique
+  citizenId      String
+  organisationId String
+  purpose        String
+  scope          String
+  status         String       @default("GRANTED")
+  grantedAt      DateTime?    @default(now())
+  expiresAt      DateTime
+  revokedAt      DateTime?
+  user           User         @relation(fields: [citizenId], references: [id])
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+}
+
+model Document {
+  id                 String               @id @default(uuid())
+  citizenId          String
+  type               String
+  source             String               @default("DIGILOCKER")
+  externalDocumentId String?
+  storageKey         String
+  checksum           String
+  status             String               @default("RETRIEVED")
+  issuedAt           DateTime?
+  retrievedAt        DateTime             @default(now())
+  createdAt          DateTime             @default(now())
+  user               User                 @relation(fields: [citizenId], references: [id])
+  results            VerificationResult[]
+}
+
+model Verification {
+  id            String               @id @default(uuid())
+  publicId      String               @unique
+  requestId     String               @unique
+  status        String               @default("QUEUED")
+  engineVersion String               @default("1.0.0")
+  startedAt     DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime             @default(now())
+  request       VerificationRequest  @relation(fields: [requestId], references: [id])
+  results       VerificationResult[]
+  proof         VerificationProof?
+}
+
+model VerificationResult {
+  id             String       @id @default(uuid())
+  verificationId String
+  documentId     String
+  result         String       @default("VERIFIED")
+  confidence     Float        @default(1.0)
+  checks         String
+  reason         String?
+  createdAt      DateTime     @default(now())
+  verification   Verification @relation(fields: [verificationId], references: [id])
+  document       Document     @relation(fields: [documentId], references: [id])
+}
+
+model VerificationProof {
+  id             String       @id @default(uuid())
+  proofId        String       @unique
+  verificationId String       @unique
+  organisationId String
+  purpose        String
+  status         String       @default("ACTIVE")
+  version        Int          @default(1)
+  issuedAt       DateTime     @default(now())
+  expiresAt      DateTime
+  revokedAt      DateTime?
+  verification   Verification @relation(fields: [verificationId], references: [id])
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+}
+
+model Permission {
+  id             String    @id @default(uuid())
+  citizenId      String
+  organisationId String
+  purpose        String
+  scope          String
+  status         String    @default("ACTIVE")
+  grantedAt      DateTime  @default(now())
+  expiresAt      DateTime
+  revokedAt      DateTime?
+  user           User      @relation(fields: [citizenId], references: [id])
+}
+
+model ApiClient {
+  id             String          @id @default(uuid())
+  organisationId String
+  name           String
+  clientId       String          @unique
+  scopes         String
+  status         String          @default("ACTIVE")
+  createdAt      DateTime        @default(now())
+  lastUsedAt     DateTime?
+  revokedAt      DateTime?
+  organisation   Organisation    @relation(fields: [organisationId], references: [id])
+  credentials    ApiCredential[]
+}
+
+model ApiCredential {
+  id          String    @id @default(uuid())
+  apiClientId String
+  keyHash     String    @unique
+  createdAt   DateTime  @default(now())
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+  apiClient   ApiClient @relation(fields: [apiClientId], references: [id])
+}
+
+model Webhook {
+  id             String       @id @default(uuid())
+  organisationId String
+  url            String
+  events         String
+  secretKey      String
+  status         String       @default("ACTIVE")
+  createdAt      DateTime     @default(now())
+  lastDeliveryAt DateTime?
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+}
+
+model AuditEvent {
+  id           String   @id @default(uuid())
+  eventId      String   @unique
+  actorType    String
+  actorId      String
+  eventType    String
+  resourceType String
+  resourceId   String
+  requestId    String?
+  metadata     String?
+  createdAt    DateTime @default(now())
+}
+
+model Notification {
+  id          String    @id @default(uuid())
+  recipientId String
+  type        String
+  title       String
+  body        String
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+  metadata    String?
+  user        User      @relation(fields: [recipientId], references: [id])
+}

@@ -1,0 +1,56 @@
+openapi: 3.0.3
+info:
+  title: DigiIn Sovereign Verification API
+  version: 1.0.0
+  description: Official OpenAPI v1 specification for the DigiIn platform.
+servers:
+  - url: http://localhost:8080/v1
+    description: Local development server
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Operational status
+  /auth/login:
+    post:
+      summary: Authenticate citizen or organisation
+      responses:
+        '200':
+          description: Successfully authenticated
+  /verification-requests:
+    post:
+      summary: Create purpose-bound verification request
+      responses:
+        '201':
+          description: Request created
+    get:
+      summary: List verification requests
+      responses:
+        '200':
+          description: List of requests
+  /verification-requests/{id}:
+    get:
+      summary: Get verification request details
+      responses:
+        '200':
+          description: Request details
+  /verifications:
+    post:
+      summary: Queue asynchronous verification job
+      responses:
+        '202':
+          description: Verification job accepted
+  /proofs/{proofId}/validate:
+    get:
+      summary: Validate cryptographic verification proof
+      responses:
+        '200':
+          description: Proof validity outcome
+  /notifications:
+    get:
+      summary: Get user notifications
+      responses:
+        '200':
+          description: List of notifications
