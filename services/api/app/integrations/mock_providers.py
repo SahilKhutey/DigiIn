@@ -18,11 +18,8 @@ from app.integrations.contracts import (
     AuthMethod,
     ClaimVerificationRequest,
     ClaimVerificationResult,
-    DocumentProvider,
     ExternalDocumentRequest,
     ExternalDocumentResult,
-    GovernmentVerificationProvider,
-    IssuerProvider,
     ProviderCapability,
     ProviderEnvironment,
     ProviderHealthReport,
@@ -156,7 +153,6 @@ class MockRevenueVerificationProvider:
 
     def verify_authoritative(self, request: ClaimVerificationRequest) -> ClaimVerificationResult:
         # Simulates Department A AND Department B response styles both normalizing to DigiIn shape
-        raw = {"resident": True, "district": "Raipur", "domicileStatus": "VALID", "districtCode": "RPR"}
         return ClaimVerificationResult(
             request_id=request.request_id,
             provider_id=self.PROVIDER_ID,

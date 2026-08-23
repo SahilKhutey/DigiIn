@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase17",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 17 — Production Backend Completion & Deterministic Workflow Engine.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4188",
+    "test": "node --test"
+  }
+}
