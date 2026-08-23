@@ -62,8 +62,7 @@ def main():
         ("Production Workflow & State Machine Suite (Phase 17)", ["python", "tests/test_phase17_workflow_engine.py"], root_dir),
         ("Cryptographic Proof & Verifiable Credentials (Phase 18)", ["python", "tests/test_phase18_cryptographic_proofs.py"], root_dir),
         ("Offline CLI Proof Verifier Demo", ["python", "tests/cli_proof_verifier.py", "--demo"], root_dir),
-
-
+        ("External Integration & Webhook Gateway E2E", ["python", "tests/test_external_integration_e2e.py"], root_dir),
     ]
 
     results = []
