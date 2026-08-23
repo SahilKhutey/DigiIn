@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: DigiIn Production Integration & Provider Adapter API
+  version: 1.5.0
+  description: OpenAPI v1 specification for DigiIn Provider Adapters, Trust Registry & Integration Webhooks.
+servers:
+  - url: http://localhost:8080/v1
+    description: Development API Server
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Operational status
+  /integrations/health:
+    get:
+      summary: Get live health status for all registered evidence providers
+      responses:
+        '200':
+          description: Provider health status list
+  /admin/integrations:
+    get:
+      summary: List all evidence providers in registry with trust levels
+      responses:
+        '200':
+          description: Providers list
+  /admin/integrations/{id}/test:
+    post:
+      summary: Run connection and health check against specific provider adapter
+      responses:
+        '200':
+          description: Health test result
+  /admin/integrations/{id}/enable:
+    post:
+      summary: Enable provider adapter in production registry
+      responses:
+        '200':
+          description: Provider enabled
+  /admin/integrations/{id}/disable:
+    post:
+      summary: Disable provider adapter
+      responses:
+        '200':
+          description: Provider disabled
+  /integrations/{provider}/webhook:
+    post:
+      summary: Ingest asynchronous provider webhook with HMAC-SHA256 signature verification
+      responses:
+        '200':
+          description: Webhook received and queued
+  /organisation/api-keys:
+    post:
+      summary: Generate scoped developer API key (secret shown only once)
+      responses:
+        '201':
+          description: API key generated
+    get:
+      summary: List active API keys and assigned scopes
+      responses:
+        '200':
+          description: List of API keys
