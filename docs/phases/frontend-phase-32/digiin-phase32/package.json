@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase32",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 32 — Product Verification System.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4203",
+    "test": "node --test"
+  }
+}
