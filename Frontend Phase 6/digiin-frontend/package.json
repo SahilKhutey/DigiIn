@@ -1,0 +1,11 @@
+{
+  "name": "digiin-frontend-phase6",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn frontend Phase 6 — Document Verification Engine & Cryptographic Proof Minting.",
+  "scripts": {
+    "dev": "python -m http.server 4178",
+    "start": "python -m http.server 4178",
+    "preview": "python -m http.server 4178"
+  }
+}

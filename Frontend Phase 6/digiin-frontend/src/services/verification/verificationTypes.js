@@ -1,0 +1,18 @@
+export const CheckStatus = {
+  PASSED: 'passed',
+  FAILED: 'failed',
+  WARNING: 'warning',
+  PENDING: 'pending'
+};
+
+export const VerificationStatus = {
+  READY: 'READY',
+  STARTED: 'STARTED',
+  INTEGRITY_CHECK: 'INTEGRITY_CHECK',
+  AUTHORITY_CHECK: 'AUTHORITY_CHECK',
+  DETAIL_MATCH: 'DETAIL_MATCH',
+  DECISION: 'DECISION',
+  VERIFIED: 'VERIFIED',
+  PARTIALLY_VERIFIED: 'PARTIALLY_VERIFIED',
+  FAILED: 'FAILED'
+};
