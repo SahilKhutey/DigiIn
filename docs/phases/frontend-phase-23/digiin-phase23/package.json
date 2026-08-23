@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase23",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 23 — Privacy, Data Governance & Compliance.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4194",
+    "test": "node --test"
+  }
+}
