@@ -1,0 +1,13 @@
+export const ProofStatus = {
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  REVOKED: 'REVOKED'
+};
+
+export const ValidationStatus = {
+  VALID: 'VALID',
+  INVALID: 'INVALID',
+  EXPIRED: 'EXPIRED',
+  REVOKED: 'REVOKED',
+  SERVICE_UNAVAILABLE: 'SERVICE_UNAVAILABLE'
+};

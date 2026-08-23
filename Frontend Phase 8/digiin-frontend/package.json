@@ -1,0 +1,11 @@
+{
+  "name": "digiin-frontend-phase8",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn frontend Phase 8 — Organisation Portal & Verification Request Management System.",
+  "scripts": {
+    "dev": "python -m http.server 4180",
+    "start": "python -m http.server 4180",
+    "preview": "python -m http.server 4180"
+  }
+}
