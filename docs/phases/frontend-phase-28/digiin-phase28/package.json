@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase28",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 28 — Ecosystem Adoption & Institutional Scale.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4199",
+    "test": "node --test"
+  }
+}
