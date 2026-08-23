@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase34",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 34 — Services Working + User Interface + Department & Institutional Requests/Review.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4205",
+    "test": "node --test"
+  }
+}

@@ -76,6 +76,7 @@ def main():
         ("Working Product & User Request Handling (Phase 31)", ["python", "tests/test_phase31_working_product.py"], root_dir),
         ("Product Verification System (Phase 32)", ["python", "tests/test_phase32_product_verification.py"], root_dir),
         ("Working Verification -> User Workflow -> Service Verification -> Web App (Phase 33)", ["python", "tests/test_phase33_service_verification.py"], root_dir),
+        ("Institutional Review & Department Requests (Phase 34)", ["python", "tests/test_phase34_institutional_review.py"], root_dir),
         ("Offline CLI Proof Verifier Demo", ["python", "tests/cli_proof_verifier.py", "--demo"], root_dir),
         ("External Integration & Webhook Gateway E2E", ["python", "tests/test_external_integration_e2e.py"], root_dir),
     ]
