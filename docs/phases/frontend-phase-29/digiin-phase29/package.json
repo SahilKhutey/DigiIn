@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase29",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 29 — National-Scale Operations & Infrastructure.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4200",
+    "test": "node --test"
+  }
+}
