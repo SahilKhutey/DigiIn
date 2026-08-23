@@ -60,6 +60,7 @@ def main():
         ("Core Verification Flow E2E", ["python", "tests/e2e_verification_flow.py"], root_dir),
         ("Production Security & Hardening Suite (Phase 16)", ["python", "tests/test_phase16_security_hardening.py"], root_dir),
         ("Production Workflow & State Machine Suite (Phase 17)", ["python", "tests/test_phase17_workflow_engine.py"], root_dir),
+        ("Cryptographic Proof & Verifiable Credentials (Phase 18)", ["python", "tests/test_phase18_cryptographic_proofs.py"], root_dir),
         ("Offline CLI Proof Verifier Demo", ["python", "tests/cli_proof_verifier.py", "--demo"], root_dir),
 
 

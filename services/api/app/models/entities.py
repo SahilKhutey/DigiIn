@@ -210,3 +210,52 @@ class DocumentMatch(Base):
     details_json: Mapped[str] = mapped_column(Text, default="{}")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
 
+
+class IntegrationEvent(Base):
+    """Audit record for every external provider call — no PII or raw document bytes."""
+
+    __tablename__ = "integration_events"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    event_id: Mapped[str] = mapped_column(String(60), unique=True, index=True)
+    provider_id: Mapped[str] = mapped_column(String(100), index=True)
+    operation: Mapped[str] = mapped_column(String(80))
+    request_id: Mapped[str] = mapped_column(String(80))
+    correlation_id: Mapped[str] = mapped_column(String(80))
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    status: Mapped[str] = mapped_column(String(32), default="STARTED")
+    error_code: Mapped[str | None] = mapped_column(String(60), nullable=True)
+    retry_count: Mapped[int] = mapped_column(Integer, default=0)
+    metadata_json: Mapped[str] = mapped_column(Text, default="{}")
+
+
+class WebhookEvent(Base):
+    """Persisted inbound webhook events (deduplicated by event_id)."""
+
+    __tablename__ = "webhook_events"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    event_id: Mapped[str] = mapped_column(String(100), unique=True, index=True)
+    provider_id: Mapped[str] = mapped_column(String(100), index=True)
+    event_type: Mapped[str] = mapped_column(String(80))
+    payload_json: Mapped[str] = mapped_column(Text, default="{}")
+    received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    processed: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class ProviderRegistration(Base):
+    """Persisted provider manifests with trust metadata and lifecycle status."""
+
+    __tablename__ = "provider_registrations"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    provider_id: Mapped[str] = mapped_column(String(100), unique=True, index=True)
+    provider_type: Mapped[str] = mapped_column(String(40))
+    issuer_id: Mapped[str] = mapped_column(String(100))
+    name: Mapped[str] = mapped_column(String(200))
+    version: Mapped[str] = mapped_column(String(20), default="v1")
+    environment: Mapped[str] = mapped_column(String(20), default="development")
+    capabilities_json: Mapped[str] = mapped_column(Text, default="[]")
+    auth_method: Mapped[str] = mapped_column(String(40), default="none")
+    status: Mapped[str] = mapped_column(String(32), default="ACTIVE")
+    trust_level: Mapped[str] = mapped_column(String(32), default="trusted")
+    valid_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    registered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)

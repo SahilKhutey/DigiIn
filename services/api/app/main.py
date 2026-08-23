@@ -41,6 +41,9 @@ from app.api.v1 import (
     proofs as proofs_router,
 )
 from app.api.v1 import (
+    providers as providers_router,
+)
+from app.api.v1 import (
     review as review_router,
 )
 from app.api.v1 import (
@@ -221,9 +224,13 @@ app.include_router(documents_router.router, prefix="/api/v1")
 app.include_router(government_router.router, prefix="/api/v1")
 app.include_router(intelligence_router.router, prefix="/api/v1")
 app.include_router(proofs_router.router, prefix="/api/v1")
+app.include_router(providers_router.router, prefix="/api/v1")
 app.include_router(review_router.router, prefix="/api/v1")
 
+# Bootstrap Phase 7 mock providers (development / sandbox only)
+from app.integrations.mock_providers import register_mock_providers  # noqa: E402
 
+register_mock_providers()
 
 
 

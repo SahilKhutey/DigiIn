@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase18",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 18 — Cryptographic Proof & Verifiable Credentials.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4189",
+    "test": "node --test"
+  }
+}
