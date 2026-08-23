@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase36",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 36 — Verification Hardening, Negative Proof & Hackathon Readiness.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4207",
+    "test": "node --test"
+  }
+}
