@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase24",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 24 — Performance, Scalability & High-Load Engineering.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4195",
+    "test": "node --test"
+  }
+}
