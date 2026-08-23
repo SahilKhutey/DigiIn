@@ -1,0 +1,11 @@
+{
+  "name": "digiin-frontend-phase9",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn frontend Phase 9 — Identity, Trust & API Foundation.",
+  "scripts": {
+    "dev": "python -m http.server 4181",
+    "start": "python -m http.server 4181",
+    "preview": "python -m http.server 4181"
+  }
+}
