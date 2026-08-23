@@ -76,19 +76,23 @@ class IntegrationAuditLogger:
             event.status = ctx.get("status", "COMPLETED").upper()
             event.completed_at = datetime.now(UTC)
             event.retry_count = ctx.get("retry_count", 0)
-            db.flush()
+            db.commit()
 
         except Exception as exc:
             event.status = "ERROR"
             event.error_code = type(exc).__name__[:60]
             event.completed_at = datetime.now(UTC)
             event.retry_count = ctx.get("retry_count", 0)
-            db.flush()
+            try:
+                db.commit()
+            except Exception:
+                db.rollback()
             logger.error(
                 "Integration call failed — provider='%s' op='%s' req='%s': %s",
                 provider_id, operation, request_id, exc,
             )
             raise
+
 
 
 # ---------------------------------------------------------------------------
