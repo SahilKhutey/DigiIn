@@ -148,3 +148,65 @@ class Notification(Base):
     body: Mapped[str] = mapped_column(Text)
     read: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class DocumentJob(Base):
+    __tablename__ = "document_jobs"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    document_id: Mapped[str] = mapped_column(ForeignKey("user_documents.id"), index=True)
+    job_type: Mapped[str] = mapped_column(String(40))
+    status: Mapped[str] = mapped_column(String(32), default="PENDING")
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    priority: Mapped[int] = mapped_column(Integer, default=1)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    error_code: Mapped[str | None] = mapped_column(String(60), nullable=True)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class DocumentExtraction(Base):
+    __tablename__ = "document_extractions"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    document_id: Mapped[str] = mapped_column(ForeignKey("user_documents.id"), index=True)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    provider: Mapped[str] = mapped_column(String(60), default="LocalOCR")
+    extracted_fields_json: Mapped[str] = mapped_column(Text, default="{}")
+    classification_type: Mapped[str] = mapped_column(String(60), default="OTHER")
+    classification_confidence: Mapped[float] = mapped_column(default=0.0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class VerificationEvidence(Base):
+    __tablename__ = "verification_evidence"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    document_id: Mapped[str] = mapped_column(ForeignKey("user_documents.id"), index=True)
+    evidence_type: Mapped[str] = mapped_column(String(60))
+    source: Mapped[str] = mapped_column(String(100))
+    reference: Mapped[str] = mapped_column(String(150))
+    result: Mapped[str] = mapped_column(String(40), default="MATCH")
+    confidence: Mapped[float] = mapped_column(default=1.0)
+    metadata_json: Mapped[str] = mapped_column(Text, default="{}")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class RiskAssessment(Base):
+    __tablename__ = "risk_assessments"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    document_id: Mapped[str] = mapped_column(ForeignKey("user_documents.id"), index=True)
+    score: Mapped[int] = mapped_column(Integer, default=100)
+    level: Mapped[str] = mapped_column(String(32), default="LOW_RISK")
+    factors_json: Mapped[str] = mapped_column(Text, default="{}")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class DocumentMatch(Base):
+    __tablename__ = "document_matches"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    document_id: Mapped[str] = mapped_column(ForeignKey("user_documents.id"), index=True)
+    matched_document_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    match_type: Mapped[str] = mapped_column(String(40), default="NO_MATCH")
+    similarity_score: Mapped[float] = mapped_column(default=0.0)
+    details_json: Mapped[str] = mapped_column(Text, default="{}")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+

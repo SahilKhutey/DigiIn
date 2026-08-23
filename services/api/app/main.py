@@ -43,6 +43,9 @@ from app.api.v1 import (
 from app.api.v1 import (
     review as review_router,
 )
+from app.api.v1 import (
+    verification_intelligence as intelligence_router,
+)
 from app.crypto.proofs import (
     Proof,
     _b64,
@@ -216,8 +219,10 @@ app.include_router(auth_router.router, prefix="/api/v1")
 app.include_router(citizen_router.router, prefix="/api/v1")
 app.include_router(documents_router.router, prefix="/api/v1")
 app.include_router(government_router.router, prefix="/api/v1")
+app.include_router(intelligence_router.router, prefix="/api/v1")
 app.include_router(proofs_router.router, prefix="/api/v1")
 app.include_router(review_router.router, prefix="/api/v1")
+
 
 
 

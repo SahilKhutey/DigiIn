@@ -55,9 +55,11 @@ def main():
         ("Security & Anti-Piracy Safeguards", ["python", "tests/test_security_and_anti_piracy.py"], root_dir),
         ("Background Worker & Mobile Integration", ["python", "tests/test_mobile_and_worker_integration.py"], root_dir),
         ("Document Upload & Government Review Lifecycle", ["python", "tests/test_upload_review_pipeline.py"], root_dir),
+        ("Verification Intelligence & Evidence Pipeline", ["python", "tests/test_verification_intelligence_pipeline.py"], root_dir),
         ("Document Pipeline 9-Step E2E", ["python", "tests/test_document_pipeline_e2e.py"], root_dir),
         ("Core Verification Flow E2E", ["python", "tests/e2e_verification_flow.py"], root_dir),
         ("Offline CLI Proof Verifier Demo", ["python", "tests/cli_proof_verifier.py", "--demo"], root_dir),
+
 
     ]
 

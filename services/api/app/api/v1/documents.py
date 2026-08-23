@@ -75,6 +75,9 @@ async def upload_document(
     db.commit()
     db.refresh(doc)
 
+    from app.services.job_queue import create_document_pipeline_jobs
+    create_document_pipeline_jobs(db, doc.id)
+
     audit(
         db,
         user.id,
@@ -83,6 +86,7 @@ async def upload_document(
         doc.id,
         {"sha256": saved["sha256"], "size": saved["size"], "filename": saved["filename"]},
     )
+
 
     return {
         "id": doc.id,
