@@ -1,0 +1,11 @@
+{
+  "name": "digiin-frontend-phase5",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn frontend Phase 5 — DigiLocker Connection & Document Retrieval Workflow.",
+  "scripts": {
+    "dev": "python -m http.server 4177",
+    "start": "python -m http.server 4177",
+    "preview": "python -m http.server 4177"
+  }
+}
