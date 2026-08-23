@@ -1,23 +1,45 @@
 import { useEffect, useState } from "react";
 import * as api from "./api/client";
+import { AppShell } from "./layouts/AppShell";
+import { AppView } from "./layouts/GovHeader";
+import { LandingView } from "./features/landing/LandingView";
+import { CitizenVerificationJourney } from "./features/verification/CitizenVerificationJourney";
 import { CorrectionSection } from "./components/correction/CorrectionSection";
 import { ConsentManagerDashboard } from "./components/consent/ConsentManagerDashboard";
 import { DiagnosticTimeline } from "./components/diagnostic/DiagnosticTimeline";
-
 import { DocumentPicker } from "./components/diagnostic/DocumentPicker";
 import { ScenarioPicker } from "./components/diagnostic/ScenarioPicker";
-import { Header } from "./components/layout/Header";
-import { Hero } from "./components/layout/Hero";
 import { NoticeBanner } from "./components/layout/NoticeBanner";
-import { PrivacyFooter } from "./components/layout/PrivacyFooter";
 import { PlatformRunner } from "./components/platform/PlatformRunner";
 import { ProofGateway } from "./components/verification/ProofGateway";
 import { VerifierDashboard } from "./components/verifier/VerifierDashboard";
 import { DocumentCenter } from "./components/wallet/DocumentCenter";
+import { DirectVerificationFlow } from "./components/verification/DirectVerificationFlow";
+
+import {
+  AboutView,
+  HowItWorksView,
+  ForCitizensView,
+  ForOrganisationsView,
+  SecurityPrivacyView,
+  AccessibilityView,
+  HelpFaqView,
+  ContactView,
+  TermsView,
+  PrivacyPolicyView,
+} from "./features/public";
+import {
+  SignInView,
+  OtpVerificationView,
+  OnboardingView,
+} from "./features/auth";
+import { AuthProvider } from "./context/AuthContext";
 import { OfflineScannerModal } from "./components/scanner/OfflineScannerModal";
 import { EkycVerificationModal } from "./components/ekyc/EkycVerificationModal";
-import { DirectVerificationFlow } from "./components/verification/DirectVerificationFlow";
+import { ToastProvider } from "./components/ui/Toast";
 import { LanguageProvider, useLanguage } from "./context/LanguageContext";
+
+
 
 
 
@@ -37,9 +59,6 @@ import type {
   VerificationResult,
   WalletDocument,
 } from "./types";
-
-
-
 
 const LOCAL_SCENARIOS: Scenario[] = [
   {
@@ -119,8 +138,8 @@ function AppContent() {
   const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null);
   const [tokenCheck, setTokenCheck] = useState<TokenCheck | null>(null);
 
-  // View Mode: Citizen Wallet vs Government Verifier Console vs Consent Dashboard
-  const [viewMode, setViewMode] = useState<"CITIZEN" | "VERIFIER" | "CONSENT">("CITIZEN");
+  // App Perspective / View: LANDING | JOURNEY | WALLET | VERIFIER | CONSENT
+  const [currentView, setCurrentView] = useState<AppView>("LANDING");
 
   // Offline QR Code Scanner Modal State
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -143,9 +162,6 @@ function AppContent() {
   // Citizen Wallet Documents State (5 Discrete Trust Signals)
   const [walletDocuments, setWalletDocuments] = useState<WalletDocument[]>([]);
 
-
-
-
   // Platform & Student Slice State
   const [platformSnapshot, setPlatformSnapshot] = useState<PlatformSnapshot | null>(null);
   const [studentDemo, setStudentDemo] = useState<StudentDemo | null>(null);
@@ -164,7 +180,7 @@ function AppContent() {
 
   // Accessible Notice Banner State
   const [notice, setNotice] = useState(
-    "Demonstration only. DigiIn never asks for an Aadhaar number, OTP, password or document upload."
+    "DigiIn is built on UX4G 3.0 standards. Zero raw documents are ever transferred to third-party requesters."
   );
 
   // Initial Data Fetching
@@ -233,7 +249,6 @@ function AppContent() {
     setNotice(`Selected record ${docId} for correction & versioning review.`);
   };
 
-
   // Handlers
   const handleRetry = () => {
     api
@@ -277,12 +292,16 @@ function AppContent() {
       .authorizeVerificationRequest(verificationRequest.requestId, true, customDisclosure)
       .then((result) => {
         setVerificationResult(result);
-        const modeLabel = customDisclosure?.mode === "PREDICATE_ONLY" ? "Zero-Knowledge Predicate" : (customDisclosure?.mode === "SELECTIVE_ATTRIBUTES" ? "Selective Attribute" : "Full Credential");
+        const modeLabel =
+          customDisclosure?.mode === "PREDICATE_ONLY"
+            ? "Zero-Knowledge Predicate"
+            : customDisclosure?.mode === "SELECTIVE_ATTRIBUTES"
+            ? "Selective Attribute"
+            : "Full Credential";
         setNotice(`Purpose-bound proof generated in ${modeLabel} mode. No unnecessary raw data was shared.`);
       })
       .catch(() => setNotice("The demo request could not be authorised."));
   };
-
 
   const handleIntrospectProof = () => {
     if (!verificationResult) return;
@@ -369,35 +388,108 @@ function AppContent() {
   };
 
   return (
-    <main>
-      <Header
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        onOpenScanner={() => handleOpenScanner()}
-      />
-      <Hero />
+    <AppShell
+      currentView={currentView}
+      onViewChange={setCurrentView}
+      onOpenScanner={() => handleOpenScanner()}
+      onOpenEkyc={() => handleOpenEkyc()}
+    >
       <NoticeBanner notice={notice} />
 
-      {viewMode === "VERIFIER" ? (
-        <VerifierDashboard onRefreshWallet={refreshWallet} />
-      ) : viewMode === "CONSENT" ? (
-        <ConsentManagerDashboard onNotice={setNotice} />
-      ) : (
+      {/* View 1: PUBLIC LANDING EXPERIENCE */}
+      {currentView === "LANDING" && (
+        <LandingView
+          onStartJourney={() => setCurrentView("JOURNEY")}
+          onOpenWallet={() => setCurrentView("WALLET")}
+          onOpenVerifier={() => setCurrentView("VERIFIER")}
+          onNavigate={(view) => setCurrentView(view)}
+        />
+      )}
 
-        <>
+      {/* Public Sub-Pages */}
+      {currentView === "ABOUT" && (
+        <AboutView onStartJourney={() => setCurrentView("JOURNEY")} />
+      )}
+
+      {currentView === "HOW_IT_WORKS" && (
+        <HowItWorksView onStartJourney={() => setCurrentView("JOURNEY")} />
+      )}
+
+      {currentView === "FOR_CITIZENS" && (
+        <ForCitizensView
+          onStartJourney={() => setCurrentView("JOURNEY")}
+          onOpenWallet={() => setCurrentView("WALLET")}
+        />
+      )}
+
+      {currentView === "FOR_ORGANISATIONS" && (
+        <ForOrganisationsView onOpenVerifier={() => setCurrentView("VERIFIER")} />
+      )}
+
+      {currentView === "SECURITY" && (
+        <SecurityPrivacyView />
+      )}
+
+      {currentView === "ACCESSIBILITY" && (
+        <AccessibilityView />
+      )}
+
+      {currentView === "HELP" && (
+        <HelpFaqView onOpenContact={() => setCurrentView("CONTACT")} />
+      )}
+
+      {currentView === "CONTACT" && (
+        <ContactView />
+      )}
+
+      {currentView === "TERMS" && (
+        <TermsView />
+      )}
+
+      {currentView === "PRIVACY" && (
+        <PrivacyPolicyView />
+      )}
+
+      {/* Authentication Sub-Pages */}
+      {currentView === "SIGN_IN" && (
+        <SignInView
+          onOtpSent={() => setCurrentView("OTP")}
+          onNavigateHelp={() => setCurrentView("HELP")}
+          onNavigatePrivacy={() => setCurrentView("PRIVACY")}
+        />
+      )}
+
+      {currentView === "OTP" && (
+        <OtpVerificationView
+          onSuccess={(isFirstTime) => setCurrentView(isFirstTime ? "ONBOARDING" : "WALLET")}
+          onBackToMobile={() => setCurrentView("SIGN_IN")}
+        />
+      )}
+
+      {currentView === "ONBOARDING" && (
+        <OnboardingView onComplete={() => setCurrentView("WALLET")} />
+      )}
+
+
+      {/* View 2: CITIZEN 8-STEP VERIFICATION JOURNEY */}
+      {currentView === "JOURNEY" && (
+        <CitizenVerificationJourney />
+      )}
+
+
+
+      {/* View 3: CITIZEN DOCUMENT WALLET & VAULT */}
+      {currentView === "WALLET" && (
+        <div className="space-y-8">
           <DocumentCenter
             walletDocuments={walletDocuments}
             onSelectForCorrection={handleSelectForCorrection}
             onRefreshWallet={refreshWallet}
-            onSwitchToVerifier={() => setViewMode("VERIFIER")}
+            onSwitchToVerifier={() => setCurrentView("VERIFIER")}
             onEkycVerify={handleOpenEkyc}
           />
 
           <DirectVerificationFlow />
-
-
-
-
 
           <PlatformRunner
             snapshot={platformSnapshot}
@@ -453,10 +545,20 @@ function AppContent() {
             onRetry={handleRetry}
             onCopyEvidence={handleCopyEvidence}
           />
-
-        </>
+        </div>
       )}
 
+      {/* View 4: VERIFIER & REQUESTER CONSOLE */}
+      {currentView === "VERIFIER" && (
+        <VerifierDashboard onRefreshWallet={refreshWallet} />
+      )}
+
+      {/* View 5: CONSENT & SOVEREIGN AUDIT DASHBOARD */}
+      {currentView === "CONSENT" && (
+        <ConsentManagerDashboard onNotice={setNotice} />
+      )}
+
+      {/* Modals for Offline Scanner & eKYC */}
       <OfflineScannerModal
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
@@ -473,16 +575,18 @@ function AppContent() {
           setNotice("Aadhaar eKYC identity verified! Document trust level elevated to Level 4 (Government Verified).");
         }}
       />
-
-      <PrivacyFooter />
-    </main>
+    </AppShell>
   );
 }
 
 export function App() {
   return (
     <LanguageProvider>
-      <AppContent />
+      <AuthProvider>
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
+      </AuthProvider>
     </LanguageProvider>
   );
 }
