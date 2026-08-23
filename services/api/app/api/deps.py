@@ -35,21 +35,22 @@ def current_user(
     if not user and sub:
         from app.db.repository import get_account_by_id
         acc = get_account_by_id(sub)
-        if acc:
-            user = db.query(User).filter((User.id == acc.account_id) | (User.email == acc.phone_number)).first()
-            if not user:
-                user = User(
-                    id=acc.account_id,
-                    email=f"{acc.account_id.lower()}@digiin.gov.in",
-                    password_hash="session_key_placeholder",
-                    role=acc.role,
-                )
-                db.add(user)
-                db.commit()
-                db.refresh(user)
+        role = acc.role if acc else payload.get("role", "CITIZEN")
+        user = db.query(User).filter(User.id == sub).first()
+        if not user:
+            user = User(
+                id=sub,
+                email=f"{sub.lower()}@digiin.gov.in",
+                password_hash="session_key_placeholder",
+                role=role,
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
     return user
+
 
 
 def require_role(*roles: str):

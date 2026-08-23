@@ -29,6 +29,9 @@ from app.api.v1 import (
     citizen as citizen_router,
 )
 from app.api.v1 import (
+    documents as documents_router,
+)
+from app.api.v1 import (
     government as government_router,
 )
 from app.api.v1 import (
@@ -36,6 +39,9 @@ from app.api.v1 import (
 )
 from app.api.v1 import (
     proofs as proofs_router,
+)
+from app.api.v1 import (
+    review as review_router,
 )
 from app.crypto.proofs import (
     Proof,
@@ -208,8 +214,11 @@ app.add_middleware(
 app.include_router(health_router.router, prefix="/api/v1")
 app.include_router(auth_router.router, prefix="/api/v1")
 app.include_router(citizen_router.router, prefix="/api/v1")
+app.include_router(documents_router.router, prefix="/api/v1")
 app.include_router(government_router.router, prefix="/api/v1")
 app.include_router(proofs_router.router, prefix="/api/v1")
+app.include_router(review_router.router, prefix="/api/v1")
+
 
 
 
