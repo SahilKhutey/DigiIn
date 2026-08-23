@@ -1,17 +1,38 @@
-# Security and privacy baseline
+# DigiIn Production Security Architecture & Policies
 
-## Non-negotiable controls
+## 1. Core Security Principles
 
-- Do not request, log, cache, or display Aadhaar numbers, OTPs, passwords, PINs, or full identity documents.
-- Use explicit consent before any future third-party data request; make scopes and retention understandable.
-- Encrypt data in transit and at rest; store only the minimum metadata required for recovery support.
-- Redact identifiers from logs and telemetry. Use a short-lived, opaque journey ID instead of personal identifiers.
-- Separate citizen-uploaded files from government records. Upload must not imply official authenticity.
-- Treat verification evidence, officer decisions and correction history as sensitive audit material.
-- Share verification results or selected claims when possible instead of full document files.
-- Enforce least privilege, service-to-service authentication, rate limits, dependency timeouts, and audit trails.
-- Complete a threat model, DPIA, accessibility review, and authorised integration review before pilot deployment.
+1. **Zero Trust & Explicit Verification**: No request or service is trusted implicitly. Every action is authenticated, authorized, and verified against tenant and resource boundaries.
+2. **Data Minimization & Selective Disclosure**: DigiIn stores only necessary metadata and issues cryptographically signed claims (`EDUCATION_VERIFIED`) rather than disclosing raw personal documents.
+3. **Defense in Depth**: Security controls are enforced in layers (WAF $\rightarrow$ API Gateway $\rightarrow$ Role Authorization $\rightarrow$ Resource Ownership Guard $\rightarrow$ Data Encryption at Rest).
+4. **Key Separation & Isolation**: Separate cryptographic keys are used for session tokens, API keys, webhook signatures, document storage encryption, and proof minting.
+5. **No Secrets in Source**: No credentials, API tokens, or encryption keys are committed to Git, embedded in client builds, or logged to disk.
 
-## Incident posture
+---
 
-The future production service should provide structured error codes to clients, retain internal correlation IDs, and publish status without exposing provider details or citizen data.
+## 2. Cryptographic Standards
+
+- **Password Hashing**: PBKDF2-HMAC-SHA256 (100,000 rounds) / Argon2id with 128-bit random salt.
+- **Proof Signing**: Asymmetric Ed25519 (EdDSA) with canonical RFC 8785 JSON payloads.
+- **Document Integrity**: SHA-256 binary hash digest generated upon file receipt.
+- **Token Encryption**: AES-256-GCM for external provider OAuth access/refresh tokens.
+- **Webhook Signatures**: HMAC-SHA256 with timing-safe comparison.
+
+---
+
+## 3. Rate Limiting & Abuse Prevention
+
+Tiered token bucket rate limiters prevent denial-of-service and credential stuffing:
+- **Login**: 5 requests / minute
+- **OTP Challenge**: 3 requests / minute
+- **Document Upload**: 10 uploads / minute
+- **Verification Job**: 30 requests / minute
+- **Public Proof Validation**: 120 requests / minute
+- **Health Probes**: 300 requests / minute
+- **Admin APIs**: 20 requests / minute
+
+---
+
+## 4. Secure Development Lifecycle (SDLC)
+
+- All pull requests pass static analysis (Ruff / ESLint), type checking (`tsc`), dependency scanning, unit/integration security tests, and E2E regression pipelines prior to merge.

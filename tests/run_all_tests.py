@@ -58,6 +58,7 @@ def main():
         ("Verification Intelligence & Evidence Pipeline", ["python", "tests/test_verification_intelligence_pipeline.py"], root_dir),
         ("Document Pipeline 9-Step E2E", ["python", "tests/test_document_pipeline_e2e.py"], root_dir),
         ("Core Verification Flow E2E", ["python", "tests/e2e_verification_flow.py"], root_dir),
+        ("Production Security & Hardening Suite (Phase 16)", ["python", "tests/test_phase16_security_hardening.py"], root_dir),
         ("Offline CLI Proof Verifier Demo", ["python", "tests/cli_proof_verifier.py", "--demo"], root_dir),
 
 

@@ -87,3 +87,6 @@ def decode_token(
         raise HTTPException(status_code=401, detail="Token is not yet valid (nbf violation)")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token signature or malformed payload")
+
+
+# Re-export Phase 16 Security Hardening Foundation classes

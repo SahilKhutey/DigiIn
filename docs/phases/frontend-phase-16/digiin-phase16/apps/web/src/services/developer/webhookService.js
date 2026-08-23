@@ -1,0 +1,2 @@
+let hooks=[{id:'WH-1',url:'https://example.org/digiin/webhook',events:['verification.created','verification.completed','proof.created'],status:'active',lastDeliveryAt:'23 Aug 2026 10:42'}];
+export const webhookService={async list(){return hooks.map(x=>({...x,events:[...x.events]}));},async create(url,events){const h={id:'WH-'+Math.random().toString(36).slice(2,7).toUpperCase(),url,events,status:'active',lastDeliveryAt:'Never'};hooks.push(h);return h;},async disable(id){hooks=hooks.map(x=>x.id===id?{...x,status:'disabled'}:x);return hooks.find(x=>x.id===id);}};

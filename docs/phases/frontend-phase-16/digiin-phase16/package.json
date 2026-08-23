@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase16",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 16 — Production Hardening & Security Foundation.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4187",
+    "test": "node --test"
+  }
+}
