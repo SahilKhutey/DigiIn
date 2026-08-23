@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: digiin-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: digiin
+      POSTGRES_PASSWORD: digiin_secure_password
+      POSTGRES_DB: digiin_platform
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: digiin-redis
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+  api:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    container_name: digiin-api
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://digiin:digiin_secure_password@postgres:5432/digiin_platform
+      REDIS_URL: redis://redis:6379
+      PORT: 8080
+    ports:
+      - '8080:8080'
+    depends_on:
+      - postgres
+      - redis
+
+  document-worker:
+    build:
+      context: .
+      dockerfile: ./workers/document-worker/Dockerfile
+    container_name: digiin-doc-worker
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://digiin:digiin_secure_password@postgres:5432/digiin_platform
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+
+  verification-worker:
+    build:
+      context: .
+      dockerfile: ./workers/verification-worker/Dockerfile
+    container_name: digiin-verif-worker
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://digiin:digiin_secure_password@postgres:5432/digiin_platform
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+    container_name: digiin-web
+    restart: always
+    ports:
+      - '3000:3000'
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  redis_data:
