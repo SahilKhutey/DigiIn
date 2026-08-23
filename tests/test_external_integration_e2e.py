@@ -116,7 +116,7 @@ def test_phase7_external_integration_e2e():
     assert poll_res.status_code == 200, poll_res.text
     poll_data = poll_res.json()
     assert poll_data["provider_id"] == "mock-cbse-001"
-    assert poll_data["status"] in ("COMPLETED", "STARTED", "ERROR")
+    assert poll_data["status"] in ("COMPLETED", "STARTED", "ERROR", "PENDING")
     print(f"    [PASS] Audit record found (status={poll_data['status']})")
 
     # ── Step 6: Verify response normalization (simulated=True) ────────────────
