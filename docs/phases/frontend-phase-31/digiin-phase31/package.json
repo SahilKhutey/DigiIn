@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase31",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 31 — Working Product & User Request Handling.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4202",
+    "test": "node --test"
+  }
+}
