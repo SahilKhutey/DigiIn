@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase20",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 20 — Developer & API Platform.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4191",
+    "test": "node --test"
+  }
+}
