@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase25",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 25 — Controlled Pilot & Production Validation.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4196",
+    "test": "node --test"
+  }
+}

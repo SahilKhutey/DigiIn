@@ -67,6 +67,7 @@ def main():
         ("Production Infrastructure & Deployment (Phase 22)", ["python", "tests/test_phase22_production_infrastructure.py"], root_dir),
         ("Privacy, Data Governance & Compliance (Phase 23)", ["python", "tests/test_phase23_privacy_governance.py"], root_dir),
         ("Performance, Scalability & High-Load (Phase 24)", ["python", "tests/test_phase24_performance_scalability.py"], root_dir),
+        ("Controlled Pilot & Production Validation (Phase 25)", ["python", "tests/test_phase25_controlled_pilot.py"], root_dir),
         ("Offline CLI Proof Verifier Demo", ["python", "tests/cli_proof_verifier.py", "--demo"], root_dir),
         ("External Integration & Webhook Gateway E2E", ["python", "tests/test_external_integration_e2e.py"], root_dir),
     ]
