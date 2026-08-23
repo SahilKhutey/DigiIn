@@ -1,0 +1,58 @@
+/**
+ * UX4G Government Colors & Semantic Tokens
+ */
+:root {
+  /* Government Primary Brand */
+  --ux4g-color-primary-900: #053659;
+  --ux4g-color-primary-800: #074B7D;
+  --ux4g-color-primary-700: #0B5D9B;
+  --ux4g-color-primary-600: #0D6EB5;
+  --ux4g-color-primary-100: #EBF4FA;
+  --ux4g-color-primary-50: #F3F7FA;
+  
+  /* National Identity Navy */
+  --ux4g-color-navy-950: #051E33;
+  --ux4g-color-navy-900: #092F4F;
+  --ux4g-color-navy-800: #102A43;
+  --ux4g-color-navy-700: #1A3B5C;
+  --ux4g-color-navy-600: #244A65;
+  
+  /* Neutral Slate Scale */
+  --ux4g-color-slate-900: #0F172A;
+  --ux4g-color-slate-800: #1E293B;
+  --ux4g-color-slate-700: #334155;
+  --ux4g-color-slate-600: #475569;
+  --ux4g-color-slate-500: #64748B;
+  --ux4g-color-slate-400: #94A3B8;
+  --ux4g-color-slate-300: #CBD5E1;
+  --ux4g-color-slate-200: #E2E8F0;
+  --ux4g-color-slate-100: #F1F5F9;
+  --ux4g-color-slate-50: #F8FAFC;
+  --ux4g-color-white: #FFFFFF;
+  
+  /* Semantic Status Colors (WCAG 2.1 AA Compliant >= 4.5:1) */
+  --ux4g-color-success-bg: #DFF6E8;
+  --ux4g-color-success-border: #86EFAC;
+  --ux4g-color-success-text: #14743F;
+  --ux4g-color-success-dark: #0F5B31;
+
+  --ux4g-color-warning-bg: #FFF0CC;
+  --ux4g-color-warning-border: #FDE68A;
+  --ux4g-color-warning-text: #744B00;
+  --ux4g-color-warning-dark: #573800;
+
+  --ux4g-color-danger-bg: #FEE2E2;
+  --ux4g-color-danger-border: #FCA5A5;
+  --ux4g-color-danger-text: #991B1B;
+  --ux4g-color-danger-dark: #7F1D1D;
+
+  --ux4g-color-info-bg: #E6F4F8;
+  --ux4g-color-info-border: #BAE6FD;
+  --ux4g-color-info-text: #0A6990;
+  --ux4g-color-info-dark: #034E6C;
+
+  /* Focus Indicator */
+  --ux4g-color-focus-ring: rgba(11, 93, 155, 0.35);
+  --ux4g-focus-outline: 3px solid #0B5D9B;
+  --ux4g-focus-offset: 2px;
+}

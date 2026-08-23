@@ -1,0 +1,19 @@
+/**
+ * UX4G Elevation & Shadows
+ */
+:root {
+  --ux4g-shadow-none: none;
+  --ux4g-shadow-xs: 0 1px 2px rgba(9, 47, 79, 0.05);
+  --ux4g-shadow-sm: 0 1px 3px rgba(9, 47, 79, 0.08);
+  --ux4g-shadow-md: 0 4px 14px rgba(9, 47, 79, 0.08), 0 2px 6px rgba(9, 47, 79, 0.04);
+  --ux4g-shadow-lg: 0 10px 30px rgba(9, 47, 79, 0.12), 0 4px 10px rgba(9, 47, 79, 0.06);
+  --ux4g-shadow-xl: 0 20px 40px rgba(9, 47, 79, 0.16);
+
+  /* Z-Index Layers */
+  --ux4g-z-base: 1;
+  --ux4g-z-sticky: 100;
+  --ux4g-z-drawer: 500;
+  --ux4g-z-modal: 1000;
+  --ux4g-z-toast: 1500;
+  --ux4g-z-tooltip: 2000;
+}

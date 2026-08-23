@@ -1,0 +1,60 @@
+/**
+ * UX4G 3.0 Design Tokens for DigiIn Phase 2
+ */
+:root {
+  /* Government Colors */
+  --blue-900: #092F4F;
+  --blue-800: #0B4F71;
+  --blue-700: #0B5D9B;
+  --blue-600: #0284C7;
+  --blue-100: #EBF4FA;
+  --blue-50: #F3F7FA;
+  
+  --green-700: #14743F;
+  --green-600: #16A34A;
+  --green-100: #DFF6E8;
+  
+  --amber-700: #744B00;
+  --amber-600: #D97706;
+  --amber-100: #FFF0CC;
+  
+  --red-700: #991B1B;
+  --red-100: #FEE2E2;
+
+  --slate-900: #0F172A;
+  --slate-800: #1E293B;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748B;
+  --slate-300: #CBD5E1;
+  --slate-200: #E2E8F0;
+  --slate-100: #F1F5F9;
+  --white: #FFFFFF;
+
+  /* Typography */
+  --font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  
+  /* 4px Spacing Grid */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  
+  /* Radius & Shadows */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+  
+  --shadow-sm: 0 1px 3px rgba(9, 47, 79, 0.06);
+  --shadow-md: 0 4px 14px rgba(9, 47, 79, 0.08);
+  --shadow-lg: 0 10px 30px rgba(9, 47, 79, 0.12);
+
+  /* Focus Indicator (WCAG 2.1 AA) */
+  --focus-ring: 0 0 0 3px rgba(11, 93, 155, 0.35);
+  --container: 1120px;
+}

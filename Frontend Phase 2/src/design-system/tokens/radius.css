@@ -1,0 +1,11 @@
+/**
+ * UX4G Border Radius Tokens
+ */
+:root {
+  --ux4g-radius-none: 0;
+  --ux4g-radius-sm: 6px;
+  --ux4g-radius-md: 10px;
+  --ux4g-radius-lg: 14px;
+  --ux4g-radius-xl: 18px;
+  --ux4g-radius-full: 9999px;
+}

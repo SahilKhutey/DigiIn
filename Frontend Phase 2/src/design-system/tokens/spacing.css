@@ -1,0 +1,23 @@
+/**
+ * UX4G 4px Spacing Grid & Container Widths
+ */
+:root {
+  --ux4g-space-0: 0;
+  --ux4g-space-1: 4px;
+  --ux4g-space-2: 8px;
+  --ux4g-space-3: 12px;
+  --ux4g-space-4: 16px;
+  --ux4g-space-5: 20px;
+  --ux4g-space-6: 24px;
+  --ux4g-space-8: 32px;
+  --ux4g-space-10: 40px;
+  --ux4g-space-12: 48px;
+  --ux4g-space-16: 64px;
+
+  /* Container Widths */
+  --ux4g-container-sm: 640px;
+  --ux4g-container-md: 768px;
+  --ux4g-container-lg: 1024px;
+  --ux4g-container-xl: 1120px;
+  --ux4g-container-2xl: 1280px;
+}

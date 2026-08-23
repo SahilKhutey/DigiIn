@@ -1,0 +1,29 @@
+/**
+ * UX4G Typography Tokens
+ */
+:root {
+  --ux4g-font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ux4g-font-mono: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
+
+  /* Font Sizes */
+  --ux4g-font-size-xs: 0.75rem;    /* 12px */
+  --ux4g-font-size-sm: 0.875rem;   /* 14px */
+  --ux4g-font-size-base: 1rem;     /* 16px */
+  --ux4g-font-size-lg: 1.125rem;   /* 18px */
+  --ux4g-font-size-xl: 1.25rem;    /* 20px */
+  --ux4g-font-size-2xl: 1.5rem;    /* 24px */
+  --ux4g-font-size-3xl: 1.875rem;  /* 30px */
+  --ux4g-font-size-4xl: 2.25rem;   /* 36px */
+
+  /* Line Heights */
+  --ux4g-line-height-tight: 1.2;
+  --ux4g-line-height-normal: 1.5;
+  --ux4g-line-height-relaxed: 1.625;
+
+  /* Font Weights */
+  --ux4g-font-weight-regular: 400;
+  --ux4g-font-weight-medium: 500;
+  --ux4g-font-weight-semibold: 600;
+  --ux4g-font-weight-bold: 700;
+  --ux4g-font-weight-extrabold: 800;
+}

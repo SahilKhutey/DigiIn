@@ -1,0 +1,11 @@
+{
+  "name": "digiin-frontend-phase-2",
+  "version": "0.2.0",
+  "private": true,
+  "description": "DigiIn Frontend Phase 2 — UX4G Design System and Modular Component Architecture.",
+  "scripts": {
+    "dev": "python3 -m http.server 4174",
+    "start": "python3 -m http.server 4174",
+    "preview": "python3 -m http.server 4174"
+  }
+}
