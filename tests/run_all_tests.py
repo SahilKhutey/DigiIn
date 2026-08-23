@@ -72,6 +72,7 @@ def main():
         ("Trust Network Expansion & Ecosystem Operations (Phase 27)", ["python", "tests/test_phase27_ecosystem_expansion.py"], root_dir),
         ("Ecosystem Adoption & Institutional Scale (Phase 28)", ["python", "tests/test_phase28_institutional_scale.py"], root_dir),
         ("National-Scale Operations & Infrastructure (Phase 29)", ["python", "tests/test_phase29_national_scale.py"], root_dir),
+        ("Long-Term Digital Trust Infrastructure (Phase 30)", ["python", "tests/test_phase30_long_term_infrastructure.py"], root_dir),
         ("Offline CLI Proof Verifier Demo", ["python", "tests/cli_proof_verifier.py", "--demo"], root_dir),
         ("External Integration & Webhook Gateway E2E", ["python", "tests/test_external_integration_e2e.py"], root_dir),
     ]

@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase30",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 30 — Long-Term Digital Trust Infrastructure.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4201",
+    "test": "node --test"
+  }
+}
