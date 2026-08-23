@@ -319,6 +319,12 @@ class DocumentVersionRecord(BaseModel):
     versionNumber: int = Field(ge=1)
     documentId: str
     parentVersionId: str | None = None
+    objectId: str | None = None
+    sha256: str | None = None
+    contentType: str | None = None
+    sizeBytes: int | None = None
+    ownerAccountId: str | None = None
+    processingStatus: str | None = "completed"
     status: DocumentVersionStatus = DocumentVersionStatus.ACTIVE
     metadata: dict[str, Any] = Field(default_factory=dict)
     changeSummary: str
@@ -676,7 +682,40 @@ class AuthTokenPairResponse(BaseModel):
     tokenType: str = "Bearer"
     expiresIn: int = 900
     subjectId: str
+    accountId: str | None = None
     role: str = "CITIZEN"
+
+
+class DocumentUploadJobResponse(BaseModel):
+    document_id: str
+    version_id: str
+    processing_job_id: str
+    status: str = "queued"
+
+
+class ProcessingJobRecord(BaseModel):
+    jobId: str
+    documentId: str
+    versionId: str
+    ownerAccountId: str
+    status: str = "queued"
+    malwareScan: dict[str, Any] | None = None
+    ocrResult: dict[str, Any] | None = None
+    claims: list[dict[str, Any]] = Field(default_factory=list)
+    errorMessage: str | None = None
+    createdAt: datetime
+    completedAt: datetime | None = None
+
+
+class DocumentClaimRecord(BaseModel):
+    claimId: str
+    documentId: str
+    versionId: str
+    claimKey: str
+    claimValue: str
+    confidence: float = 1.0
+    createdAt: datetime
+
 
 
 

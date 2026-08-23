@@ -9,21 +9,52 @@ from sqlalchemy import desc, select
 from sqlalchemy.orm import Session
 
 from app.db.models import (
+    AuthChallengeModel,
     CorrectionRequestModel,
+    CredentialModel,
+    DigiInAccountModel,
+    DocumentClaimModel,
     DocumentModel,
     DocumentVersionModel,
     DomainEventModel,
+    GatewayConsentModel,
+    GatewayVerificationRequestModel,
+    IdentityClaimModel,
+    ProcessingJobModel,
+    SecurityEventModel,
+    SessionModel,
     VerificationCaseModel,
     WalletDocumentModel,
 )
 from app.db.session import get_db_session
+from app.domain.auth_models import (
+    AuthChallengeRecord,
+    DigiInAccountRecord,
+    IdentityClaimRecord,
+    SecurityEventRecord,
+    SessionRecord,
+)
+from app.domain.credential_models import (
+    Credential,
+    CredentialStatus,
+    VerifiedClaim,
+)
+from app.domain.gateway_models import (
+    Consent,
+    RequestStatus,
+)
+from app.domain.gateway_models import (
+    VerificationRequest as GatewayVerificationRequest,
+)
 from app.domain.models import (
     CorrectionRequestRecord,
     CorrectionStatus,
+    DocumentClaimRecord,
     DocumentVersionRecord,
     DocumentVersionStatus,
     DomainEvent,
     GovernmentReviewDecision,
+    ProcessingJobRecord,
     UploadedDocument,
     VerificationCase,
     VerifierQueueId,
@@ -115,8 +146,14 @@ def save_document_version(v: DocumentVersionRecord, session: Session | None = No
             db_v = DocumentVersionModel(
                 version_id=v.versionId,
                 document_id=v.documentId,
+                owner_account_id=v.ownerAccountId,
                 version_number=v.versionNumber,
                 parent_version_id=v.parentVersionId,
+                object_id=v.objectId,
+                sha256=v.sha256,
+                content_type=v.contentType,
+                size_bytes=v.sizeBytes,
+                processing_status=v.processingStatus,
                 status=v.status,
                 metadata_json=json.dumps(v.metadata),
                 change_summary=v.changeSummary,
@@ -129,6 +166,12 @@ def save_document_version(v: DocumentVersionRecord, session: Session | None = No
         else:
             db_v.status = v.status
             db_v.superseded_at = v.supersededAt
+            if v.processingStatus:
+                db_v.processing_status = v.processingStatus
+            if v.objectId:
+                db_v.object_id = v.objectId
+            if v.sha256:
+                db_v.sha256 = v.sha256
         return v
 
     if session:
@@ -149,10 +192,16 @@ def get_document_versions(document_id: str) -> list[DocumentVersionRecord]:
             DocumentVersionRecord(
                 versionId=r.version_id,
                 documentId=r.document_id,
+                ownerAccountId=r.owner_account_id,
                 versionNumber=r.version_number,
                 parentVersionId=r.parent_version_id,
+                objectId=r.object_id,
+                sha256=r.sha256,
+                contentType=r.content_type,
+                sizeBytes=r.size_bytes,
+                processingStatus=r.processing_status or "completed",
                 status=DocumentVersionStatus(r.status),
-                metadata=json.loads(r.metadata_json),
+                metadata=json.loads(r.metadata_json) if r.metadata_json else {},
                 changeSummary=r.change_summary,
                 authority=r.authority,
                 evidenceReference=r.evidence_reference,
@@ -171,15 +220,123 @@ def list_all_versions() -> list[DocumentVersionRecord]:
             DocumentVersionRecord(
                 versionId=r.version_id,
                 documentId=r.document_id,
+                ownerAccountId=r.owner_account_id,
                 versionNumber=r.version_number,
                 parentVersionId=r.parent_version_id,
+                objectId=r.object_id,
+                sha256=r.sha256,
+                contentType=r.content_type,
+                sizeBytes=r.size_bytes,
+                processingStatus=r.processing_status or "completed",
                 status=DocumentVersionStatus(r.status),
-                metadata=json.loads(r.metadata_json),
+                metadata=json.loads(r.metadata_json) if r.metadata_json else {},
                 changeSummary=r.change_summary,
                 authority=r.authority,
                 evidenceReference=r.evidence_reference,
                 createdAt=r.created_at,
                 supersededAt=r.superseded_at,
+            )
+            for r in rows
+        ]
+
+
+# --- Processing Jobs & Claims ---
+
+def save_processing_job(job: ProcessingJobRecord, session: Session | None = None) -> ProcessingJobRecord:
+    def _op(s: Session) -> ProcessingJobRecord:
+        db_job = s.get(ProcessingJobModel, job.jobId)
+        if db_job is None:
+            db_job = ProcessingJobModel(
+                job_id=job.jobId,
+                document_id=job.documentId,
+                version_id=job.versionId,
+                owner_account_id=job.ownerAccountId,
+                status=job.status,
+                malware_scan_json=json.dumps(job.malwareScan) if job.malwareScan else None,
+                ocr_result_json=json.dumps(job.ocrResult) if job.ocrResult else None,
+                claims_json=json.dumps(job.claims) if job.claims else None,
+                error_message=job.errorMessage,
+                created_at=job.createdAt,
+                completed_at=job.completedAt,
+            )
+            s.add(db_job)
+        else:
+            db_job.status = job.status
+            db_job.malware_scan_json = json.dumps(job.malwareScan) if job.malwareScan else None
+            db_job.ocr_result_json = json.dumps(job.ocrResult) if job.ocrResult else None
+            db_job.claims_json = json.dumps(job.claims) if job.claims else None
+            db_job.error_message = job.errorMessage
+            db_job.completed_at = job.completedAt
+        return job
+
+    if session:
+        return _op(session)
+    with get_db_session() as s:
+        return _op(s)
+
+
+def get_processing_job(job_id: str) -> ProcessingJobRecord | None:
+    with get_db_session() as s:
+        row = s.get(ProcessingJobModel, job_id)
+        if row is None:
+            return None
+        return ProcessingJobRecord(
+            jobId=row.job_id,
+            documentId=row.document_id,
+            versionId=row.version_id,
+            ownerAccountId=row.owner_account_id,
+            status=row.status,
+            malwareScan=json.loads(row.malware_scan_json) if row.malware_scan_json else None,
+            ocrResult=json.loads(row.ocr_result_json) if row.ocr_result_json else None,
+            claims=json.loads(row.claims_json) if row.claims_json else [],
+            errorMessage=row.error_message,
+            createdAt=row.created_at,
+            completedAt=row.completed_at,
+        )
+
+
+def save_document_claim(claim: DocumentClaimRecord, session: Session | None = None) -> DocumentClaimRecord:
+    def _op(s: Session) -> DocumentClaimRecord:
+        db_c = s.get(DocumentClaimModel, claim.claimId)
+        if db_c is None:
+            db_c = DocumentClaimModel(
+                claim_id=claim.claimId,
+                document_id=claim.documentId,
+                version_id=claim.versionId,
+                claim_key=claim.claimKey,
+                claim_value=claim.claimValue,
+                confidence=claim.confidence,
+                created_at=claim.createdAt,
+            )
+            s.add(db_c)
+        else:
+            db_c.claim_value = claim.claimValue
+            db_c.confidence = claim.confidence
+        return claim
+
+    if session:
+        return _op(session)
+    with get_db_session() as s:
+        return _op(s)
+
+
+def get_document_claims(document_id: str) -> list[DocumentClaimRecord]:
+    with get_db_session() as s:
+        stmt = (
+            select(DocumentClaimModel)
+            .where(DocumentClaimModel.document_id == document_id)
+            .order_by(DocumentClaimModel.created_at)
+        )
+        rows = s.scalars(stmt).all()
+        return [
+            DocumentClaimRecord(
+                claimId=r.claim_id,
+                documentId=r.document_id,
+                versionId=r.version_id,
+                claimKey=r.claim_key,
+                claimValue=r.claim_value,
+                confidence=r.confidence,
+                createdAt=r.created_at,
             )
             for r in rows
         ]
@@ -617,4 +774,544 @@ def update_document_verification_level(
             w.verification_level = level
             w.authenticity = authenticity
             w.verification_method = method
+
+
+# --- Phase 3: Identity & Authentication Repository ---
+
+def save_account(acc: DigiInAccountRecord, session: Session | None = None) -> DigiInAccountRecord:
+    now = datetime.now(UTC)
+
+    def _op(s: Session) -> DigiInAccountRecord:
+        db_acc = s.get(DigiInAccountModel, acc.id)
+        if db_acc is None:
+            db_acc = DigiInAccountModel(
+                id=acc.id,
+                account_id=acc.account_id,
+                phone_number=acc.phone_number,
+                role=acc.role,
+                status=acc.status,
+                created_at=acc.created_at or now,
+                updated_at=acc.updated_at or now,
+            )
+            s.add(db_acc)
+        else:
+            db_acc.status = acc.status
+            db_acc.role = acc.role
+            db_acc.updated_at = now
+        return acc
+
+    if session:
+        return _op(session)
+    with get_db_session() as s:
+        return _op(s)
+
+
+def get_account_by_id(account_id: str) -> DigiInAccountRecord | None:
+    with get_db_session() as s:
+        stmt = select(DigiInAccountModel).where(
+            (DigiInAccountModel.account_id == account_id) | (DigiInAccountModel.id == account_id)
+        )
+        row = s.scalars(stmt).first()
+        if row is None:
+            return None
+        return DigiInAccountRecord(
+            id=row.id,
+            account_id=row.account_id,
+            phone_number=row.phone_number,
+            role=row.role,
+            status=row.status,
+            created_at=row.created_at,
+            updated_at=row.updated_at,
+        )
+
+
+def get_account_by_phone(phone_number: str) -> DigiInAccountRecord | None:
+    clean_phone = phone_number.strip()
+    with get_db_session() as s:
+        stmt = select(DigiInAccountModel).where(DigiInAccountModel.phone_number == clean_phone)
+        row = s.scalars(stmt).first()
+        if row is None:
+            return None
+        return DigiInAccountRecord(
+            id=row.id,
+            account_id=row.account_id,
+            phone_number=row.phone_number,
+            role=row.role,
+            status=row.status,
+            created_at=row.created_at,
+            updated_at=row.updated_at,
+        )
+
+
+def save_identity_claim(claim: IdentityClaimRecord, session: Session | None = None) -> IdentityClaimRecord:
+    now = datetime.now(UTC)
+
+    def _op(s: Session) -> IdentityClaimRecord:
+        db_c = s.get(IdentityClaimModel, claim.id)
+        if db_c is None:
+            db_c = IdentityClaimModel(
+                id=claim.id,
+                account_id=claim.account_id,
+                claim_type=claim.claim_type,
+                value_reference=claim.value_reference,
+                verification_level=claim.verification_level,
+                source=claim.source,
+                verified_at=claim.verified_at or now,
+            )
+            s.add(db_c)
+        else:
+            db_c.verification_level = claim.verification_level
+            db_c.verified_at = claim.verified_at or now
+        return claim
+
+    if session:
+        return _op(session)
+    with get_db_session() as s:
+        return _op(s)
+
+
+def get_identity_claims(account_id: str) -> list[IdentityClaimRecord]:
+    with get_db_session() as s:
+        stmt = (
+            select(IdentityClaimModel)
+            .where(IdentityClaimModel.account_id == account_id)
+            .order_by(IdentityClaimModel.verified_at)
+        )
+        rows = s.scalars(stmt).all()
+        return [
+            IdentityClaimRecord(
+                id=r.id,
+                account_id=r.account_id,
+                claim_type=r.claim_type,
+                value_reference=r.value_reference,
+                verification_level=r.verification_level,
+                source=r.source,
+                verified_at=r.verified_at,
+            )
+            for r in rows
+        ]
+
+
+def save_auth_challenge(ch: AuthChallengeRecord, session: Session | None = None) -> AuthChallengeRecord:
+    def _op(s: Session) -> AuthChallengeRecord:
+        db_ch = s.get(AuthChallengeModel, ch.challenge_id)
+        if db_ch is None:
+            db_ch = AuthChallengeModel(
+                id=ch.challenge_id,
+                account_id=ch.account_id,
+                channel=ch.channel,
+                challenge_hash=ch.challenge_hash,
+                expires_at=ch.expires_at,
+                attempts=ch.attempts,
+                consumed_at=ch.consumed_at,
+            )
+            s.add(db_ch)
+        else:
+            db_ch.attempts = ch.attempts
+            db_ch.consumed_at = ch.consumed_at
+        return ch
+
+    if session:
+        return _op(session)
+    with get_db_session() as s:
+        return _op(s)
+
+
+def get_auth_challenge(challenge_id: str) -> AuthChallengeRecord | None:
+    with get_db_session() as s:
+        row = s.get(AuthChallengeModel, challenge_id)
+        if row is None:
+            return None
+        return AuthChallengeRecord(
+            challenge_id=row.id,
+            account_id=row.account_id,
+            channel=row.channel,
+            challenge_hash=row.challenge_hash,
+            expires_at=row.expires_at,
+            attempts=row.attempts,
+            consumed_at=row.consumed_at,
+        )
+
+
+def save_session(sess: SessionRecord, session: Session | None = None) -> SessionRecord:
+    now = datetime.now(UTC)
+
+    def _op(s: Session) -> SessionRecord:
+        db_s = s.get(SessionModel, sess.session_id)
+        if db_s is None:
+            db_s = SessionModel(
+                id=sess.session_id,
+                account_id=sess.account_id,
+                token_family=sess.token_family,
+                refresh_token_hash=sess.refresh_token_hash,
+                created_at=sess.created_at or now,
+                expires_at=sess.expires_at,
+                revoked_at=sess.revoked_at,
+                last_used_at=sess.last_used_at or now,
+            )
+            s.add(db_s)
+        else:
+            db_s.refresh_token_hash = sess.refresh_token_hash
+            db_s.revoked_at = sess.revoked_at
+            db_s.last_used_at = sess.last_used_at or now
+        return sess
+
+    if session:
+        return _op(session)
+    with get_db_session() as s:
+        return _op(s)
+
+
+def get_session(session_id: str) -> SessionRecord | None:
+    with get_db_session() as s:
+        row = s.get(SessionModel, session_id)
+        if row is None:
+            return None
+        return SessionRecord(
+            session_id=row.id,
+            account_id=row.account_id,
+            token_family=row.token_family,
+            refresh_token_hash=row.refresh_token_hash,
+            created_at=row.created_at,
+            expires_at=row.expires_at,
+            revoked_at=row.revoked_at,
+            last_used_at=row.last_used_at,
+        )
+
+
+def get_sessions_by_family(token_family: str) -> list[SessionRecord]:
+    with get_db_session() as s:
+        stmt = (
+            select(SessionModel)
+            .where(SessionModel.token_family == token_family)
+            .order_by(SessionModel.created_at)
+        )
+        rows = s.scalars(stmt).all()
+        return [
+            SessionRecord(
+                session_id=r.id,
+                account_id=r.account_id,
+                token_family=r.token_family,
+                refresh_token_hash=r.refresh_token_hash,
+                created_at=r.created_at,
+                expires_at=r.expires_at,
+                revoked_at=r.revoked_at,
+                last_used_at=r.last_used_at,
+            )
+            for r in rows
+        ]
+
+
+def revoke_session(session_id: str) -> None:
+    now = datetime.now(UTC)
+    with get_db_session() as s:
+        row = s.get(SessionModel, session_id)
+        if row and not row.revoked_at:
+            row.revoked_at = now
+
+
+def revoke_token_family(token_family: str) -> None:
+    now = datetime.now(UTC)
+    with get_db_session() as s:
+        stmt = select(SessionModel).where(
+            (SessionModel.token_family == token_family) & (SessionModel.revoked_at.is_(None))
+        )
+        rows = s.scalars(stmt).all()
+        for r in rows:
+            r.revoked_at = now
+
+
+def save_security_event(evt: SecurityEventRecord, session: Session | None = None) -> SecurityEventRecord:
+    def _op(s: Session) -> SecurityEventRecord:
+        db_evt = SecurityEventModel(
+            id=evt.id,
+            account_id=evt.account_id,
+            event_type=evt.event_type,
+            timestamp=evt.timestamp,
+            request_id=evt.request_id,
+            metadata_json=json.dumps(evt.metadata or {}),
+        )
+        s.add(db_evt)
+        return evt
+
+    if session:
+        return _op(session)
+    with get_db_session() as s:
+        return _op(s)
+
+
+def list_security_events(account_id: str | None = None, limit: int = 50) -> list[SecurityEventRecord]:
+    with get_db_session() as s:
+        stmt = select(SecurityEventModel).order_by(desc(SecurityEventModel.timestamp))
+        if account_id:
+            stmt = stmt.where(SecurityEventModel.account_id == account_id)
+        rows = s.scalars(stmt.limit(limit)).all()
+        return [
+            SecurityEventRecord(
+                id=r.id,
+                account_id=r.account_id,
+                event_type=r.event_type,
+                timestamp=r.timestamp,
+                request_id=r.request_id,
+                metadata=json.loads(r.metadata_json) if r.metadata_json else {},
+            )
+            for r in rows
+        ]
+
+
+# --- Phase 4: Credential Engine Repository ---
+
+def save_credential(c: Credential, session: Session | None = None) -> Credential:
+    claims_data = [
+        {
+            "claim_type": cl.claim_type,
+            "value": cl.value,
+            "source": cl.source,
+            "verification_level": cl.verification_level,
+            "verified_at": cl.verified_at.isoformat() if cl.verified_at else None,
+        }
+        for cl in c.claims
+    ]
+
+    def _op(s: Session) -> Credential:
+        db_c = s.get(CredentialModel, c.credential_id)
+        if db_c is None:
+            db_c = CredentialModel(
+                credential_id=c.credential_id,
+                account_id=c.account_id,
+                credential_type=c.credential_type,
+                issuer=c.issuer,
+                claims_json=json.dumps(claims_data),
+                issued_at=c.issued_at,
+                expires_at=c.expires_at,
+                status=c.status.value if hasattr(c.status, "value") else str(c.status),
+                verification_case_id=c.verification_case_id,
+            )
+            s.add(db_c)
+        else:
+            db_c.status = c.status.value if hasattr(c.status, "value") else str(c.status)
+            db_c.expires_at = c.expires_at
+        return c
+
+    if session:
+        return _op(session)
+    with get_db_session() as s:
+        return _op(s)
+
+
+def get_credential_by_id(credential_id: str) -> Credential | None:
+    with get_db_session() as s:
+        row = s.get(CredentialModel, credential_id)
+        if row is None:
+            return None
+        raw_claims = json.loads(row.claims_json) if row.claims_json else []
+        claims = tuple(
+            VerifiedClaim(
+                claim_type=item["claim_type"],
+                value=item["value"],
+                source=item["source"],
+                verification_level=item.get("verification_level", "verified"),
+                verified_at=datetime.fromisoformat(item["verified_at"]) if item.get("verified_at") else row.issued_at,
+            )
+            for item in raw_claims
+        )
+        return Credential(
+            credential_id=row.credential_id,
+            account_id=row.account_id,
+            credential_type=row.credential_type,
+            issuer=row.issuer,
+            claims=claims,
+            issued_at=row.issued_at,
+            expires_at=row.expires_at,
+            status=CredentialStatus(row.status),
+            verification_case_id=row.verification_case_id,
+        )
+
+
+def list_credentials_for_account(account_id: str) -> list[Credential]:
+    with get_db_session() as s:
+        stmt = (
+            select(CredentialModel)
+            .where(CredentialModel.account_id == account_id)
+            .order_by(desc(CredentialModel.issued_at))
+        )
+        rows = s.scalars(stmt).all()
+        result: list[Credential] = []
+        for row in rows:
+            raw_claims = json.loads(row.claims_json) if row.claims_json else []
+            claims = tuple(
+                VerifiedClaim(
+                    claim_type=item["claim_type"],
+                    value=item["value"],
+                    source=item["source"],
+                    verification_level=item.get("verification_level", "verified"),
+                    verified_at=datetime.fromisoformat(item["verified_at"]) if item.get("verified_at") else row.issued_at,
+                )
+                for item in raw_claims
+            )
+            result.append(
+                Credential(
+                    credential_id=row.credential_id,
+                    account_id=row.account_id,
+                    credential_type=row.credential_type,
+                    issuer=row.issuer,
+                    claims=claims,
+                    issued_at=row.issued_at,
+                    expires_at=row.expires_at,
+                    status=CredentialStatus(row.status),
+                    verification_case_id=row.verification_case_id,
+                )
+            )
+        return result
+
+
+def update_credential_status(credential_id: str, status: CredentialStatus) -> None:
+    with get_db_session() as s:
+        row = s.get(CredentialModel, credential_id)
+        if row:
+            row.status = status.value if hasattr(status, "value") else str(status)
+
+
+def revoke_credential(credential_id: str) -> None:
+    update_credential_status(credential_id, CredentialStatus.REVOKED)
+
+
+# --- Phase 5: Verification Gateway Repository ---
+
+def save_gateway_request(
+    req: GatewayVerificationRequest,
+    session: Session | None = None,
+) -> GatewayVerificationRequest:
+    now = datetime.now(UTC)
+
+    def _op(s: Session) -> GatewayVerificationRequest:
+        db_req = s.get(GatewayVerificationRequestModel, req.request_id)
+        if db_req is None:
+            db_req = GatewayVerificationRequestModel(
+                request_id=req.request_id,
+                verifier_id=req.verifier_id,
+                account_id=req.account_id,
+                purpose=req.purpose,
+                requested_claim_types_json=json.dumps(list(req.requested_claim_types)),
+                status=req.status.value if hasattr(req.status, "value") else str(req.status),
+                expires_at=req.expires_at,
+                created_at=req.created_at or now,
+            )
+            s.add(db_req)
+        else:
+            db_req.status = req.status.value if hasattr(req.status, "value") else str(req.status)
+        return req
+
+    if session:
+        return _op(session)
+    with get_db_session() as s:
+        return _op(s)
+
+
+def get_gateway_request(request_id: str) -> GatewayVerificationRequest | None:
+    with get_db_session() as s:
+        row = s.get(GatewayVerificationRequestModel, request_id)
+        if row is None:
+            return None
+        claims = tuple(json.loads(row.requested_claim_types_json)) if row.requested_claim_types_json else ()
+        return GatewayVerificationRequest(
+            request_id=row.request_id,
+            verifier_id=row.verifier_id,
+            account_id=row.account_id,
+            purpose=row.purpose,
+            requested_claim_types=claims,
+            status=RequestStatus(row.status),
+            expires_at=row.expires_at,
+            created_at=row.created_at,
+        )
+
+
+def list_gateway_requests_for_account(account_id: str) -> list[GatewayVerificationRequest]:
+    with get_db_session() as s:
+        stmt = (
+            select(GatewayVerificationRequestModel)
+            .where(GatewayVerificationRequestModel.account_id == account_id)
+            .order_by(desc(GatewayVerificationRequestModel.created_at))
+        )
+        rows = s.scalars(stmt).all()
+        return [
+            GatewayVerificationRequest(
+                request_id=row.request_id,
+                verifier_id=row.verifier_id,
+                account_id=row.account_id,
+                purpose=row.purpose,
+                requested_claim_types=tuple(json.loads(row.requested_claim_types_json)) if row.requested_claim_types_json else (),
+                status=RequestStatus(row.status),
+                expires_at=row.expires_at,
+                created_at=row.created_at,
+            )
+            for row in rows
+        ]
+
+
+def update_gateway_request_status(request_id: str, status: RequestStatus) -> None:
+    with get_db_session() as s:
+        row = s.get(GatewayVerificationRequestModel, request_id)
+        if row:
+            row.status = status.value if hasattr(status, "value") else str(status)
+
+
+def save_gateway_consent(c: Consent, session: Session | None = None) -> Consent:
+    def _op(s: Session) -> Consent:
+        db_c = s.get(GatewayConsentModel, c.consent_id)
+        if db_c is None:
+            db_c = GatewayConsentModel(
+                consent_id=c.consent_id,
+                request_id=c.request_id,
+                account_id=c.account_id,
+                decision=c.decision,
+                approved_claim_types_json=json.dumps(list(c.approved_claim_types)),
+                granted_at=c.granted_at,
+                expires_at=c.expires_at,
+                revoked_at=c.revoked_at,
+            )
+            s.add(db_c)
+        else:
+            db_c.decision = c.decision
+            db_c.approved_claim_types_json = json.dumps(list(c.approved_claim_types))
+            db_c.revoked_at = c.revoked_at
+        return c
+
+    if session:
+        return _op(session)
+    with get_db_session() as s:
+        return _op(s)
+
+
+def get_gateway_consent_by_request(request_id: str) -> Consent | None:
+    with get_db_session() as s:
+        stmt = select(GatewayConsentModel).where(GatewayConsentModel.request_id == request_id)
+        row = s.scalars(stmt).first()
+        if row is None:
+            return None
+        claims = tuple(json.loads(row.approved_claim_types_json)) if row.approved_claim_types_json else ()
+        return Consent(
+            consent_id=row.consent_id,
+            request_id=row.request_id,
+            account_id=row.account_id,
+            decision=row.decision,
+            approved_claim_types=claims,
+            granted_at=row.granted_at,
+            expires_at=row.expires_at,
+            revoked_at=row.revoked_at,
+        )
+
+
+def revoke_gateway_consent(request_id: str) -> None:
+    now = datetime.now(UTC)
+    with get_db_session() as s:
+        stmt = select(GatewayConsentModel).where(GatewayConsentModel.request_id == request_id)
+        row = s.scalars(stmt).first()
+        if row and row.revoked_at is None:
+            row.revoked_at = now
+        req_row = s.get(GatewayVerificationRequestModel, request_id)
+        if req_row:
+            req_row.status = RequestStatus.REVOKED.value
+
+
 

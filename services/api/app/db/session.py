@@ -41,9 +41,30 @@ def get_db_session() -> Generator[Session, None, None]:
         session.close()
 
 
+def _run_migrations(conn) -> None:
+    columns_to_ensure = [
+        ("documents", "owner_account_id", "VARCHAR(80)"),
+        ("document_versions", "owner_account_id", "VARCHAR(80)"),
+        ("document_versions", "object_id", "VARCHAR(80)"),
+        ("document_versions", "sha256", "VARCHAR(64)"),
+        ("document_versions", "content_type", "VARCHAR(80)"),
+        ("document_versions", "size_bytes", "INTEGER"),
+        ("document_versions", "processing_status", "VARCHAR(40)"),
+    ]
+    for table, col, col_type in columns_to_ensure:
+        try:
+            conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"))
+            conn.commit()
+        except Exception:
+            pass
+
+
 def init_db() -> None:
     """Initialize all database tables and seed initial fixtures if empty."""
     Base.metadata.create_all(bind=engine)
+    with engine.connect() as conn:
+        _run_migrations(conn)
+
     from app.db.repository import seed_default_data_if_empty
 
     seed_default_data_if_empty()

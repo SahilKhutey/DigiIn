@@ -4,12 +4,24 @@ from __future__ import annotations
 
 import time
 import uuid
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Query, Request, Response
+from fastapi import (
+    BackgroundTasks,
+    FastAPI,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+    UploadFile,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
+import app.db.repository as repo
 from app.api.v1 import (
     auth as auth_router,
 )
@@ -25,7 +37,42 @@ from app.api.v1 import (
 from app.api.v1 import (
     proofs as proofs_router,
 )
+from app.crypto.proofs import (
+    Proof,
+    _b64,
+    generate_keypair,
+    sign_proof,
+    verify_proof,
+)
 from app.db.session import check_db_health, init_db
+from app.domain.credential_models import (
+    CredentialResponse,
+    IssueCredentialRequest,
+    RevokeCredentialRequest,
+    VerificationDecision,
+    VerificationStatus,
+    VerifiedClaim,
+    VerifiedClaimSchema,
+    VerifyCredentialRequest,
+    VerifyCredentialResponse,
+)
+from app.domain.gateway_models import (
+    Consent as GatewayConsent,
+)
+from app.domain.gateway_models import (
+    CreateGatewayVerificationRequest,
+    GatewayConsentApproveRequest,
+    GatewayConsentResponse,
+    GatewayEvaluateResponse,
+    GatewayVerificationRequestResponse,
+    ProofSchema,
+    RequestStatus,
+    VerifyProofRequest,
+    VerifyProofResponse,
+)
+from app.domain.gateway_models import (
+    VerificationRequest as GatewayVerificationRequest,
+)
 from app.domain.models import (
     AuthSendOtpRequest,
     AuthSendOtpResponse,
@@ -37,7 +84,9 @@ from app.domain.models import (
     CorrectionRequestRecord,
     CorrectionReviewDecision,
     DirectUploadPayload,
+    DocumentClaimRecord,
     DocumentOption,
+    DocumentUploadJobResponse,
     DocumentUploadRequest,
     DocumentVersionRecord,
     DomainEvent,
@@ -53,6 +102,7 @@ from app.domain.models import (
     JwksResponse,
     PipelineUploadResponse,
     PlatformSnapshot,
+    ProcessingJobRecord,
     ProofTokenIntrospection,
     ProofTokenIntrospectionRequest,
     RevokeConsentPayload,
@@ -71,7 +121,10 @@ from app.domain.models import (
     WalletDocument,
 )
 from app.services.catalogue import get_document, search_documents
+from app.services.credential_issuer import CredentialIssuanceError, CredentialIssuer
+from app.services.credential_verifier import CredentialVerifier
 from app.services.crypto import get_public_jwks
+from app.services.disclosure_policy import DisclosurePolicyError
 from app.services.ekyc import (
     MOCK_UIDAI_IDENTITIES,
     calculate_demographics_match,
@@ -110,6 +163,7 @@ from app.services.verification import (
     result_for_request,
     revoke_verification_consent,
 )
+from app.services.verification_gateway import VerificationGateway
 
 # Initialize database tables and initial seed fixtures on module load / startup
 init_db()
@@ -195,16 +249,22 @@ def send_auth_otp(payload: AuthSendOtpRequest) -> AuthSendOtpResponse:
 
 @app.post("/api/v1/auth/otp/verify", response_model=AuthTokenPairResponse)
 def verify_auth_otp(payload: AuthVerifyOtpRequest) -> AuthTokenPairResponse:
-    """Verify OTP challenge and return sovereign session tokens."""
-    if payload.otpCode not in {"123456", "000000"}:
-        raise HTTPException(status_code=400, detail="Invalid OTP code. Please enter 123456.")
+    """Verify OTP challenge and return sovereign session tokens with opaque DigiIn Account ID."""
+    from app.integrations.auth import get_auth_provider
+    provider = get_auth_provider()
+    try:
+        subject = provider.verify_otp(payload.challengeId, payload.otpCode)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     return AuthTokenPairResponse(
         accessToken="eyJhbGciOiJFZERTQSI...demo_access_token",
         refreshToken="rft_demo_rotatable_token_9f8a",
         tokenType="Bearer",
         expiresIn=900,
-        subjectId="subj_demo_5c7b90",
-        role="CITIZEN",
+        subjectId=subject.subject_id,
+        accountId=subject.account_id,
+        role=subject.role,
     )
 
 
@@ -432,6 +492,56 @@ def execute_upload_pipeline(payload: DirectUploadPayload) -> PipelineUploadRespo
     return upload_and_classify_pipeline(payload)
 
 
+@app.post("/api/v1/documents/ingest", response_model=DocumentUploadJobResponse)
+async def ingest_document_stream(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    document_type: str = Form(default="CLASS_XII"),
+    owner_account_id: str = Form(default="DIN-DEMO-0000-0001"),
+) -> DocumentUploadJobResponse:
+    """Phase 2 multipart document ingestion with streaming SHA-256 and async job queue."""
+    from app.services.document_pipeline import execute_processing_job, ingest_document
+    try:
+        res = ingest_document(
+            stream=file.file,
+            filename=file.filename or "document.pdf",
+            content_type=file.content_type or "application/pdf",
+            owner_account_id=owner_account_id,
+            document_type_hint=document_type,
+        )
+        background_tasks.add_task(execute_processing_job, res.processing_job_id)
+        return res
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/api/v1/documents/jobs/{job_id}", response_model=ProcessingJobRecord)
+def get_job_status(job_id: str) -> ProcessingJobRecord:
+    """Retrieve async document processing job status, scan details, and OCR claims."""
+    from app.db.repository import get_processing_job
+    job = get_processing_job(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Processing job not found")
+    return job
+
+
+@app.post("/api/v1/documents/jobs/{job_id}/process", response_model=ProcessingJobRecord)
+def process_job_synchronously(job_id: str) -> ProcessingJobRecord:
+    """Synchronously execute document processing pipeline for testing and validation."""
+    from app.services.document_pipeline import execute_processing_job
+    try:
+        return execute_processing_job(job_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.get("/api/v1/documents/{document_id}/claims", response_model=list[DocumentClaimRecord])
+def get_document_claims_endpoint(document_id: str) -> list[DocumentClaimRecord]:
+    """Retrieve all structured OCR claims extracted for a persistent document."""
+    from app.db.repository import get_document_claims
+    return get_document_claims(document_id)
+
+
 
 @app.post("/api/v1/documents/{document_id}/classify", response_model=UploadedDocument)
 def classify_uploaded_document(document_id: str) -> UploadedDocument:
@@ -583,6 +693,374 @@ def ekyc_match_demographics(payload: EkycMatchDemographicsRequest) -> EkycMatchR
         claimed_state=payload.claimedState,
         official_state=identity.get("state"),
     )
+
+
+# --- Phase 4: Credential & Verification Engine Endpoints ---
+
+@app.post("/api/v1/credentials/issue", response_model=CredentialResponse)
+def issue_credential(payload: IssueCredentialRequest) -> CredentialResponse:
+    """Issue a durable, sovereign DigiIn credential from an approved verification case."""
+    decision = VerificationDecision(
+        case_id=payload.case_id,
+        account_id=payload.account_id,
+        status=VerificationStatus.APPROVED,
+        decided_by="officer_authorized",
+        decided_at=datetime.now(UTC),
+    )
+    claims = tuple(
+        VerifiedClaim(
+            claim_type=c.claim_type,
+            value=c.value,
+            source=c.source,
+            verification_level=c.verification_level,
+            verified_at=c.verified_at or datetime.now(UTC),
+        )
+        for c in payload.claims
+    )
+    try:
+        issuer = CredentialIssuer()
+        cred = issuer.issue(
+            decision=decision,
+            credential_type=payload.credential_type,
+            issuer=payload.issuer,
+            claims=claims,
+            expires_at=payload.expires_at,
+        )
+        repo.save_credential(cred)
+        return CredentialResponse(
+            credential_id=cred.credential_id,
+            account_id=cred.account_id,
+            credential_type=cred.credential_type,
+            issuer=cred.issuer,
+            claims=[
+                VerifiedClaimSchema(
+                    claim_type=cl.claim_type,
+                    value=cl.value,
+                    source=cl.source,
+                    verification_level=cl.verification_level,
+                    verified_at=cl.verified_at,
+                )
+                for cl in cred.claims
+            ],
+            issued_at=cred.issued_at,
+            expires_at=cred.expires_at,
+            status=cred.status.value,
+            verification_case_id=cred.verification_case_id,
+        )
+    except CredentialIssuanceError as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
+
+@app.get("/api/v1/credentials/{credential_id}", response_model=CredentialResponse)
+def get_credential(credential_id: str) -> CredentialResponse:
+    """Retrieve specific credential by CRD-... identifier."""
+    c = repo.get_credential_by_id(credential_id)
+    if not c:
+        raise HTTPException(status_code=404, detail="Credential not found")
+    return CredentialResponse(
+        credential_id=c.credential_id,
+        account_id=c.account_id,
+        credential_type=c.credential_type,
+        issuer=c.issuer,
+        claims=[
+            VerifiedClaimSchema(
+                claim_type=cl.claim_type,
+                value=cl.value,
+                source=cl.source,
+                verification_level=cl.verification_level,
+                verified_at=cl.verified_at,
+            )
+            for cl in c.claims
+        ],
+        issued_at=c.issued_at,
+        expires_at=c.expires_at,
+        status=c.status.value,
+        verification_case_id=c.verification_case_id,
+    )
+
+
+@app.post("/api/v1/credentials/{credential_id}/revoke")
+def revoke_credential_endpoint(credential_id: str, payload: RevokeCredentialRequest | None = None) -> dict[str, str]:
+    """Revoke an active credential."""
+    c = repo.get_credential_by_id(credential_id)
+    if not c:
+        raise HTTPException(status_code=404, detail="Credential not found")
+    repo.revoke_credential(credential_id)
+    return {"status": "revoked", "credential_id": credential_id}
+
+
+@app.post("/api/v1/credentials/verify", response_model=VerifyCredentialResponse)
+def verify_credential_endpoint(payload: VerifyCredentialRequest) -> VerifyCredentialResponse:
+    """Perform independent state and lifecycle verification of a DigiIn credential."""
+    c = repo.get_credential_by_id(payload.credential_id)
+    if not c:
+        return VerifyCredentialResponse(valid=False, reason="not_found")
+    verifier = CredentialVerifier()
+    res = verifier.verify(c)
+    return VerifyCredentialResponse(**res)
+
+
+# --- Phase 5: Verification Gateway Endpoints ---
+
+@app.post("/api/v1/gateway/requests", response_model=GatewayVerificationRequestResponse)
+def create_gateway_request_endpoint(payload: CreateGatewayVerificationRequest) -> GatewayVerificationRequestResponse:
+    """External verifier initiates a purpose-bound request against a DigiIn Account ID."""
+    now = datetime.now(UTC)
+    req_id = f"REQ-{uuid.uuid4().hex[:12]}"
+    exp = now + timedelta(minutes=payload.ttl_minutes)
+
+    req = GatewayVerificationRequest(
+        request_id=req_id,
+        verifier_id=payload.verifier_id,
+        account_id=payload.account_id,
+        purpose=payload.purpose,
+        requested_claim_types=tuple(payload.requested_claim_types),
+        status=RequestStatus.PENDING,
+        expires_at=exp,
+        created_at=now,
+    )
+    repo.save_gateway_request(req)
+    return GatewayVerificationRequestResponse(
+        request_id=req.request_id,
+        verifier_id=req.verifier_id,
+        account_id=req.account_id,
+        purpose=req.purpose,
+        requested_claim_types=list(req.requested_claim_types),
+        status=req.status.value,
+        created_at=req.created_at,
+        expires_at=req.expires_at,
+    )
+
+
+@app.get("/api/v1/gateway/requests/{request_id}", response_model=GatewayVerificationRequestResponse)
+def get_gateway_request_endpoint(request_id: str) -> GatewayVerificationRequestResponse:
+    """Retrieve details of a verification request for citizen approval or verifier status."""
+    req = repo.get_gateway_request(request_id)
+    if not req:
+        raise HTTPException(status_code=404, detail="Verification request not found")
+    return GatewayVerificationRequestResponse(
+        request_id=req.request_id,
+        verifier_id=req.verifier_id,
+        account_id=req.account_id,
+        purpose=req.purpose,
+        requested_claim_types=list(req.requested_claim_types),
+        status=req.status.value,
+        created_at=req.created_at,
+        expires_at=req.expires_at,
+    )
+
+
+def _to_utc(dt: datetime | None) -> datetime:
+    if dt is None:
+        return datetime.now(UTC)
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
+
+
+@app.post("/api/v1/gateway/requests/{request_id}/approve", response_model=GatewayConsentResponse)
+def approve_gateway_request_endpoint(
+    request_id: str,
+    payload: GatewayConsentApproveRequest,
+) -> GatewayConsentResponse:
+    """Citizen grants purpose-bound consent for a selective subset of requested claims."""
+    req = repo.get_gateway_request(request_id)
+    if not req:
+        raise HTTPException(status_code=404, detail="Verification request not found")
+    now = datetime.now(UTC)
+    if _to_utc(req.expires_at) <= now:
+        repo.update_gateway_request_status(request_id, RequestStatus.EXPIRED)
+        raise HTTPException(status_code=400, detail="Verification request has expired")
+
+    # Update request status to APPROVED
+    repo.update_gateway_request_status(request_id, RequestStatus.APPROVED)
+
+    consent = GatewayConsent(
+        consent_id=f"CON-{uuid.uuid4().hex[:12]}",
+        request_id=request_id,
+        account_id=req.account_id,
+        decision="approved",
+        approved_claim_types=tuple(payload.approved_claim_types),
+        granted_at=now,
+        expires_at=now + timedelta(minutes=payload.ttl_minutes),
+        revoked_at=None,
+    )
+    repo.save_gateway_consent(consent)
+
+    return GatewayConsentResponse(
+        consent_id=consent.consent_id,
+        request_id=consent.request_id,
+        account_id=consent.account_id,
+        decision=consent.decision,
+        approved_claim_types=list(consent.approved_claim_types),
+        granted_at=consent.granted_at,
+        expires_at=consent.expires_at,
+        revoked_at=consent.revoked_at,
+    )
+
+
+@app.post("/api/v1/gateway/requests/{request_id}/deny")
+def deny_gateway_request_endpoint(request_id: str) -> dict[str, str]:
+    """Citizen denies verification request."""
+    req = repo.get_gateway_request(request_id)
+    if not req:
+        raise HTTPException(status_code=404, detail="Verification request not found")
+    repo.update_gateway_request_status(request_id, RequestStatus.DENIED)
+    return {"status": "denied", "request_id": request_id}
+
+
+@app.post("/api/v1/gateway/requests/{request_id}/revoke")
+def revoke_gateway_request_endpoint(request_id: str) -> dict[str, str]:
+    """Citizen revokes prior consent granted for a verification request."""
+    req = repo.get_gateway_request(request_id)
+    if not req:
+        raise HTTPException(status_code=404, detail="Verification request not found")
+    repo.revoke_gateway_consent(request_id)
+    return {"status": "revoked", "request_id": request_id}
+
+
+# System-level gateway Ed25519 signing keypair
+GATEWAY_SIGNING_KEY, GATEWAY_PUBLIC_KEY = generate_keypair()
+GATEWAY_KEY_ID = "digiin-ed25519-key-2026"
+
+
+@app.post("/api/v1/gateway/requests/{request_id}/evaluate", response_model=GatewayEvaluateResponse)
+def evaluate_gateway_request_endpoint(request_id: str) -> GatewayEvaluateResponse:
+    """Verifier triggers evaluation of approved request against citizen's active credentials."""
+    req = repo.get_gateway_request(request_id)
+    if not req:
+        raise HTTPException(status_code=404, detail="Verification request not found")
+
+    consent = repo.get_gateway_consent_by_request(request_id)
+    if not consent:
+        return GatewayEvaluateResponse(
+            valid=False,
+            reason="consent_not_granted",
+            request_id=request_id,
+            purpose=req.purpose,
+        )
+
+    # Collect available verified claims from active credentials owned by the account
+    creds = repo.list_credentials_for_account(req.account_id)
+    active_creds = [c for c in creds if c.status.value == "active"]
+
+    available_claims: dict[str, str] = {}
+    for c in active_creds:
+        for cl in c.claims:
+            available_claims[cl.claim_type] = cl.value
+
+    # Also include identity claims
+    id_claims = repo.get_identity_claims(req.account_id)
+    for ic in id_claims:
+        available_claims[ic.claim_type] = ic.value_reference
+
+    gateway = VerificationGateway()
+    now = datetime.now(UTC)
+    try:
+        eval_result = gateway.evaluate(req, consent, available_claims)
+        is_valid = eval_result.get("valid", False)
+        proof_schema = None
+        if is_valid:
+            now_ts = int(now.timestamp())
+            exp_ts = int((now + timedelta(minutes=15)).timestamp())
+            proof = sign_proof(
+                proof_id=f"PRF-{uuid.uuid4().hex[:12]}",
+                issuer="digiin",
+                audience=req.verifier_id,
+                nonce=req.request_id,
+                claims=eval_result.get("claims", {}),
+                key_id=GATEWAY_KEY_ID,
+                private_key=GATEWAY_SIGNING_KEY,
+                expires_at=exp_ts,
+                issued_at=now_ts,
+            )
+            proof_schema = ProofSchema(
+                proof_id=proof.proof_id,
+                issuer=proof.issuer,
+                audience=proof.audience,
+                issued_at=proof.issued_at,
+                expires_at=proof.expires_at,
+                nonce=proof.nonce,
+                claims=proof.claims,
+                key_id=proof.key_id,
+                signature=proof.signature,
+            )
+
+        return GatewayEvaluateResponse(
+            valid=is_valid,
+            reason=eval_result.get("reason"),
+            request_id=eval_result.get("request_id"),
+            purpose=eval_result.get("purpose"),
+            claims=eval_result.get("claims", {}),
+            generated_at=eval_result.get("generated_at"),
+            proof=proof_schema,
+        )
+    except DisclosurePolicyError as err:
+        return GatewayEvaluateResponse(
+            valid=False,
+            reason=str(err),
+            request_id=request_id,
+            purpose=req.purpose,
+        )
+
+
+# --- Phase 6: Cryptographic Proof Verification & Discovery ---
+
+@app.post("/api/v1/proofs/verify", response_model=VerifyProofResponse)
+def verify_proof_endpoint(payload: VerifyProofRequest) -> VerifyProofResponse:
+    """Independent online verifier endpoint for validating Ed25519 signed proof envelopes."""
+    proof_obj = Proof(
+        proof_id=payload.proof.proof_id,
+        issuer=payload.proof.issuer,
+        audience=payload.proof.audience,
+        issued_at=payload.proof.issued_at,
+        expires_at=payload.proof.expires_at,
+        nonce=payload.proof.nonce,
+        claims=payload.proof.claims,
+        key_id=payload.proof.key_id,
+        signature=payload.proof.signature,
+    )
+    is_valid = verify_proof(
+        proof_obj,
+        public_key=GATEWAY_PUBLIC_KEY,
+        expected_issuer=payload.expected_issuer,
+        expected_audience=payload.expected_audience,
+        expected_nonce=payload.expected_nonce,
+    )
+    if is_valid:
+        return VerifyProofResponse(
+            valid=True,
+            status="TRUSTED_PROOF_VERIFIED",
+            issuer=proof_obj.issuer,
+            audience=proof_obj.audience,
+            claims=proof_obj.claims,
+            key_id=proof_obj.key_id,
+        )
+    return VerifyProofResponse(
+        valid=False,
+        status="INVALID_PROOF",
+        reason="signature_mismatch_or_constraints_violated",
+    )
+
+
+@app.get("/api/v1/issuers/{issuer_id}/keys")
+def get_issuer_keys_endpoint(issuer_id: str) -> dict[str, Any]:
+    """Retrieve public keys for offline and independent verifier discovery."""
+    return {
+        "issuer": issuer_id,
+        "keys": [
+            {
+                "kty": "OKP",
+                "crv": "Ed25519",
+                "kid": GATEWAY_KEY_ID,
+                "x": _b64(GATEWAY_PUBLIC_KEY),
+                "use": "sig",
+                "alg": "EdDSA",
+            }
+        ],
+    }
+
+
 
 
 

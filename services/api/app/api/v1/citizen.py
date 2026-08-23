@@ -36,8 +36,35 @@ def create_credential(payload: CredentialCreate, user=Depends(current_user), db:
     return credential
 
 
-@router.get("/credentials", response_model=list[CredentialOut])
-def credentials(user=Depends(current_user), db: Session = Depends(get_db)):
+@router.get("/credentials")
+def credentials(account_id: str | None = None, user=Depends(current_user), db: Session = Depends(get_db)):
+    if account_id:
+        import app.db.repository as repo
+        from app.domain.credential_models import CredentialResponse, VerifiedClaimSchema
+        creds = repo.list_credentials_for_account(account_id)
+        return [
+            CredentialResponse(
+                credential_id=c.credential_id,
+                account_id=c.account_id,
+                credential_type=c.credential_type,
+                issuer=c.issuer,
+                claims=[
+                    VerifiedClaimSchema(
+                        claim_type=cl.claim_type,
+                        value=cl.value,
+                        source=cl.source,
+                        verification_level=cl.verification_level,
+                        verified_at=cl.verified_at,
+                    )
+                    for cl in c.claims
+                ],
+                issued_at=c.issued_at,
+                expires_at=c.expires_at,
+                status=c.status.value,
+                verification_case_id=c.verification_case_id,
+            )
+            for c in creds
+        ]
     return db.query(Credential).filter(Credential.user_id == user.id).all()
 
 
