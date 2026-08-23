@@ -1,0 +1,73 @@
+openapi: 3.0.3
+info:
+  title: DigiIn Two-Sided Verification & Consent API
+  version: 1.4.0
+  description: OpenAPI v1 specification for DigiIn Organisation Requests, Scoped Consent, and Verification Orchestration.
+servers:
+  - url: http://localhost:8080/v1
+    description: Development API Server
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Operational status
+  /organisation/requests:
+    post:
+      summary: Create purpose-bound verification request with required claims
+      responses:
+        '201':
+          description: Request created
+    get:
+      summary: List organisation's verification requests
+      responses:
+        '200':
+          description: List of requests
+  /organisation/requests/{id}:
+    get:
+      summary: Get organisation request details and linked proof
+      responses:
+        '200':
+          description: Request details
+    delete:
+      summary: Cancel pending verification request
+      responses:
+        '200':
+          description: Request cancelled
+  /requests:
+    get:
+      summary: List incoming verification requests for citizen
+      responses:
+        '200':
+          description: Citizen request inbox
+  /requests/{id}:
+    get:
+      summary: Get verification request details for citizen review
+      responses:
+        '200':
+          description: Review payload
+  /requests/{id}/consent:
+    post:
+      summary: Grant scoped citizen consent for requested claims
+      responses:
+        '200':
+          description: Consent recorded and verification orchestrated
+  /requests/{id}/decline:
+    post:
+      summary: Decline verification request
+      responses:
+        '200':
+          description: Request declined
+  /consents:
+    get:
+      summary: List citizen's active consents
+      responses:
+        '200':
+          description: Active consents
+  /consents/{id}/revoke:
+    post:
+      summary: Revoke active consent
+      responses:
+        '200':
+          description: Consent revoked

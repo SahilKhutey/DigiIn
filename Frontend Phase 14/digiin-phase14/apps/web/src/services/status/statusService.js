@@ -1,0 +1,1 @@
+export const getPublicStatus=()=>({overall:'OPERATIONAL',services:['Verification','DigiLocker integration','Proof verification','Organisation portal','API'].map(name=>({name,status:'OPERATIONAL'}))});
