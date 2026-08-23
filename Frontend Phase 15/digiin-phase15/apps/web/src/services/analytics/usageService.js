@@ -1,0 +1,1 @@
+export const getUsage=()=>({requests:1284,success:1257,errors:27,rateLimited:4,successRate:97.9,avgLatency:183,endpoints:[['POST /v1/verification-requests',482],['GET /v1/verification-requests/:id',391],['GET /v1/verifications/:id',284],['POST /v1/proofs/validate',127]]});

@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase15",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 15 — Production Integration, Trust Network & Provider Adapter Layer.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4186",
+    "test": "node --test"
+  }
+}
