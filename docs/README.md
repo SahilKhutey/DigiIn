@@ -1,27 +1,38 @@
-# DigiLocker X — Engineering Documentation
+# DigiIn — Documentation Hub & Master Index
 
-This directory defines the **single source of truth** for the DigiLocker X engineering implementation, governance, architecture, and interfaces.
-
----
-
-## 📖 Core Engineering Specifications (Single Source of Truth)
-
-| # | Specification | Focus Area | Description |
-|:---:|---|---|---|
-| **01** | [**Workflow.md**](Workflow.md) | Platform Behavior & Workflows | Actors, citizen dashboard journeys, government issuance, self-upload OCR pipeline, verification rules, consent-controlled sharing, and cryptographic proof schemas. |
-| **02** | [**Principles.md**](Principles.md) | Engineering Principles | The 15 mandatory engineering principles: Citizen First, Verify Don't Copy, Minimum Disclosure, Explicit Consent, Purpose Limitation, Security by Default, Accessibility (WCAG 2.2 AA), and Parity. |
-| **03** | [**Services.md**](Services.md) | Service Specifications | Detailed responsibilities, domain boundaries, inputs, and outputs for all 13 platform services (Identity, Document, Credential, Verification, Consent, Proof, Issuer, Requester, Review, Notification, Audit, Search, Integration). |
-| **04** | [**CoreFoundation.md**](CoreFoundation.md) | Backend Architecture & Tech Stack | Gateway, modular monolith organization, technology stack (Python/FastAPI, Next.js/React, React Native/Expo, PostgreSQL 16, Redis, S3), and strict zero-trust boundary rules. |
-| **05** | [**Database.md**](Database.md) | Data Models & Schemas | Entity-relationship models, PostgreSQL DDL schemas, foreign keys, indexes, version chains, domain events, and audit ledgers. |
-| **06** | [**Auth.md**](Auth.md) | Authentication & Security | Passwordless auth (Mobile OTP, Passkeys, eKYC), token architecture (15m JWT, rotating refresh tokens), OAuth 2.0 / OIDC delegation, RBAC permissions matrix, and throttling. |
-| **07** | [**UI-UX.md**](UI-UX.md) | Screen Specs & Design System | Route map, universal 8 UI states (`LOADING`, `EMPTY`, `SUCCESS`, `ERROR`, `PENDING`, `OFFLINE`, `UNAUTHORIZED`, `EXPIRED`), ASCII screen wireframes, and WCAG 2.2 AA accessibility guidelines. |
+Welcome to the **DigiIn Documentation Hub**. DigiIn is a sovereign Digital Trust and Verification Infrastructure connecting citizens, authoritative credential issuers, and verifying institutions.
 
 ---
 
-## 📚 Supporting Architectural Reference Documents
+## 🧭 Navigation & Core Documents
 
-- [**Task List & Status**](Task-List.md): Comprehensive implementation checklist across all 13 platform services and 11 testing suites.
-- [**Foundation Architecture**](foundation-architecture.md): Deep-dive into modular-monolith boundaries and local execution paths.
-- [**Product Scope**](product-scope.md): Scope boundaries and synthetic verification testing fixtures.
-- [**Security Baseline**](security.md): Cryptographic security, data minimization, and HSM key rotation policies.
+### 🏛️ 1. Architecture & Design
+- **[Master Architecture](architecture/MASTER_ARCHITECTURE.md)**: Multi-tier platform reference architecture, trust boundaries, and core invariants.
+- **[Operational Flowcharts](architecture/FLOWCHARTS.md)**: 10 comprehensive Mermaid sequence and workflow flowcharts covering every system interaction.
+- **[Phase Catalog](PHASE_CATALOG.md)**: Detailed breakdown and deliverables across all 36 completed phases.
 
+### 🏆 2. Hackathon & Evidence Package
+- **[Hackathon Overview](hackathon/README.md)**: Problem statement, value proposition, and key differentiators.
+- **[Verification Evidence](hackathon/VERIFICATION.md)**: 7-point deterministic verification matrix, negative proof results, and Verification Lab guide (`/admin/verification-lab`).
+- **[Live Demonstration Script](hackathon/DEMO.md)**: 5–7 minute dual-browser live walkthrough script (Citizen Rahul Sharma $\leftrightarrow$ National Scholarship Portal).
+
+### 🔒 3. Security, Privacy & Compliance
+- **[Security Architecture](security.md)**: Cryptographic algorithms (Ed25519, SHA-256, PBKDF2), token security, and session controls.
+- **[Threat Model](THREAT-MODEL.md)**: STRIDE threat modeling and mitigation strategy.
+- **[Data Classification](DATA-CLASSIFICATION.md)**: Data categorization and minimal disclosure rules.
+- **[Incident Response](INCIDENT-RESPONSE.md)**: Protocols for handling security anomalies and revocations.
+
+### 💻 4. API & Integration
+- **[OpenAPI 3.0 Specification](openapi.json)**: Complete machine-readable REST API contract.
+- **[Verification Gateway Contract](DigiIn-Verification-Gateway-Contract.md)**: Cryptographic proof token schemas and claim verification specs.
+- **[UI & Design System](UI-UX.md)**: Component specifications, responsive patterns, and accessibility guidelines.
+
+---
+
+## 🧪 5. Testing & Verification
+
+The repository contains an automated test orchestrator covering all 34 test suites with a **100% pass rate**:
+
+```bash
+python tests/run_all_tests.py
+```
