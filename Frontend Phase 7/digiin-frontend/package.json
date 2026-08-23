@@ -1,0 +1,11 @@
+{
+  "name": "digiin-frontend-phase7",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn frontend Phase 7 — Digital Verification Proof & Sharing Layer.",
+  "scripts": {
+    "dev": "python -m http.server 4179",
+    "start": "python -m http.server 4179",
+    "preview": "python -m http.server 4179"
+  }
+}
