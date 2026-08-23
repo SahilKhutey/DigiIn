@@ -1,0 +1,63 @@
+openapi: 3.0.3
+info:
+  title: DigiIn Verification Engine & Cryptographic Proof API
+  version: 1.3.0
+  description: OpenAPI v1 specification for DigiIn Verification Engine, Rule Evaluation & Proof Infrastructure.
+servers:
+  - url: http://localhost:8080/v1
+    description: Development API Server
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Operational status
+  /documents/{id}/verify:
+    post:
+      summary: Queue deterministic verification job for document
+      responses:
+        '202':
+          description: Verification job queued
+  /verifications/{id}:
+    get:
+      summary: Get verification job outcome and rule breakdown
+      responses:
+        '200':
+          description: Verification result
+  /verifications/{id}/evidence:
+    get:
+      summary: Get observable evidence collected during verification
+      responses:
+        '200':
+          description: Evidence list
+  /verifications/{id}/proof:
+    post:
+      summary: Generate and sign cryptographic DigiIn proof
+      responses:
+        '201':
+          description: Cryptographic proof issued
+  /proofs:
+    get:
+      summary: List citizen's active and historical proofs
+      responses:
+        '200':
+          description: List of proofs
+  /proofs/{proofId}:
+    get:
+      summary: Get full proof metadata and claim payload
+      responses:
+        '200':
+          description: Proof details
+  /proofs/{proofId}/revoke:
+    post:
+      summary: Revoke active proof with audit reason
+      responses:
+        '200':
+          description: Proof revoked
+  /public/proofs/{proofId}/verify:
+    get:
+      summary: Public independent cryptographic proof verification
+      responses:
+        '200':
+          description: Minimal claim validity response

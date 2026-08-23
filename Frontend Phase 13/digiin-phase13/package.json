@@ -1,0 +1,16 @@
+{
+  "name": "digiin-phase13",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DigiIn Phase 13 — Verification Engine & Cryptographic Proof Infrastructure.",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev:api": "node apps/api/src/server.js",
+    "dev:web": "python -m http.server 4184",
+    "test": "node --test"
+  }
+}
