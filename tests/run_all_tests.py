@@ -81,6 +81,8 @@ def main():
         ("Verification Hardening, Negative Proof & Hackathon Lab (Phase 36)", ["python", "tests/test_phase36_verification_hardening.py"], root_dir),
         ("Offline CLI Proof Verifier Demo", ["python", "tests/cli_proof_verifier.py", "--demo"], root_dir),
         ("External Integration & Webhook Gateway E2E", ["python", "tests/test_external_integration_e2e.py"], root_dir),
+        ("Phase 8 Security Hardening Threat-Model", ["python", "tests/test_phase8_security_hardening.py"], root_dir),
+        ("Phase 8 Full Acceptance Scenario", ["python", "tests/test_phase8_acceptance_scenario.py"], root_dir),
     ]
 
     results = []
