@@ -1,16 +1,45 @@
 {
   "app": {
-    "title": "DigiLocker X",
-    "tagline": "Sovereign Digital Credentials & Verification Authority",
-    "verifiedZeroTransfer": "Verified with Zero Raw File Transfer"
+    "title": "DigiLocker X (DigiIn)",
+    "tagline": "You shouldn't have to prove the same thing five times.",
+    "subtagline": "Use your verified information to complete public-service applications in minutes with zero document uploads.",
+    "verifiedZeroTransfer": "Verified with Zero Raw File Transfer",
+    "ctaStartService": "Start a Public Service",
+    "ctaHowItWorks": "See How DigiIn Verification Works"
   },
   "nav": {
+    "home": "Home",
+    "services": "Public Services",
+    "verifiedInfo": "My Verified Information",
+    "sharingActivity": "Sharing Activity",
+    "help": "Help & Support",
     "wallet": "Document Wallet",
     "verification": "Verification Inquiries",
-    "pipeline": "Document Upload & OCR",
-    "ekyc": "eKYC Gateway",
-    "audit": "Sovereign Audit Stream",
-    "profile": "Profile & Security"
+    "dataSaverToggle": "Data Saver Mode"
+  },
+  "services": {
+    "title": "Public Services Directory",
+    "scholarship": "National Merit-cum-Means Scholarship",
+    "scholarshipDesc": "University of Delhi & National Scholarship Portal",
+    "casteCert": "State Certificate Verification & Renewal",
+    "universityAdmission": "Undergraduate Admissions Eligibility",
+    "estimatedTime": "Estimated Time: 2 min with DigiIn (vs 45 min traditional)",
+    "useDigiInBtn": "Use My Verified DigiIn Information"
+  },
+  "sharingReview": {
+    "title": "Sharing Review — What is shared vs What is kept private",
+    "subtitle": "Review exactly what information will be shared with the institution before giving consent.",
+    "sharedSectionHeader": "Shared with Institution",
+    "withheldSectionHeader": "Kept Private in Your Vault (Zero Raw Files Transferred)",
+    "purposeLabel": "Declared Purpose",
+    "validityLabel": "Validity Window",
+    "allowBtn": "Allow & Submit Application",
+    "denyBtn": "Decline Request",
+    "timeSaved": "43 minutes saved"
+  },
+  "dataSaver": {
+    "badge": "⚡ Data Saver is on. DigiIn will use less data.",
+    "status": "Low-Bandwidth Mode Active"
   },
   "wallet": {
     "title": "Citizen Document Wallet",
