@@ -88,6 +88,7 @@ def main():
         ("Phase 10 Hackathon Demo & Evaluation", ["python", "tests/test_phase10_hackathon_demo.py"], root_dir),
         ("Phase 10 Flagship E2E Showcase", ["python", "tests/test_phase10_flagship_e2e_showcase.py"], root_dir),
         ("Phase 37 — Release Readiness & Evidence Gate", ["python", "tests/test_phase37_release_readiness.py"], root_dir),
+        ("Phase 38 — Hackathon-First Product Development", ["python", "tests/test_phase38_hackathon_product.py"], root_dir),
     ]
 
     results = []
