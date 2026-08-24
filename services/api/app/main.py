@@ -22,6 +22,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 import app.db.repository as repo
+from app.api.middleware.security_pipeline import SecurityPipelineMiddleware
 from app.api.v1 import (
     auth as auth_router,
 )
@@ -215,6 +216,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Phase 8 — Security Pipeline Middleware (request ID, security headers, threat detection)
+app.add_middleware(SecurityPipelineMiddleware)
 
 
 app.include_router(health_router.router, prefix="/api/v1")
