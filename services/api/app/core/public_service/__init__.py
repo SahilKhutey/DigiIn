@@ -5,6 +5,11 @@ from app.core.public_service.data_saver import (
     DataSaverMetrics,
     data_saver_engine,
 )
+from app.core.public_service.demo_seed import (
+    DemoSeedManager,
+    DemoSeedState,
+    demo_seed_manager,
+)
 from app.core.public_service.service_registry import (
     ApplicationStatus,
     PublicServiceDefinition,
@@ -23,6 +28,8 @@ __all__ = [
     "ApplicationStatus",
     "DataSaverEngine",
     "DataSaverMetrics",
+    "DemoSeedManager",
+    "DemoSeedState",
     "PublicServiceDefinition",
     "PublicServiceRegistry",
     "ServiceApplication",
@@ -30,6 +37,7 @@ __all__ = [
     "SharingReviewGenerator",
     "SharingReviewScreenData",
     "data_saver_engine",
+    "demo_seed_manager",
     "service_registry",
     "sharing_review_generator",
 ]

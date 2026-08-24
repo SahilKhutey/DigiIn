@@ -236,3 +236,32 @@ def get_data_saver_status() -> dict[str, Any]:
         ],
         "message": "Data Saver is on. DigiIn will use less data.",
     }
+
+
+@router.post("/demo/reset")
+def reset_demo_scenario() -> dict[str, Any]:
+    """1-Click instant reset of the deterministic sandbox demo environment."""
+    from app.core.public_service.demo_seed import demo_seed_manager
+
+    return demo_seed_manager.reset_demo()
+
+
+@router.get("/demo/state")
+def get_demo_state() -> dict[str, Any]:
+    """Returns the current deterministic demo state and credentials."""
+    from app.core.public_service.demo_seed import demo_seed_manager
+
+    state = demo_seed_manager.get_seed_state()
+    return {
+        "citizen_account_id": state.citizen_account_id,
+        "citizen_name": state.citizen_name,
+        "service_id": state.service_id,
+        "service_name": state.service_name,
+        "organization_id": state.organization_id,
+        "organization_name": state.organization_name,
+        "valid_proof_id": state.valid_proof_id,
+        "tampered_proof_id": state.tampered_proof_id,
+        "expired_proof_id": state.expired_proof_id,
+        "revoked_proof_id": state.revoked_proof_id,
+        "credentials": state.credentials,
+    }
