@@ -72,7 +72,8 @@ class TieredHealthProbes:
 
     def check_readiness(self) -> tuple[bool, dict[str, Any]]:
         """Readiness probe: validates critical dependencies before receiving traffic."""
-        db_ok = check_db_health()
+        db_res = check_db_health()
+        db_ok = isinstance(db_res, dict) and db_res.get("status") == "connected"
         ready = self._is_ready and db_ok
 
         return ready, {
@@ -86,7 +87,8 @@ class TieredHealthProbes:
         deps: list[DependencyStatus] = []
 
         # 1. Database
-        db_ok = check_db_health()
+        db_res = check_db_health()
+        db_ok = isinstance(db_res, dict) and db_res.get("status") == "connected"
         deps.append(
             DependencyStatus(
                 name="postgresql",
