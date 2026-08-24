@@ -39,6 +39,9 @@ from app.api.v1 import (
     health as health_router,
 )
 from app.api.v1 import (
+    ops as ops_router,
+)
+from app.api.v1 import (
     proofs as proofs_router,
 )
 from app.api.v1 import (
@@ -222,6 +225,7 @@ app.add_middleware(SecurityPipelineMiddleware)
 
 
 app.include_router(health_router.router, prefix="/api/v1")
+app.include_router(ops_router.router, prefix="/api/v1")
 app.include_router(auth_router.router, prefix="/api/v1")
 app.include_router(citizen_router.router, prefix="/api/v1")
 app.include_router(documents_router.router, prefix="/api/v1")
