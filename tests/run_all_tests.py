@@ -85,6 +85,8 @@ def main():
         ("Phase 8 Full Acceptance Scenario", ["python", "tests/test_phase8_acceptance_scenario.py"], root_dir),
         ("Phase 9 Operations, Observability & SLOs", ["python", "tests/test_phase9_operations_observability.py"], root_dir),
         ("Phase 9 Full Operational Acceptance Scenario", ["python", "tests/test_phase9_acceptance_scenario.py"], root_dir),
+        ("Phase 10 Hackathon Demo & Evaluation", ["python", "tests/test_phase10_hackathon_demo.py"], root_dir),
+        ("Phase 10 Flagship E2E Showcase", ["python", "tests/test_phase10_flagship_e2e_showcase.py"], root_dir),
     ]
 
     results = []
