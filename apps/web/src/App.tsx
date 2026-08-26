@@ -45,6 +45,7 @@ import { AuditTrailView } from "./features/citizen/AuditTrailView";
 import { CredentialsView } from "./features/citizen/CredentialsView";
 import { NotificationsView } from "./features/citizen/NotificationsView";
 import { SettingsView } from "./features/settings/SettingsView";
+import { IssuerFederationView } from "./features/issuer/IssuerFederationView";
 import { AuthProvider } from "./context/AuthContext";
 import { OfflineScannerModal } from "./components/scanner/OfflineScannerModal";
 import { EkycVerificationModal } from "./components/ekyc/EkycVerificationModal";
@@ -886,34 +887,37 @@ function AppContent() {
 
       {/* Government Issuer & Officer Review Queue Console */}
       {currentView === "ISSUER_CONSOLE" && (
-        <div className="space-y-6">
-          <div className="bg-white border border-[#CBD5E1] rounded-2xl p-6 shadow-xs">
-            <h2 className="text-xl font-bold text-[#092F4F] m-0">
-              CBSE & Government Registry Discrepancy Queue
-            </h2>
-            <p className="text-xs text-slate-500 mt-1 m-0">
-              Review pending citizen discrepancy appeals, compare OCR evidence side-by-side with registry, and issue superseded certificate versions.
-            </p>
+        <div className="space-y-8">
+          <IssuerFederationView />
+          <div className="border-t border-slate-200 pt-6">
+            <div className="bg-white border border-[#CBD5E1] rounded-2xl p-6 shadow-xs mb-6">
+              <h2 className="text-xl font-bold text-[#092F4F] m-0">
+                Administrative Discrepancy & Evidence Verification Queue
+              </h2>
+              <p className="text-xs text-slate-500 mt-1 m-0">
+                Review pending citizen discrepancy appeals, compare OCR evidence side-by-side with registry, and issue superseded certificate versions.
+              </p>
+            </div>
+            <CorrectionSection
+              snapshot={platformSnapshot}
+              targetDocId={targetDocId}
+              corrField={corrField}
+              corrCurrentVal={corrCurrentVal}
+              corrProposedVal={corrProposedVal}
+              corrReason={corrReason}
+              corrEvidenceDesc={corrEvidenceDesc}
+              docVersions={docVersions}
+              corrections={corrections}
+              onTargetDocChange={setTargetDocId}
+              onFieldChange={setCorrField}
+              onCurrentValChange={setCorrCurrentVal}
+              onProposedValChange={setCorrProposedVal}
+              onReasonChange={setCorrReason}
+              onEvidenceDescChange={setCorrEvidenceDesc}
+              onSubmitCorrection={handleSubmitCorrection}
+              onDecideCorrection={handleDecideCorrection}
+            />
           </div>
-          <CorrectionSection
-            snapshot={platformSnapshot}
-            targetDocId={targetDocId}
-            corrField={corrField}
-            corrCurrentVal={corrCurrentVal}
-            corrProposedVal={corrProposedVal}
-            corrReason={corrReason}
-            corrEvidenceDesc={corrEvidenceDesc}
-            docVersions={docVersions}
-            corrections={corrections}
-            onTargetDocChange={setTargetDocId}
-            onFieldChange={setCorrField}
-            onCurrentValChange={setCorrCurrentVal}
-            onProposedValChange={setCorrProposedVal}
-            onReasonChange={setCorrReason}
-            onEvidenceDescChange={setCorrEvidenceDesc}
-            onSubmitCorrection={handleSubmitCorrection}
-            onDecideCorrection={handleDecideCorrection}
-          />
         </div>
       )}
 

@@ -29,6 +29,10 @@ import type {
   VerifierQueueId,
   VerifierQueueSummary,
   WalletDocument,
+  FederatedIssuer,
+  FederatedCredential,
+  RevocationRecord,
+  RevocationRegistryResponse,
 } from "../types";
 
 
@@ -377,6 +381,111 @@ export async function resetDemoEnvironment(): Promise<{
   if (!res.ok) throw new Error("Failed to reset demo environment");
   return res.json();
 }
+
+// ── Federated Issuer & Dynamic Revocation API ──────────────────────────────────
+
+export async function fetchFederatedIssuers(): Promise<{
+  status: string;
+  total_issuers: number;
+  issuers: FederatedIssuer[];
+  trust_framework: string;
+}> {
+  const res = await fetch(`${API_BASE}/api/v1/federation/issuers`);
+  if (!res.ok) throw new Error("Failed to fetch federated issuers");
+  return res.json();
+}
+
+export async function fetchFederatedCredentials(
+  accountId?: string,
+  issuerId?: string
+): Promise<{
+  status: string;
+  total: number;
+  credentials: FederatedCredential[];
+}> {
+  const params = new URLSearchParams();
+  if (accountId) params.set("account_id", accountId);
+  if (issuerId) params.set("issuer_id", issuerId);
+  const query = params.toString() ? `?${params.toString()}` : "";
+  const res = await fetch(`${API_BASE}/api/v1/federation/credentials${query}`);
+  if (!res.ok) throw new Error("Failed to fetch credentials");
+  return res.json();
+}
+
+export async function issueFederatedCredential(payload: {
+  issuer_id: string;
+  citizen_account_id: string;
+  credential_type: string;
+  title: string;
+  claims: Record<string, unknown>;
+  validity_days?: number;
+}): Promise<{
+  status: string;
+  message: string;
+  credential: {
+    credential_id: string;
+    account_id: string;
+    issuer_id: string;
+    issuer_name: string;
+    credential_type: string;
+    title: string;
+    issued_at: string;
+    expires_at: string;
+    claim_digest: string;
+    digital_signature: string;
+    public_key_id: string;
+    status: string;
+    claims: Record<string, unknown>;
+  };
+}> {
+  const res = await fetch(`${API_BASE}/api/v1/federation/issue-credential`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Failed to issue federated credential");
+  return res.json();
+}
+
+export async function revokeFederatedCredential(payload: {
+  credential_id: string;
+  issuer_id: string;
+  reason: string;
+  reason_description?: string;
+  operator_id?: string;
+}): Promise<{
+  status: string;
+  message: string;
+  revocation_record: RevocationRecord;
+}> {
+  const res = await fetch(`${API_BASE}/api/v1/federation/revoke-credential`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Failed to revoke credential");
+  return res.json();
+}
+
+export async function fetchRevocationRegistry(): Promise<RevocationRegistryResponse> {
+  const res = await fetch(`${API_BASE}/api/v1/federation/revocation-registry`);
+  if (!res.ok) throw new Error("Failed to fetch revocation registry");
+  return res.json();
+}
+
+export async function checkCredentialRevocationStatus(
+  credentialId: string
+): Promise<{
+  status: string;
+  is_valid: boolean;
+  credential_id: string;
+  revocation_details: RevocationRecord | null;
+}> {
+  const res = await fetch(`${API_BASE}/api/v1/federation/status/${credentialId}`);
+  if (!res.ok) throw new Error("Failed to check revocation status");
+  return res.json();
+}
+
 
 
 

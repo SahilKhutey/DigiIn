@@ -37,6 +37,9 @@ from app.api.v1 import (
     documents as documents_router,
 )
 from app.api.v1 import (
+    federation as federation_router,
+)
+from app.api.v1 import (
     government as government_router,
 )
 from app.api.v1 import (
@@ -246,6 +249,7 @@ app.include_router(demo_router.router, prefix="/api/v1")
 app.include_router(auth_router.router, prefix="/api/v1")
 app.include_router(citizen_router.router, prefix="/api/v1")
 app.include_router(documents_router.router, prefix="/api/v1")
+app.include_router(federation_router.router, prefix="/api/v1")
 app.include_router(jobs_router.router, prefix="/api/v1")
 app.include_router(government_router.router, prefix="/api/v1")
 app.include_router(intelligence_router.router, prefix="/api/v1")

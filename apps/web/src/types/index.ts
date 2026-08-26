@@ -499,6 +499,68 @@ export type LabTestResult = {
   tampered_value?: unknown;
 };
 
+// ── Federated Issuer & Revocation Registry Types ──────────────────────────────
+
+export type FederatedIssuer = {
+  issuer_id: string;
+  name: string;
+  jurisdiction: string;
+  category: string;
+  accreditation_level: string;
+  trust_score: number;
+  supported_schemas: string[];
+  algorithm: string;
+  endpoint: string;
+  status: "ACTIVE" | "SUSPENDED" | "REVOKED";
+  public_key_id: string;
+  public_key_b64?: string;
+};
+
+export type FederatedCredential = {
+  credential_id: string;
+  account_id: string;
+  credential_type: string;
+  issuer: string;
+  issued_at: string | null;
+  expires_at: string | null;
+  status: "ACTIVE" | "REVOKED" | "SUSPENDED";
+  is_revoked: boolean;
+  claims: Array<{
+    claim_type: string;
+    value: string;
+    source: string;
+    verification_level?: string;
+  }>;
+  revocation_details?: {
+    revoked_at: string;
+    reason: string;
+    reason_description?: string;
+    operator_id: string;
+    revocation_signature: string;
+  } | null;
+};
+
+export type RevocationRecord = {
+  credential_id: string;
+  issuer_id: string;
+  revoked_at: string;
+  reason: string;
+  reason_description: string;
+  operator_id: string;
+  revocation_signature: string;
+  status: string;
+};
+
+export type RevocationRegistryResponse = {
+  status: string;
+  registry_version: string;
+  standard: string;
+  aggregate_digest: string;
+  revoked_count: number;
+  revocations: RevocationRecord[];
+  last_updated: string;
+};
+
 
 
 
