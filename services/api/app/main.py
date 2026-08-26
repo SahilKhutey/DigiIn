@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import time
 import uuid
 from datetime import UTC, datetime, timedelta
@@ -216,14 +217,20 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 app = FastAPI(title="DigiLocker X API", version="0.5.0")
 app.add_middleware(SecurityHeadersMiddleware)
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "")
+cors_origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+]
+if allowed_origins_env:
+    cors_origins.extend([o.strip() for o in allowed_origins_env.split(",") if o.strip()])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=cors_origins,
+    allow_origin_regex=r"^https:\/\/.*(vercel\.app|onrender\.com|digiin\..*|localhost:[0-9]+)$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
