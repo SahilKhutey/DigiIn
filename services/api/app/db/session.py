@@ -10,9 +10,9 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 raw_db_url = (
-    os.getenv("DIGIIN_DATABASE_URL")
-    or os.getenv("DATABASE_URL")
-    or os.getenv("SUPABASE_DB_URL")
+    (os.getenv("DIGIIN_DATABASE_URL") or "").strip()
+    or (os.getenv("DATABASE_URL") or "").strip()
+    or (os.getenv("SUPABASE_DB_URL") or "").strip()
     or "sqlite:///./digiin_database.db"
 )
 if raw_db_url.startswith("postgres://"):
