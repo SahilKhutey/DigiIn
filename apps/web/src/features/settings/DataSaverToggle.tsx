@@ -1,7 +1,8 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 const DATA_SAVER_KEY = "digiin-data-saver";
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+const rawBase = import.meta.env.VITE_API_BASE_URL ?? import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+const API_BASE = String(rawBase).replace(/\/+$/, "");
 
 interface DataSaverStats {
   mode_active: boolean;

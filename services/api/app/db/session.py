@@ -9,16 +9,29 @@ from contextlib import contextmanager
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
-DATABASE_URL = os.getenv("DIGIIN_DATABASE_URL", "sqlite:///./digiin_database.db")
-
-connect_args = {"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
-
-engine = create_engine(
-    DATABASE_URL,
-    connect_args=connect_args,
-    echo=False,
-    future=True,
+raw_db_url = (
+    os.getenv("DIGIIN_DATABASE_URL")
+    or os.getenv("DATABASE_URL")
+    or os.getenv("SUPABASE_DB_URL")
+    or "sqlite:///./digiin_database.db"
 )
+if raw_db_url.startswith("postgres://"):
+    raw_db_url = raw_db_url.replace("postgres://", "postgresql://", 1)
+
+DATABASE_URL = raw_db_url
+
+is_sqlite = "sqlite" in DATABASE_URL
+connect_args = {"check_same_thread": False} if is_sqlite else {}
+engine_kwargs = {
+    "connect_args": connect_args,
+    "echo": False,
+    "future": True,
+}
+if not is_sqlite:
+    engine_kwargs["pool_pre_ping"] = True
+    engine_kwargs["pool_recycle"] = 300
+
+engine = create_engine(DATABASE_URL, **engine_kwargs)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

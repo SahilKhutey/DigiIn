@@ -29,7 +29,8 @@ export const DirectVerificationFlow: React.FC = () => {
   const [verifiedProof, setVerifiedProof] = useState<any>(null);
   const [pipelineResult, setPipelineResult] = useState<any>(null);
 
-  const API_BASE = "http://localhost:8000/api/v1";
+  const rawBase = import.meta.env.VITE_API_BASE_URL ?? import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+  const API_BASE = String(rawBase).replace(/\/+$/, "") + "/api/v1";
 
   const authHeaders = () => ({
     "Content-Type": "application/json",

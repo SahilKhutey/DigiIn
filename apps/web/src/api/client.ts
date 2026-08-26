@@ -34,7 +34,8 @@ import type {
 
 
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+const rawBase = import.meta.env.VITE_API_BASE_URL ?? import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+export const API_BASE = String(rawBase).replace(/\/+$/, "");
 
 export async function fetchJwks(): Promise<JwksResponse> {
   const res = await fetch(`${API_BASE}/.well-known/jwks.json`);
