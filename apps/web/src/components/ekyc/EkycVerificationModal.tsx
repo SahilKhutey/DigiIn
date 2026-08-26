@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { generateEkycOtp, verifyEkycOtp } from "../../api/client";
 import type { EkycOtpResponse, EkycVerifyResponse } from "../../types";
 
@@ -10,22 +10,28 @@ interface Props {
   onVerificationSuccess?: (result: EkycVerifyResponse) => void;
 }
 
+/**
+ * Demo Identity Verification modal.
+ *
+ * SANDBOX DEMO — No connection to Aadhaar, UIDAI, or any real government identity service.
+ * All identities, OTPs, and credentials are synthetic demo fixtures for demonstration only.
+ */
 const PRESET_IDENTITIES = [
   {
-    label: "👤 Sahil Khutey (Candidate)",
-    ref: "9100-2026-9921",
-    name: "SAHIL KHUTEY",
-    dob: "2006-05-14",
-    mobile: "+91 ******9921",
-    otp: "202601",
+    label: "👤 Demo Citizen A (DIN-DEMO-001)",
+    ref: "DEMO-ID-001",
+    name: "DEMO CITIZEN A",
+    dob: "2006-01-01",
+    mobile: "+91 ******0001",
+    otp: "000000",
   },
   {
-    label: "👤 Ramesh Patel (Citizen)",
-    ref: "8200-1998-4412",
-    name: "RAMESH PATEL",
-    dob: "1978-11-20",
-    mobile: "+91 ******4412",
-    otp: "199801",
+    label: "👤 Demo Citizen B (DIN-DEMO-002)",
+    ref: "DEMO-ID-002",
+    name: "DEMO CITIZEN B",
+    dob: "1978-01-01",
+    mobile: "+91 ******0002",
+    otp: "000000",
   },
 ];
 
@@ -37,7 +43,7 @@ export const EkycVerificationModal: React.FC<Props> = ({
   onVerificationSuccess,
 }) => {
   const [step, setStep] = useState<"ENTER_REF" | "ENTER_OTP" | "VERIFIED_RECEIPT">("ENTER_REF");
-  const [aadhaarRef, setAadhaarRef] = useState("9100-2026-9921");
+  const [demoRef, setDemoRef] = useState("DEMO-ID-001");
   const [otp, setOtp] = useState("");
   const [txnData, setTxnData] = useState<EkycOtpResponse | null>(null);
   const [verifyResult, setVerifyResult] = useState<EkycVerifyResponse | null>(null);
@@ -48,15 +54,17 @@ export const EkycVerificationModal: React.FC<Props> = ({
   useEffect(() => {
     if (!isOpen) {
       setStep("ENTER_REF");
+      setDemoRef("DEMO-ID-001");
       setOtp("");
       setTxnData(null);
       setVerifyResult(null);
       setErrorMessage(null);
+      setCountdown(600);
     }
   }, [isOpen]);
 
   useEffect(() => {
-    let timer: any;
+    let timer: ReturnType<typeof setInterval>;
     if (step === "ENTER_OTP" && countdown > 0) {
       timer = setInterval(() => setCountdown((c) => Math.max(0, c - 1)), 1000);
     }
@@ -68,14 +76,14 @@ export const EkycVerificationModal: React.FC<Props> = ({
   const handleGenerateOtp = async (refToUse?: string) => {
     setLoading(true);
     setErrorMessage(null);
-    const targetRef = refToUse || aadhaarRef;
+    const targetRef = refToUse || demoRef;
     try {
-      const res = await generateEkycOtp(targetRef, `Verification of ${documentTitle || "Citizen Document"}`);
+      const res = await generateEkycOtp(targetRef, `Demo verification of ${documentTitle || "citizen document"}`);
       setTxnData(res);
       setCountdown(res.expiresInSeconds);
       setStep("ENTER_OTP");
     } catch (err: any) {
-      setErrorMessage(err.message || "Failed to generate eKYC OTP");
+      setErrorMessage(err.message || "Failed to generate Demo OTP");
     } finally {
       setLoading(false);
     }
@@ -93,26 +101,32 @@ export const EkycVerificationModal: React.FC<Props> = ({
         onVerificationSuccess(res);
       }
     } catch (err: any) {
-      setErrorMessage(err.message || "OTP verification failed");
+      setErrorMessage(err.message || "Demo OTP verification failed");
     } finally {
       setLoading(false);
     }
   };
 
   const handleSelectPreset = (p: typeof PRESET_IDENTITIES[0]) => {
-    setAadhaarRef(p.ref);
+    setDemoRef(p.ref);
     handleGenerateOtp(p.ref);
   };
 
   return (
     <div className="modal-backdrop">
-      <div className="modal-container ekyc-modal-content" role="dialog" aria-modal="true" aria-label="Aadhaar eKYC Gateway">
+      <div className="modal-container ekyc-modal-content" role="dialog" aria-modal="true" aria-label="DigiIn Demo Identity Verification">
         <div className="modal-header">
           <div>
-            <span className="trust-level-pill" style={{ background: "#eff6ff", color: "#1d4ed8" }}>
-              🔐 SOVEREIGN IDENTITY GATEWAY
-            </span>
-            <h3>Aadhaar / eKYC Identity Verification</h3>
+            {/* SANDBOX badge row */}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+              <span className="trust-level-pill" style={{ background: "#f0fdf4", color: "#166534" }}>
+                🧪 DigiIn Demo Verification
+              </span>
+              <span style={{ background: "#FEF3C7", color: "#92400E", fontSize: "10px", fontWeight: 800, padding: "2px 8px", borderRadius: "6px", border: "1px solid #F59E0B" }}>
+                ⚠️ SANDBOX — No real identity service connected
+              </span>
+            </div>
+            <h3>Demo Identity Verification</h3>
           </div>
           <button className="btn-close" onClick={onClose} aria-label="Close modal">
             &times;
@@ -123,23 +137,24 @@ export const EkycVerificationModal: React.FC<Props> = ({
         <div className="ekyc-stepper">
           <div className={`step-item ${step === "ENTER_REF" ? "active" : step === "ENTER_OTP" || step === "VERIFIED_RECEIPT" ? "completed" : ""}`}>
             <div className="step-circle">1</div>
-            <span>Virtual ID</span>
+            <span>Demo ID</span>
           </div>
           <div className="step-connector" />
           <div className={`step-item ${step === "ENTER_OTP" ? "active" : step === "VERIFIED_RECEIPT" ? "completed" : ""}`}>
             <div className="step-circle">2</div>
-            <span>OTP Auth</span>
+            <span>Demo OTP</span>
           </div>
           <div className="step-connector" />
           <div className={`step-item ${step === "VERIFIED_RECEIPT" ? "completed active" : ""}`}>
             <div className="step-circle">3</div>
-            <span>Demographic Match</span>
+            <span>Demo Match</span>
           </div>
         </div>
 
         {/* Privacy Assurance Banner */}
         <div className="privacy-assurance-box">
-          <strong>🛡️ Zero Raw Aadhaar Storage Guarantee:</strong> DigiIn never captures or stores 12-digit Aadhaar numbers or biometrics. All verifications use masked Virtual IDs (VID) and issue tamper-evident asymmetric cryptographic tokens (Ed25519).
+          <strong>🛡️ Synthetic Data Only:</strong> This demo uses fictional identities and synthetic credentials.
+          No real identity data, Aadhaar numbers, or government records are accessed or stored.
         </div>
 
         {errorMessage && (
@@ -148,24 +163,26 @@ export const EkycVerificationModal: React.FC<Props> = ({
           </div>
         )}
 
-        {/* STEP 1: Enter Virtual ID */}
+        {/* STEP 1: Enter Demo Identity Reference */}
         {step === "ENTER_REF" && (
           <div className="ekyc-step-content">
             <p className="step-instruction">
-              Authenticate your identity to elevate <strong>{documentTitle || "your document"}</strong> to <strong>Level 4: Government Verified</strong>.
+              Select a demo identity to simulate verification of{" "}
+              <strong>{documentTitle || "your document"}</strong>.
+              This demonstrates DigiIn's verification flow using synthetic sandbox data.
             </p>
 
             <div className="form-group">
-              <label htmlFor="aadhaar-ref-input">
-                <strong>Enter Aadhaar Reference or 16-Digit Virtual ID (VID):</strong>
+              <label htmlFor="demo-ref-input">
+                <strong>Demo Identity Reference:</strong>
               </label>
               <input
-                id="aadhaar-ref-input"
+                id="demo-ref-input"
                 type="text"
                 className="input-field"
-                placeholder="e.g. 9100-2026-9921"
-                value={aadhaarRef}
-                onChange={(e) => setAadhaarRef(e.target.value)}
+                placeholder="e.g. DEMO-ID-001"
+                value={demoRef}
+                onChange={(e) => setDemoRef(e.target.value)}
               />
             </div>
 
@@ -192,25 +209,25 @@ export const EkycVerificationModal: React.FC<Props> = ({
               <button
                 className="btn btn-primary"
                 onClick={() => handleGenerateOtp()}
-                disabled={loading || !aadhaarRef}
+                disabled={loading || !demoRef}
               >
-                {loading ? "Generating OTP..." : "📲 Generate Simulated OTP"}
+                {loading ? "Generating..." : "📲 Generate Demo OTP"}
               </button>
             </div>
           </div>
         )}
 
-        {/* STEP 2: Enter 6-Digit OTP */}
+        {/* STEP 2: Enter Demo OTP */}
         {step === "ENTER_OTP" && txnData && (
           <div className="ekyc-step-content">
             <div className="otp-sent-banner">
-              <span>📩 Simulated 6-digit OTP sent to: <strong>{txnData.maskedMobile}</strong></span>
+              <span>📩 Demo OTP sent to: <strong>{txnData.maskedMobile}</strong></span>
               <span className="otp-countdown">⏱️ Expires in {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, "0")}</span>
             </div>
 
             <div className="form-group" style={{ textAlign: "center", margin: "1.5rem 0" }}>
               <label htmlFor="ekyc-otp-input" style={{ display: "block", marginBottom: "0.5rem" }}>
-                <strong>Enter 6-Digit eKYC OTP:</strong>
+                <strong>Enter 6-Digit Demo OTP:</strong>
               </label>
               <input
                 id="ekyc-otp-input"
@@ -225,14 +242,14 @@ export const EkycVerificationModal: React.FC<Props> = ({
             </div>
 
             <div className="demo-hint-box">
-              <span>💡 Demonstration Hint: Expected OTP is <code>{txnData.demoOtpHint}</code></span>
+              <span>💡 Demo hint: OTP is <code>{txnData.demoOtpHint}</code></span>
               <button
                 type="button"
                 className="btn btn-sm btn-outline"
                 style={{ marginLeft: "0.75rem" }}
                 onClick={() => setOtp(txnData.demoOtpHint)}
               >
-                Auto-fill Demo OTP
+                Auto-fill
               </button>
             </div>
 
@@ -245,20 +262,20 @@ export const EkycVerificationModal: React.FC<Props> = ({
                 onClick={handleVerifyOtp}
                 disabled={loading || otp.length !== 6}
               >
-                {loading ? "Verifying Demographics..." : "🔐 Verify & Match Identity"}
+                {loading ? "Verifying..." : "🔐 Verify Demo Identity"}
               </button>
             </div>
           </div>
         )}
 
-        {/* STEP 3: Verified Demographics & Elevation Receipt */}
+        {/* STEP 3: Demo Verification Receipt */}
         {step === "VERIFIED_RECEIPT" && verifyResult && (
           <div className="ekyc-step-content verified-receipt-section">
             <div className="ekyc-success-banner">
               <div className="success-icon">✓</div>
               <div>
-                <h4>eKYC Demographic Verification Successful</h4>
-                <p>Identity established with official registry fixture. Document trust level elevated.</p>
+                <h4>Demo Identity Verification Complete</h4>
+                <p>Demo credential matched against synthetic sandbox fixture.</p>
               </div>
               <div className="match-score-badge">
                 <span className="score-num">{verifyResult.matchResult.score}%</span>
@@ -266,55 +283,55 @@ export const EkycVerificationModal: React.FC<Props> = ({
               </div>
             </div>
 
-            {/* Elevation Notification */}
+            {/* Trust Level Elevation */}
             {verifyResult.elevatedDocumentLevel && (
               <div className="elevation-alert-box">
-                🛡️ <strong>Trust Level Elevated to Level 4 (Government Verified)</strong>
+                🧪 <strong>Verified by DigiIn Demo Issuer</strong>
                 <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem" }}>
-                  The document has been bound to an authentic sovereign Aadhaar eKYC assertion signed with Ed25519.
+                  Document bound to synthetic demo assertion signed with Ed25519. (Sandbox only)
                 </p>
               </div>
             )}
 
             {/* Demographics Comparison Table */}
-            <h4 style={{ margin: "1rem 0 0.5rem 0" }}>📋 Side-by-Side Demographic Verification</h4>
+            <h4 style={{ margin: "1rem 0 0.5rem 0" }}>📋 Demo Credential Comparison</h4>
             <div className="demographics-diff-table">
               <div className="diff-header-row">
                 <span>Attribute</span>
-                <span>Claimed Document Value</span>
-                <span>Official eKYC Registry Record</span>
+                <span>Document Value</span>
+                <span>Demo Issuer Record</span>
                 <span>Status</span>
               </div>
               <div className="diff-data-row">
                 <span className="attr-name">Full Name</span>
-                <span>{verifyResult.matchResult.claimedValues.name || "SAHIL KHUTEY"}</span>
+                <span>{verifyResult.matchResult.claimedValues.name || "DEMO CITIZEN A"}</span>
                 <span>{verifyResult.identitySnapshot.name}</span>
                 <span className="badge-match">✓ {verifyResult.matchResult.nameMatch ? "MATCHED" : "MISMATCH"}</span>
               </div>
               <div className="diff-data-row">
                 <span className="attr-name">Date of Birth</span>
-                <span>{verifyResult.matchResult.claimedValues.dob || "2006-05-14"}</span>
+                <span>{verifyResult.matchResult.claimedValues.dob || "2006-01-01"}</span>
                 <span>{verifyResult.identitySnapshot.dob}</span>
                 <span className="badge-match">✓ {verifyResult.matchResult.dobMatch ? "VERIFIED" : "DISCREPANCY"}</span>
               </div>
               <div className="diff-data-row">
-                <span className="attr-name">Masked Aadhaar</span>
+                <span className="attr-name">Demo ID Reference</span>
                 <span>—</span>
-                <span>{verifyResult.identitySnapshot.maskedAadhaar}</span>
-                <span className="badge-match">🔒 SOVEREIGN</span>
+                <span>{verifyResult.identitySnapshot.maskedAadhaar || "DEMO-ID-***"}</span>
+                <span className="badge-match">🧪 SANDBOX</span>
               </div>
               <div className="diff-data-row">
                 <span className="attr-name">Jurisdiction / State</span>
-                <span>{verifyResult.matchResult.claimedValues.state || "Chhattisgarh"}</span>
+                <span>{verifyResult.matchResult.claimedValues.state || "Demo State"}</span>
                 <span>{verifyResult.identitySnapshot.state}</span>
                 <span className="badge-match">✓ RESIDENT</span>
               </div>
             </div>
 
-            {/* Cryptographic Signature Assertion Details */}
+            {/* Demo Cryptographic Assertion */}
             <div className="ekyc-crypto-token-box">
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.25rem" }}>
-                <strong>Signed eKYC Assertion ({verifyResult.algorithm})</strong>
+                <strong>Demo Signed Assertion ({verifyResult.algorithm})</strong>
                 <span className="key-id-tag">Key: {verifyResult.keyId}</span>
               </div>
               <code>{verifyResult.ekycProofToken}</code>
@@ -322,7 +339,7 @@ export const EkycVerificationModal: React.FC<Props> = ({
 
             <div className="modal-actions" style={{ marginTop: "1.5rem" }}>
               <button className="btn btn-primary" onClick={onClose}>
-                ✓ Done & Return to Wallet
+                ✓ Done &amp; Return to Wallet
               </button>
             </div>
           </div>

@@ -1,0 +1,72 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: digilocker_x
+      POSTGRES_USER: digilocker
+      POSTGRES_PASSWORD: digilocker_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U digilocker -d digilocker_x"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:8-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./services/api:/app
+    environment:
+      DATABASE_URL: postgresql+psycopg://digilocker:digilocker_dev@postgres:5432/digilocker_x
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: change-me-in-production
+      PROOF_SECRET: change-me-in-production
+      CORS_ORIGINS: http://localhost:3000
+    command: sh -c "pip install -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  worker:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./services/api:/app
+    environment:
+      DATABASE_URL: postgresql+psycopg://digilocker:digilocker_dev@postgres:5432/digilocker_x
+      REDIS_URL: redis://redis:6379/0
+    command: sh -c "pip install -r requirements.txt && python -m app.workers.worker"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  web:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./apps/web:/app
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:

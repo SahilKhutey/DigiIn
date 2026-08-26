@@ -17,10 +17,12 @@ export type AppView =
   | "SIGN_IN"
   | "OTP"
   | "ONBOARDING"
+  | "SCHOLARSHIP"
   | "JOURNEY"
   | "WALLET"
   | "VERIFIER"
   | "CONSENT"
+  | "DEMO_LAB"
   | "SCANNER";
 
 interface GovHeaderProps {
@@ -184,6 +186,19 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
             <button
               type="button"
               className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                currentView === "SCHOLARSHIP"
+                  ? "bg-green-700 text-white shadow-sm"
+                  : "text-[#475569] hover:text-[#092F4F] hover:bg-slate-200"
+              }`}
+              onClick={() => onViewChange("SCHOLARSHIP")}
+              aria-label="Start Scholarship Journey"
+            >
+              🎓 Scholarship
+            </button>
+
+            <button
+              type="button"
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 currentView === "JOURNEY"
                   ? "bg-[#0B5D9B] text-white shadow-sm"
                   : "text-[#475569] hover:text-[#092F4F] hover:bg-slate-200"
@@ -227,6 +242,19 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
               onClick={() => onViewChange("CONSENT")}
             >
               🛡️ Audit
+            </button>
+
+            <button
+              type="button"
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                currentView === "DEMO_LAB"
+                  ? "bg-purple-700 text-white shadow-sm"
+                  : "text-[#475569] hover:text-[#092F4F] hover:bg-slate-200"
+              }`}
+              onClick={() => onViewChange("DEMO_LAB")}
+              aria-label="Verification Demo Lab"
+            >
+              ⚗️ Lab
             </button>
 
             {onOpenScanner && (

@@ -84,11 +84,41 @@ jobs:
           path: apps/web/dist/
           retention-days: 7
 
-  # 3. End-to-End Playwright Automation Tests
+  # 3. Builder Brief Automated Release Gate (12 Criteria)
+  #    This is the authoritative hackathon compliance gate.
+  #    All 12 Builder Brief criteria must pass before Playwright E2E runs.
+  builder-brief-gate:
+    name: "Builder Brief Gate — 12 Criteria (Hackathon Release Gate)"
+    runs-on: ubuntu-latest
+    needs: [backend-test]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Backend Dependencies
+        working-directory: services/api
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run Builder Brief Automated Gate (All 12 Criteria)
+        env:
+          PYTHONPATH: "services/api:."
+        run: |
+          python scripts/hackathon_check.py
+
+  # 4. End-to-End Playwright Automation Tests
+  #    Requires BOTH backend tests AND the Builder Brief gate to pass first.
   e2e-playwright:
     name: Playwright E2E Browser Tests
     runs-on: ubuntu-latest
-    needs: [backend-test, frontend-build]
+    needs: [backend-test, builder-brief-gate, frontend-build]
 
     steps:
       - name: Checkout Repository

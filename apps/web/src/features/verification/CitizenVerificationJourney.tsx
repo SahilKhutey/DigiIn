@@ -28,13 +28,13 @@ export const CitizenVerificationJourney: React.FC = () => {
     {
       id: "step-auth",
       title: "DigiLocker Account Session",
-      description: "Secure gateway token established with UIDAI identity binding.",
+      description: "Secure gateway token established with UIDAI identity binding. (Sandbox)",
       status: pipelineProgress >= 1 ? "completed" : "in_progress",
     },
     {
       id: "step-fetch",
       title: "Fetch Official Issuer Records",
-      description: "Retrieving verified records directly from CBSE and UIDAI repositories.",
+      description: "Retrieving verified records directly from CBSE and UIDAI repositories. (Sandbox — synthetic data only)",
       status: pipelineProgress >= 2 ? "completed" : pipelineProgress === 1 ? "in_progress" : "pending",
     },
     {

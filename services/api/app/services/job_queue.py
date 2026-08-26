@@ -1,8 +1,15 @@
-"""Asynchronous document processing job queue and verification pipeline execution."""
+"""Asynchronous document processing job queue and verification pipeline execution.
+
+Architecture rule (Phase 16):
+  OCR/AI can extract evidence but NEVER independently declare a document authentic.
+  When classification_confidence < 0.80 the pipeline flags requires_human_review=True
+  and writes an immutable OCRAuditTrail record for government officer review.
+"""
 
 from __future__ import annotations
 
 import json
+import time
 from datetime import UTC, datetime
 from typing import Any
 
@@ -15,6 +22,7 @@ from app.models.entities import (
     DocumentJob,
     DocumentMatch,
     DocumentVersion,
+    OCRAuditTrail,
     RiskAssessment,
     VerificationEvidence,
 )
@@ -28,6 +36,9 @@ from app.services.document_intelligence import (
 )
 
 ocr_engine = LocalOCR()
+
+# Human-review confidence threshold — OCR below this is always flagged for officer review
+HUMAN_REVIEW_CONFIDENCE_THRESHOLD = 0.80
 
 
 def create_document_pipeline_jobs(db: Session, document_id: str) -> list[DocumentJob]:
@@ -88,11 +99,47 @@ def run_pipeline_for_document(db: Session, document_id: str) -> dict[str, Any]:
         )
     )
 
-    # 2. OCR Extraction
+    # 2. OCR Extraction (with timing for audit trail)
+    ocr_start_ms = int(time.time() * 1000)
     extracted_fields = ocr_engine.extract(doc.title, "application/pdf")
+    ocr_duration_ms = int(time.time() * 1000) - ocr_start_ms
 
     # 3. Document Classification
     classification = DocumentClassifier.classify(doc.title, extracted_fields)
+    confidence = classification["confidence"]
+
+    # --- Phase 16: Human-review fallback ---
+    # Architecture invariant: OCR/AI can extract evidence but NEVER independently
+    # declare a government document authentic. Any extraction with confidence < threshold
+    # is flagged for mandatory government officer review.
+    requires_human_review = (
+        confidence < HUMAN_REVIEW_CONFIDENCE_THRESHOLD
+        or classification.get("requires_human_confirmation", False)
+    )
+    human_review_reason = None
+    if requires_human_review:
+        if confidence < HUMAN_REVIEW_CONFIDENCE_THRESHOLD:
+            human_review_reason = (
+                f"OCR classification confidence {confidence:.0%} below threshold "
+                f"{HUMAN_REVIEW_CONFIDENCE_THRESHOLD:.0%}. Government officer review required."
+            )
+        else:
+            human_review_reason = "Document type requires mandatory human confirmation."
+
+    # Write immutable OCR audit trail record
+    ocr_trail = OCRAuditTrail(
+        document_id=document_id,
+        extraction_version=doc_version.version if doc_version else 1,
+        provider="LocalOCR",
+        raw_extracted_json=json.dumps(extracted_fields),
+        structured_fields_json=json.dumps(extracted_fields),
+        classification_type=classification["type"],
+        classification_confidence=confidence,
+        requires_human_review=requires_human_review,
+        human_review_reason=human_review_reason,
+        processing_duration_ms=ocr_duration_ms,
+    )
+    db.add(ocr_trail)
 
     extraction = DocumentExtraction(
         document_id=document_id,
@@ -100,7 +147,7 @@ def run_pipeline_for_document(db: Session, document_id: str) -> dict[str, Any]:
         provider="LocalOCR",
         extracted_fields_json=json.dumps(extracted_fields),
         classification_type=classification["type"],
-        classification_confidence=classification["confidence"],
+        classification_confidence=confidence,
     )
     db.add(extraction)
 
@@ -111,7 +158,7 @@ def run_pipeline_for_document(db: Session, document_id: str) -> dict[str, Any]:
             source="LocalOCR",
             reference="FIELD_EXTRACTION_V1",
             result="MATCH",
-            confidence=classification["confidence"],
+            confidence=confidence,
             metadata_json=json.dumps(extracted_fields),
         )
     )

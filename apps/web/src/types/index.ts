@@ -442,6 +442,64 @@ export type EkycMatchDemographicsRequest = {
   aadhaarRef: string;
 };
 
+// ── Scholarship Journey Types ─────────────────────────────────────────────────
+
+export type ScholarshipApplicationResponse = {
+  status: string;
+  application_id: string;
+  service_name: string;
+  citizen_name: string;
+  application_status: string;
+  next_step: string;
+  estimated_time: string;
+};
+
+export type SharedClaim = {
+  claim_key: string;
+  claim_label: string;
+  value_summary: string;
+  is_predicate: boolean;
+};
+
+export type SharingReviewResponse = {
+  application_id: string;
+  service_name: string;
+  service_purpose: string;
+  requester_organization: string;
+  shared_claims: SharedClaim[];
+  withheld_fields: string[];
+  raw_files_transferred_bytes: number;
+  validity_hours: number;
+  consent_required: boolean;
+};
+
+export type ConsentSubmitResponse = {
+  status: string;
+  application_id: string;
+  proof_token: string;
+  proof_id: string;
+  message: string;
+  raw_files_transferred_bytes: number;
+  claims_shared: number;
+  institution_verification_url: string;
+};
+
+// ── Verification Lab Types ────────────────────────────────────────────────────
+
+export type LabTestResult = {
+  test_id: string;
+  test_name: string;
+  description: string;
+  is_valid: boolean;
+  status: string;
+  failure_reason?: string;
+  claims_checked?: Record<string, unknown>;
+  tampered_field?: string;
+  original_value?: unknown;
+  tampered_value?: unknown;
+};
+
+
 
 
 

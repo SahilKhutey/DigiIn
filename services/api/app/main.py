@@ -42,6 +42,9 @@ from app.api.v1 import (
     health as health_router,
 )
 from app.api.v1 import (
+    jobs as jobs_router,
+)
+from app.api.v1 import (
     ops as ops_router,
 )
 from app.api.v1 import (
@@ -236,6 +239,7 @@ app.include_router(demo_router.router, prefix="/api/v1")
 app.include_router(auth_router.router, prefix="/api/v1")
 app.include_router(citizen_router.router, prefix="/api/v1")
 app.include_router(documents_router.router, prefix="/api/v1")
+app.include_router(jobs_router.router, prefix="/api/v1")
 app.include_router(government_router.router, prefix="/api/v1")
 app.include_router(intelligence_router.router, prefix="/api/v1")
 app.include_router(proofs_router.router, prefix="/api/v1")

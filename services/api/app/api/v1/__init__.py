@@ -5,6 +5,7 @@ from app.api.v1 import (
     documents,
     government,
     health,
+    jobs,
     ops,
     proofs,
     providers,
@@ -13,7 +14,21 @@ from app.api.v1 import (
     verification_intelligence,
 )
 
-__all__ = ["auth", "citizen", "demo", "documents", "government", "health", "ops", "proofs", "providers", "public_service", "review", "verification_intelligence"]
+__all__ = [
+    "auth",
+    "citizen",
+    "demo",
+    "documents",
+    "government",
+    "health",
+    "jobs",
+    "ops",
+    "proofs",
+    "providers",
+    "public_service",
+    "review",
+    "verification_intelligence",
+]
 
 
 

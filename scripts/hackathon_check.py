@@ -142,13 +142,15 @@ def run_builder_brief_gate() -> bool:
 
     # 9. Privacy Leakage Rejection
     print("[9/12] Testing Privacy Minimal Disclosure & Anti-Leakage...")
+    print("       [NEGATIVE TEST] Submitting intentional privacy-violating payload (aadhaar + raw_file) ...")
     leak_audit = PrivacyProofValidator.audit_service_disclosure(
         requested_and_consented_claims=["income_eligible"],
         returned_payload={"status": "VERIFIED", "claims": {"income_eligible": True, "aadhaar": "1234 5678 9012"}, "raw_file": "LEAK"},
     )
     privacy_ok = leak_audit.is_compliant is False and leak_audit.raw_files_leaked is True
-    print("       [PASS] Privacy violation intercepted: raw files and Aadhaar leak strictly blocked.")
+    print("       [PASS] Intentional privacy-violating payload correctly rejected (raw_file + aadhaar blocked).")
     checks.append(("Privacy Leakage Defense", privacy_ok))
+
 
     # 10. Accessibility & Bilingual Parity (en/hi)
     print("[10/12] Checking Bilingual Parity & Accessibility Dictionaries...")
@@ -190,10 +192,20 @@ def run_builder_brief_gate() -> bool:
 
     print("=" * 80)
     if all_passed:
-        print("  >>> VERDICT: 100% BUILDER BRIEF CRITERIA SATISFIED — READY FOR JURY <<<")
+        print("  >>> AUTOMATED RELEASE GATE: ALL 12 CHECKS PASSED <<<")
+        print()
+        print("  Automated gate: PASS")
+        print()
+        print("  Human review still required for:")
+        print("    • Usability and accessibility quality")
+        print("    • Visual and UX consistency")
+        print("    • Problem/solution clarity")
+        print("    • Live demo quality")
+        print("    • Submission completeness")
     else:
         print("  >>> VERDICT: SOME CHECKS FAILED — REVIEW ABOVE LOGS <<<")
     print("=" * 80)
+
 
     return all_passed
 

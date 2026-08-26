@@ -50,13 +50,26 @@ def _run_migrations(conn) -> None:
         ("document_versions", "content_type", "VARCHAR(80)"),
         ("document_versions", "size_bytes", "INTEGER"),
         ("document_versions", "processing_status", "VARCHAR(40)"),
+        ("document_jobs", "max_attempts", "INTEGER DEFAULT 3"),
+        ("document_jobs", "available_at", "TIMESTAMP"),
+        ("document_jobs", "worker_id", "VARCHAR(80)"),
+        ("document_jobs", "result_json", "TEXT"),
     ]
     for table, col, col_type in columns_to_ensure:
         try:
-            conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"))
-            conn.commit()
+            if conn.dialect.name == "sqlite":
+                res = conn.execute(text(f"PRAGMA table_info({table})")).fetchall()
+                existing_cols = {row[1] for row in res}
+                if existing_cols and col not in existing_cols:
+                    conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"))
+                    conn.commit()
+            else:
+                conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"))
+                conn.commit()
         except Exception:
             pass
+
+
 
 
 def init_db() -> None:

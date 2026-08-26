@@ -1,5 +1,6 @@
 import type {
   ConsentRecord,
+  ConsentSubmitResponse,
   CorrectionRequestRecord,
   Diagnostic,
   DirectUploadPayload,
@@ -11,11 +12,14 @@ import type {
   EvidenceComparisonDetail,
   GovernmentDecisionPayload,
   JwksResponse,
+  LabTestResult,
   PipelineUploadResponse,
   PlatformEvent,
   PlatformSnapshot,
   Scenario,
+  ScholarshipApplicationResponse,
   SelectiveDisclosurePreference,
+  SharingReviewResponse,
   StudentDemo,
   SupportSafeSummary,
   TokenCheck,
@@ -315,5 +319,48 @@ export async function matchEkycDemographics(
   }
   return res.json();
 }
+
+// ── Scholarship Journey API ───────────────────────────────────────────────────
+
+export async function startScholarshipApplication(
+  citizenId: string,
+  citizenName: string
+): Promise<ScholarshipApplicationResponse> {
+  const res = await fetch(`${API_BASE}/api/v1/public-service/scholarship/apply`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ citizen_account_id: citizenId, citizen_name: citizenName }),
+  });
+  if (!res.ok) throw new Error("Failed to start scholarship application");
+  return res.json();
+}
+
+export async function getSharingReview(appId: string): Promise<SharingReviewResponse> {
+  const res = await fetch(`${API_BASE}/api/v1/public-service/scholarship/${appId}/sharing-review`);
+  if (!res.ok) throw new Error("Failed to fetch sharing review");
+  return res.json();
+}
+
+export async function submitScholarshipConsent(
+  appId: string,
+  citizenId: string
+): Promise<ConsentSubmitResponse> {
+  const res = await fetch(`${API_BASE}/api/v1/public-service/scholarship/${appId}/consent-and-submit`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ citizen_account_id: citizenId, consent_granted: true }),
+  });
+  if (!res.ok) throw new Error("Failed to submit scholarship consent");
+  return res.json();
+}
+
+// ── Verification Lab API ──────────────────────────────────────────────────────
+
+export async function getVerificationLabResults(): Promise<{ tests: LabTestResult[] }> {
+  const res = await fetch(`${API_BASE}/api/v1/public-service/verification-lab`);
+  if (!res.ok) throw new Error("Failed to fetch verification lab results");
+  return res.json();
+}
+
 
 

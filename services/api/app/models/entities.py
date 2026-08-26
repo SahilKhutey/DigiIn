@@ -155,13 +155,50 @@ class DocumentJob(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
     document_id: Mapped[str] = mapped_column(ForeignKey("user_documents.id"), index=True)
     job_type: Mapped[str] = mapped_column(String(40))
-    status: Mapped[str] = mapped_column(String(32), default="PENDING")
+    # State machine: QUEUED → RUNNING → SUCCEEDED / FAILED / RETRYING / CANCELLED
+    status: Mapped[str] = mapped_column(String(32), default="QUEUED")
     attempts: Mapped[int] = mapped_column(Integer, default=0)
-    priority: Mapped[int] = mapped_column(Integer, default=1)
+    max_attempts: Mapped[int] = mapped_column(Integer, default=3)
+    priority: Mapped[int] = mapped_column(Integer, default=100)
+    # available_at enables delayed/scheduled execution
+    available_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # worker_id for distributed concurrency (optimistic locking)
+    worker_id: Mapped[str | None] = mapped_column(String(80), nullable=True)
     error_code: Mapped[str | None] = mapped_column(String(60), nullable=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class OCRAuditTrail(Base):
+    """Immutable audit record of every OCR/extraction run — supports versioning and human-review fallback.
+
+    Architecture rule: OCR/AI can extract evidence, but it can NEVER independently declare a
+    government document authentic. Human (government officer) review is required when
+    classification_confidence < 0.80 or requires_human_review is True.
+    """
+
+    __tablename__ = "ocr_audit_trail"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    document_id: Mapped[str] = mapped_column(ForeignKey("user_documents.id"), index=True)
+    job_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    extraction_version: Mapped[int] = mapped_column(Integer, default=1)
+    provider: Mapped[str] = mapped_column(String(60), default="LocalOCR")
+    # Full OCR output snapshot (immutable after write)
+    raw_extracted_json: Mapped[str] = mapped_column(Text, default="{}")
+    # Structured fields after post-processing
+    structured_fields_json: Mapped[str] = mapped_column(Text, default="{}")
+    classification_type: Mapped[str] = mapped_column(String(60), default="OTHER")
+    classification_confidence: Mapped[float] = mapped_column(default=0.0)
+    # Human-review fallback trigger
+    requires_human_review: Mapped[bool] = mapped_column(Boolean, default=False)
+    human_review_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    human_reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    human_reviewer_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    human_review_decision: Mapped[str | None] = mapped_column(String(40), nullable=True)  # APPROVED / REJECTED
+    processing_duration_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
 
 

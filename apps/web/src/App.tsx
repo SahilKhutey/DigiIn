@@ -4,6 +4,9 @@ import { AppShell } from "./layouts/AppShell";
 import { AppView } from "./layouts/GovHeader";
 import { LandingView } from "./features/landing/LandingView";
 import { CitizenVerificationJourney } from "./features/verification/CitizenVerificationJourney";
+import { ScholarshipJourney } from "./features/scholarship/ScholarshipJourney";
+import { VerificationLabView } from "./features/demo-lab/VerificationLabView";
+import { DataSaverToggle } from "./features/settings/DataSaverToggle";
 import { CorrectionSection } from "./components/correction/CorrectionSection";
 import { ConsentManagerDashboard } from "./components/consent/ConsentManagerDashboard";
 import { DiagnosticTimeline } from "./components/diagnostic/DiagnosticTimeline";
@@ -88,7 +91,7 @@ const LOCAL_DOCUMENTS: DocumentOption[] = [
     id: "marksheet",
     label: "Class XII marksheet",
     category: "Education",
-    trustLabel: "Government issued",
+    trustLabel: "[DEMO] Sandbox Issued",
   },
 ];
 
@@ -471,79 +474,28 @@ function AppContent() {
       )}
 
 
-      {/* View 2: CITIZEN 8-STEP VERIFICATION JOURNEY */}
+      {/* View 0: FLAGSHIP SCHOLARSHIP JOURNEY */}
+      {currentView === "SCHOLARSHIP" && (
+        <ScholarshipJourney onBack={() => setCurrentView("LANDING")} />
+      )}
+
+      {/* View 2: CITIZEN 8-STEP VERIFICATION JOURNEY (CBSE academic flow) */}
       {currentView === "JOURNEY" && (
         <CitizenVerificationJourney />
       )}
 
 
 
-      {/* View 3: CITIZEN DOCUMENT WALLET & VAULT */}
+      {/* View 3: CITIZEN DOCUMENT WALLET & VAULT — clean citizen view */}
       {currentView === "WALLET" && (
-        <div className="space-y-8">
+        <div className="space-y-6">
+          <DataSaverToggle />
           <DocumentCenter
             walletDocuments={walletDocuments}
             onSelectForCorrection={handleSelectForCorrection}
             onRefreshWallet={refreshWallet}
             onSwitchToVerifier={() => setCurrentView("VERIFIER")}
             onEkycVerify={handleOpenEkyc}
-          />
-
-          <DirectVerificationFlow />
-
-          <PlatformRunner
-            snapshot={platformSnapshot}
-            studentDemo={studentDemo}
-            onRunDemo={handleRunStudentDemo}
-          />
-
-          <CorrectionSection
-            snapshot={platformSnapshot}
-            targetDocId={targetDocId}
-            corrField={corrField}
-            corrCurrentVal={corrCurrentVal}
-            corrProposedVal={corrProposedVal}
-            corrReason={corrReason}
-            corrEvidenceDesc={corrEvidenceDesc}
-            docVersions={docVersions}
-            corrections={corrections}
-            onTargetDocChange={setTargetDocId}
-            onFieldChange={setCorrField}
-            onCurrentValChange={setCorrCurrentVal}
-            onProposedValChange={setCorrProposedVal}
-            onReasonChange={setCorrReason}
-            onEvidenceDescChange={setCorrEvidenceDesc}
-            onSubmitCorrection={handleSubmitCorrection}
-            onDecideCorrection={handleDecideCorrection}
-          />
-
-          <ProofGateway
-            verificationRequest={verificationRequest}
-            verificationResult={verificationResult}
-            tokenCheck={tokenCheck}
-            onCreateRequest={handleCreateProofRequest}
-            onAuthorize={handleAuthorizeVerification}
-            onIntrospect={handleIntrospectProof}
-            onOpenScanner={() => handleOpenScanner()}
-          />
-
-          <DocumentPicker
-            documents={documents}
-            selectedDocumentId={documentId}
-            onSelectDocument={setDocumentId}
-          />
-
-          <ScenarioPicker
-            scenarios={scenarios}
-            selectedScenarioId={scenarioId}
-            onSelectScenario={setScenarioId}
-          />
-
-          <DiagnosticTimeline
-            diagnostic={diagnostic}
-            scenarioId={scenarioId}
-            onRetry={handleRetry}
-            onCopyEvidence={handleCopyEvidence}
           />
         </div>
       )}
@@ -556,6 +508,71 @@ function AppContent() {
       {/* View 5: CONSENT & SOVEREIGN AUDIT DASHBOARD */}
       {currentView === "CONSENT" && (
         <ConsentManagerDashboard onNotice={setNotice} />
+      )}
+
+      {/* View 6: DEMO LAB — technical demonstration & dev tools */}
+      {currentView === "DEMO_LAB" && (
+        <div className="space-y-8">
+          <VerificationLabView />
+
+          <div className="max-w-4xl mx-auto px-4">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
+              <div className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">🔧 Platform Developer Tools</div>
+              <div className="space-y-6">
+                <DirectVerificationFlow />
+                <PlatformRunner
+                  snapshot={platformSnapshot}
+                  studentDemo={studentDemo}
+                  onRunDemo={handleRunStudentDemo}
+                />
+                <CorrectionSection
+                  snapshot={platformSnapshot}
+                  targetDocId={targetDocId}
+                  corrField={corrField}
+                  corrCurrentVal={corrCurrentVal}
+                  corrProposedVal={corrProposedVal}
+                  corrReason={corrReason}
+                  corrEvidenceDesc={corrEvidenceDesc}
+                  docVersions={docVersions}
+                  corrections={corrections}
+                  onTargetDocChange={setTargetDocId}
+                  onFieldChange={setCorrField}
+                  onCurrentValChange={setCorrCurrentVal}
+                  onProposedValChange={setCorrProposedVal}
+                  onReasonChange={setCorrReason}
+                  onEvidenceDescChange={setCorrEvidenceDesc}
+                  onSubmitCorrection={handleSubmitCorrection}
+                  onDecideCorrection={handleDecideCorrection}
+                />
+                <ProofGateway
+                  verificationRequest={verificationRequest}
+                  verificationResult={verificationResult}
+                  tokenCheck={tokenCheck}
+                  onCreateRequest={handleCreateProofRequest}
+                  onAuthorize={handleAuthorizeVerification}
+                  onIntrospect={handleIntrospectProof}
+                  onOpenScanner={() => handleOpenScanner()}
+                />
+                <DocumentPicker
+                  documents={documents}
+                  selectedDocumentId={documentId}
+                  onSelectDocument={setDocumentId}
+                />
+                <ScenarioPicker
+                  scenarios={scenarios}
+                  selectedScenarioId={scenarioId}
+                  onSelectScenario={setScenarioId}
+                />
+                <DiagnosticTimeline
+                  diagnostic={diagnostic}
+                  scenarioId={scenarioId}
+                  onRetry={handleRetry}
+                  onCopyEvidence={handleCopyEvidence}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Modals for Offline Scanner & eKYC */}
@@ -572,7 +589,7 @@ function AppContent() {
         documentTitle={ekycTargetDoc?.title}
         onVerificationSuccess={() => {
           refreshWallet();
-          setNotice("Aadhaar eKYC identity verified! Document trust level elevated to Level 4 (Government Verified).");
+          setNotice("[SANDBOX DEMO] eKYC simulation complete. No real Aadhaar connection. Trust level elevated to Level 4 in demo environment only.");
         }}
       />
     </AppShell>

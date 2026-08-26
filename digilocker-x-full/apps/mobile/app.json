@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "name": "DigiLocker X",
+    "slug": "digilocker-x",
+    "version": "0.2.0",
+    "scheme": "digilockerx",
+    "plugins": ["expo-router"]
+  }
+}
