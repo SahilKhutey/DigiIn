@@ -9,7 +9,6 @@ declares authenticity — human government review is required for trust elevatio
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
@@ -17,9 +16,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.deps import current_user
-from app.core.operations.job_worker import JobPriority, job_worker
+from app.core.operations.job_worker import job_worker
 from app.db import get_db
-from app.models.entities import Document, DocumentJob, DocumentVersion, OCRAuditTrail, User
+from app.models.entities import Document, DocumentJob, OCRAuditTrail, User
 from app.services.job_queue import run_pipeline_for_document
 
 router = APIRouter(prefix="/jobs", tags=["document-processing"])
