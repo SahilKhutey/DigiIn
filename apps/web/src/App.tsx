@@ -402,7 +402,7 @@ function AppContent() {
       {/* View 1: PUBLIC LANDING EXPERIENCE */}
       {currentView === "LANDING" && (
         <LandingView
-          onStartJourney={() => setCurrentView("JOURNEY")}
+          onStartJourney={() => setCurrentView("SCHOLARSHIP")}
           onOpenWallet={() => setCurrentView("WALLET")}
           onOpenVerifier={() => setCurrentView("VERIFIER")}
           onNavigate={(view) => setCurrentView(view)}
@@ -411,16 +411,16 @@ function AppContent() {
 
       {/* Public Sub-Pages */}
       {currentView === "ABOUT" && (
-        <AboutView onStartJourney={() => setCurrentView("JOURNEY")} />
+        <AboutView onStartJourney={() => setCurrentView("SCHOLARSHIP")} />
       )}
 
       {currentView === "HOW_IT_WORKS" && (
-        <HowItWorksView onStartJourney={() => setCurrentView("JOURNEY")} />
+        <HowItWorksView onStartJourney={() => setCurrentView("SCHOLARSHIP")} />
       )}
 
       {currentView === "FOR_CITIZENS" && (
         <ForCitizensView
-          onStartJourney={() => setCurrentView("JOURNEY")}
+          onStartJourney={() => setCurrentView("SCHOLARSHIP")}
           onOpenWallet={() => setCurrentView("WALLET")}
         />
       )}
