@@ -66,6 +66,9 @@ from app.api.v1 import (
 from app.api.v1 import (
     verification_intelligence as intelligence_router,
 )
+from app.api.v1 import (
+    zk_studio as zk_studio_router,
+)
 from app.crypto.proofs import (
     Proof,
     _b64,
@@ -257,6 +260,7 @@ app.include_router(proofs_router.router, prefix="/api/v1")
 app.include_router(providers_router.router, prefix="/api/v1")
 app.include_router(public_service_router.router, prefix="/api/v1")
 app.include_router(review_router.router, prefix="/api/v1")
+app.include_router(zk_studio_router.router, prefix="/api/v1")
 
 # Bootstrap Phase 7 mock providers (development / sandbox only)
 from app.integrations.mock_providers import register_mock_providers  # noqa: E402

@@ -40,7 +40,8 @@ export type AppView =
   | "SETTINGS"
   | "CORRECTIONS"
   | "SUPPORT"
-  | "DEMO_LAB";
+  | "DEMO_LAB"
+  | "ZK_STUDIO";
 
 interface GovHeaderProps {
   currentView: AppView;

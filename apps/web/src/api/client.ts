@@ -33,6 +33,10 @@ import type {
   FederatedCredential,
   RevocationRecord,
   RevocationRegistryResponse,
+  ZkPredicateRule,
+  ZkTemplate,
+  ZkEvaluateResponse,
+  ZkOfflineVerifyResponse,
 } from "../types";
 
 
@@ -485,6 +489,56 @@ export async function checkCredentialRevocationStatus(
   if (!res.ok) throw new Error("Failed to check revocation status");
   return res.json();
 }
+
+// ── Zero-Knowledge Predicate Studio API ───────────────────────────────────────
+
+export async function fetchZkTemplates(): Promise<{
+  status: string;
+  public_key_id: string;
+  public_key_b64: string;
+  templates: ZkTemplate[];
+}> {
+  const res = await fetch(`${API_BASE}/api/v1/zk/templates`);
+  if (!res.ok) throw new Error("Failed to fetch ZK predicate templates");
+  return res.json();
+}
+
+export async function evaluateZkPredicates(payload: {
+  citizen_account_id?: string;
+  audience?: string;
+  purpose?: string;
+  predicates: ZkPredicateRule[];
+}): Promise<ZkEvaluateResponse> {
+  const res = await fetch(`${API_BASE}/api/v1/zk/evaluate-predicates`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      citizen_account_id: payload.citizen_account_id || "DIN-DEMO-001",
+      audience: payload.audience || "university_admissions_portal",
+      purpose: payload.purpose || "Selective Zero-Knowledge Disclosure Verification",
+      predicates: payload.predicates,
+    }),
+  });
+  if (!res.ok) throw new Error("Failed to evaluate zero-knowledge predicates");
+  return res.json();
+}
+
+export async function verifyOfflineQr(payload: {
+  qr_payload: string;
+  audience?: string;
+}): Promise<ZkOfflineVerifyResponse> {
+  const res = await fetch(`${API_BASE}/api/v1/zk/verify-offline-qr`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      qr_payload: payload.qr_payload,
+      audience: payload.audience || "university_admissions_portal",
+    }),
+  });
+  if (!res.ok) throw new Error("Failed to verify offline QR payload");
+  return res.json();
+}
+
 
 
 

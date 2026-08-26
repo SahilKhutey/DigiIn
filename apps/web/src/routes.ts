@@ -26,6 +26,7 @@ export const routes = {
   verifier: "/verifier",
   admin: "/admin",
   scholarship: "/scholarship",
+  zkStudio: "/zk-studio",
 } as const;
 
 export type AppRoute = typeof routes[keyof typeof routes];

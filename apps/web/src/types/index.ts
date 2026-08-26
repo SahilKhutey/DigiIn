@@ -561,6 +561,67 @@ export type RevocationRegistryResponse = {
   last_updated: string;
 };
 
+// ── Zero-Knowledge Predicate Studio Types ─────────────────────────────────────
+
+export type ZkPredicateRule = {
+  predicate_id: string;
+  label: string;
+  claim_type: string;
+  operator: ">=" | "<=" | "==" | "!=" | "in";
+  threshold_value: string | number | boolean;
+};
+
+export type ZkTemplate = {
+  id: string;
+  title: string;
+  purpose: string;
+  predicates: ZkPredicateRule[];
+};
+
+export type EvaluatedPredicateResult = {
+  predicate_id: string;
+  label: string;
+  claim_type: string;
+  operator: string;
+  threshold_value: string | number | boolean;
+  is_satisfied: boolean;
+  result_status: string;
+  blinding_salt: string;
+  commitment_hash: string;
+  raw_value_redacted: boolean;
+};
+
+export type ZkEvaluateResponse = {
+  status: string;
+  proof_id: string;
+  citizen_account_id: string;
+  all_satisfied: boolean;
+  overall_result: string;
+  raw_files_transferred_bytes: number;
+  pii_leaked_bytes: number;
+  merkle_root_digest: string;
+  evaluated_predicates: EvaluatedPredicateResult[];
+  presentation_token: string;
+  compact_qr_payload: string;
+  issuer_public_key_b64: string;
+  issued_at: string;
+  expires_at: string;
+};
+
+export type ZkOfflineVerifyResponse = {
+  valid: boolean;
+  status: string;
+  reason?: string;
+  proof_id?: string;
+  subject?: string;
+  purpose?: string;
+  all_satisfied?: boolean;
+  merkle_root?: string;
+  algorithm?: string;
+  offline_validated?: boolean;
+  zero_network_calls?: boolean;
+};
+
 
 
 

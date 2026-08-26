@@ -46,6 +46,7 @@ import { CredentialsView } from "./features/citizen/CredentialsView";
 import { NotificationsView } from "./features/citizen/NotificationsView";
 import { SettingsView } from "./features/settings/SettingsView";
 import { IssuerFederationView } from "./features/issuer/IssuerFederationView";
+import { ZkPredicateStudioView } from "./features/zk-studio/ZkPredicateStudioView";
 import { AuthProvider } from "./context/AuthContext";
 import { OfflineScannerModal } from "./components/scanner/OfflineScannerModal";
 import { EkycVerificationModal } from "./components/ekyc/EkycVerificationModal";
@@ -236,6 +237,7 @@ const PATH_TO_VIEW_MAP: Record<string, AppView> = {
   [routes.verifier]: "VERIFIER_CONSOLE",
   [routes.admin]: "ADMIN_CONSOLE",
   [routes.scholarship]: "SCHOLARSHIP",
+  [routes.zkStudio]: "ZK_STUDIO",
   [routes.services]: "SERVICES",
   [routes.howItWorks]: "HOW_IT_WORKS",
   "/about": "ABOUT",
@@ -264,6 +266,7 @@ const VIEW_TO_PATH_MAP: Partial<Record<AppView, string>> = {
   VERIFIER_CONSOLE: routes.verifier,
   ADMIN_CONSOLE: routes.admin,
   SCHOLARSHIP: routes.scholarship,
+  ZK_STUDIO: routes.zkStudio,
   HOW_IT_WORKS: routes.howItWorks,
   ABOUT: "/about",
 };
@@ -936,10 +939,18 @@ function AppContent() {
         </div>
       )}
 
+      {/* Zero-Knowledge Predicate Studio & Offline Proof Hub */}
+      {currentView === "ZK_STUDIO" && (
+        <ZkPredicateStudioView />
+      )}
+
       {/* View 6: DEMO LAB — technical demonstration & dev tools */}
       {currentView === "DEMO_LAB" && (
         <div className="space-y-8">
-          <VerificationLabView />
+          <ZkPredicateStudioView />
+          <div className="border-t border-slate-200 pt-6">
+            <VerificationLabView />
+          </div>
 
           <div className="max-w-4xl mx-auto px-4">
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
