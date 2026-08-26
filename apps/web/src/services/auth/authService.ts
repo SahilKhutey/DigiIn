@@ -20,6 +20,12 @@ export const authService = {
     return mockAuthBackend.sendOtp(mobile);
   },
 
+  async loginAsPersona(personaId: string): Promise<CitizenProfile> {
+    const profile = await mockAuthBackend.loginAsPersona(personaId);
+    this.saveSession(profile);
+    return profile;
+  },
+
   async completeOnboarding(
     mobile: string,
     data: { name: string; language: "en" | "hi" }

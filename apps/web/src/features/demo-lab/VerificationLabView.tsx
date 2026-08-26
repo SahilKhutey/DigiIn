@@ -1,6 +1,7 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import * as api from "../../api/client";
 import type { LabTestResult } from "../../types";
+import { DemoControlCenter } from "./DemoControlCenter";
 
 // Fallback demo data when API is unavailable
 const FALLBACK_TESTS: LabTestResult[] = [
@@ -48,22 +49,31 @@ export const VerificationLabView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState<string>("TC-01");
 
-  useEffect(() => {
+  const loadResults = () => {
+    setLoading(true);
     api.getVerificationLabResults()
       .then(r => { setTests(r.tests); setLoading(false); })
       .catch(() => { setTests(FALLBACK_TESTS); setLoading(false); });
+  };
+
+  useEffect(() => {
+    loadResults();
   }, []);
 
   const activeTest = tests.find(t => t.test_id === activeId) ?? tests[0];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-[#092F4F] to-[#0B5D9B] text-white rounded-2xl p-6 mb-6">
+    <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+      {/* 1. Demo Control Center for Judges */}
+      <DemoControlCenter onResetComplete={loadResults} />
+
+      {/* 2. Header */}
+      <div className="bg-gradient-to-br from-[#092F4F] to-[#0B5D9B] text-white rounded-2xl p-6 shadow-xs">
         <div className="text-xs font-bold opacity-70 uppercase tracking-wide mb-1">⚗️ Verification Lab</div>
-        <h1 className="text-2xl font-extrabold mb-1">Cryptographic Proof Verification Demo</h1>
-        <p className="text-sm opacity-90">Live demonstration of valid, tampered, revoked and expired proof handling.</p>
+        <h1 className="text-2xl font-extrabold mb-1 m-0">Cryptographic Proof Verification Demo</h1>
+        <p className="text-sm opacity-90 m-0 mt-1">Live demonstration of valid, tampered, revoked, and expired proof handling.</p>
       </div>
+
 
       {loading && (
         <div className="text-center py-8 text-slate-500">

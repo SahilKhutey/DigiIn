@@ -2,10 +2,13 @@ export type AuthState = "AUTH_UNKNOWN" | "SIGNED_OUT" | "ONBOARDING" | "AUTHENTI
 
 export type OtpStatus = "IDLE" | "REQUESTING" | "SENT" | "VERIFYING" | "INVALID" | "EXPIRED";
 
+export type UserRole = "CITIZEN" | "ISSUER" | "VERIFIER" | "ADMIN";
+
 export interface CitizenProfile {
   mobile: string;
   name: string;
   digiinId: string;
+  role?: UserRole;
   language: "en" | "hi";
   isFirstTime: boolean;
   ekycVerified: boolean;
@@ -13,6 +16,18 @@ export interface CitizenProfile {
   verifiedCount: number;
   sessionExpiresAt: number;
 }
+
+export interface DemoPersona {
+  id: string;
+  name: string;
+  role: UserRole;
+  digiinId: string;
+  organization: string;
+  avatarBadge: string;
+  mobile: string;
+  description: string;
+}
+
 
 export interface OtpResult {
   success: boolean;

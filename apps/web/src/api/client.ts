@@ -362,5 +362,21 @@ export async function getVerificationLabResults(): Promise<{ tests: LabTestResul
   return res.json();
 }
 
+export async function resetDemoEnvironment(): Promise<{
+  status: string;
+  message: string;
+  citizen_account_id: string;
+  application_id: string;
+  proof_id: string;
+  credentials_count: number;
+}> {
+  const res = await fetch(`${API_BASE}/api/v1/public-service/demo/reset`, {
+    method: "POST",
+  });
+  if (!res.ok) throw new Error("Failed to reset demo environment");
+  return res.json();
+}
+
+
 
 

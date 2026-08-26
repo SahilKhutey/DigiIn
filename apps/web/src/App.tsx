@@ -3,6 +3,7 @@ import * as api from "./api/client";
 import { AppShell } from "./layouts/AppShell";
 import { AppView } from "./layouts/GovHeader";
 import { LandingView } from "./features/landing/LandingView";
+import { ServicesCatalogView } from "./features/services/ServicesCatalogView";
 import { CitizenVerificationJourney } from "./features/verification/CitizenVerificationJourney";
 import { ScholarshipJourney } from "./features/scholarship/ScholarshipJourney";
 import { VerificationLabView } from "./features/demo-lab/VerificationLabView";
@@ -457,6 +458,7 @@ function AppContent() {
       {currentView === "SIGN_IN" && (
         <SignInView
           onOtpSent={() => setCurrentView("OTP")}
+          onQuickLogin={() => setCurrentView("WALLET")}
           onNavigateHelp={() => setCurrentView("HELP")}
           onNavigatePrivacy={() => setCurrentView("PRIVACY")}
         />
@@ -473,6 +475,19 @@ function AppContent() {
         <OnboardingView onComplete={() => setCurrentView("WALLET")} />
       )}
 
+      {/* Services Discovery View */}
+      {currentView === "SERVICES" && (
+        <ServicesCatalogView
+          onSelectService={(serviceId) => {
+            if (serviceId === "srv_scholarship_du") {
+              setCurrentView("SCHOLARSHIP");
+            } else {
+              setCurrentView("JOURNEY");
+            }
+          }}
+          onBackToHome={() => setCurrentView("LANDING")}
+        />
+      )}
 
       {/* View 0: FLAGSHIP SCHOLARSHIP JOURNEY */}
       {currentView === "SCHOLARSHIP" && (

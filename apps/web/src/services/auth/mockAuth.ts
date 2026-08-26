@@ -1,6 +1,59 @@
-import { CitizenProfile, OtpResult, VerifyResult } from "./authTypes";
+import { CitizenProfile, DemoPersona, OtpResult, VerifyResult } from "./authTypes";
 
 const OTP_TTL_SECONDS = 60;
+
+export const DEMO_PERSONAS: DemoPersona[] = [
+  {
+    id: "rahul-citizen",
+    name: "Rahul Sharma",
+    role: "CITIZEN",
+    digiinId: "DIN-DEMO-001",
+    organization: "Sovereign Citizen (Holder)",
+    avatarBadge: "👤",
+    mobile: "9876543210",
+    description: "Student applicant for National Merit Scholarship with 4 verified credentials",
+  },
+  {
+    id: "priya-citizen",
+    name: "Priya Verma",
+    role: "CITIZEN",
+    digiinId: "DIN-DEMO-002",
+    organization: "Sovereign Citizen (Holder)",
+    avatarBadge: "👤",
+    mobile: "9876500000",
+    description: "Citizen applicant for PM-Kisan Agricultural Domicile subsidy",
+  },
+  {
+    id: "du-verifier",
+    name: "Delhi University Admission Office",
+    role: "VERIFIER",
+    digiinId: "ORG-DEMO-001",
+    organization: "University Scholarship Service",
+    avatarBadge: "🏢",
+    mobile: "9876511111",
+    description: "Institutional relying party verifying selective claims & proofs",
+  },
+  {
+    id: "cbse-issuer",
+    name: "CBSE Demo Authority",
+    role: "ISSUER",
+    digiinId: "ISS-DEMO-CBSE",
+    organization: "Central Board of Secondary Education",
+    avatarBadge: "🏛️",
+    mobile: "9876522222",
+    description: "Authoritative academic board credential issuer",
+  },
+  {
+    id: "admin-root",
+    name: "DigiIn Administrator",
+    role: "ADMIN",
+    digiinId: "ADMIN-DEMO-01",
+    organization: "Root Trust & Observability Infrastructure",
+    avatarBadge: "🛡️",
+    mobile: "9876599999",
+    description: "Platform operator managing trust registry, health & audit logs",
+  },
+];
 
 interface ActiveOtpSession {
   mobile: string;
@@ -10,6 +63,7 @@ interface ActiveOtpSession {
 }
 
 let activeSession: ActiveOtpSession | null = null;
+
 
 const EXISTING_CITIZENS: Record<string, Partial<CitizenProfile>> = {
   "9876543210": {
@@ -171,4 +225,23 @@ export const mockAuthBackend = {
     EXISTING_CITIZENS[mobile] = profile;
     return profile;
   },
+
+  async loginAsPersona(personaId: string): Promise<CitizenProfile> {
+    await delay(150);
+    const persona = DEMO_PERSONAS.find((p) => p.id === personaId) || DEMO_PERSONAS[0];
+    const profile: CitizenProfile = {
+      mobile: persona.mobile,
+      name: persona.name,
+      digiinId: persona.digiinId,
+      role: persona.role,
+      language: "en",
+      isFirstTime: false,
+      ekycVerified: true,
+      documentsCount: 12,
+      verifiedCount: 9,
+      sessionExpiresAt: Date.now() + 86400 * 1000,
+    };
+    return profile;
+  },
 };
+

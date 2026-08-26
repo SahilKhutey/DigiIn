@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 
 export type AppView =
   | "LANDING"
+  | "SERVICES"
   | "ABOUT"
   | "HOW_IT_WORKS"
   | "FOR_CITIZENS"
@@ -24,6 +25,7 @@ export type AppView =
   | "CONSENT"
   | "DEMO_LAB"
   | "SCANNER";
+
 
 interface GovHeaderProps {
   currentView: AppView;
@@ -186,6 +188,19 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
             <button
               type="button"
               className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                currentView === "SERVICES"
+                  ? "bg-[#0B5D9B] text-white shadow-sm"
+                  : "text-[#475569] hover:text-[#092F4F] hover:bg-slate-200"
+              }`}
+              onClick={() => onViewChange("SERVICES")}
+              aria-label="Public Services Directory"
+            >
+              🏛️ Services
+            </button>
+
+            <button
+              type="button"
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 currentView === "SCHOLARSHIP"
                   ? "bg-green-700 text-white shadow-sm"
                   : "text-[#475569] hover:text-[#092F4F] hover:bg-slate-200"
@@ -195,6 +210,7 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
             >
               🎓 Scholarship
             </button>
+
 
             <button
               type="button"

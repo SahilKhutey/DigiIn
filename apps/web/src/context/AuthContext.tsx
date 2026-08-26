@@ -15,10 +15,12 @@ interface AuthContextType {
   sendOtp: (mobile: string) => Promise<boolean>;
   verifyOtp: (code: string) => Promise<{ success: boolean; isFirstTime?: boolean; error?: string }>;
   resendOtp: () => Promise<boolean>;
+  loginAsPersona: (personaId: string) => Promise<void>;
   completeOnboarding: (name: string, language: "en" | "hi") => Promise<void>;
   logout: () => void;
   clearOtpError: () => void;
 }
+
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -101,6 +103,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return false;
   };
 
+  const loginAsPersona = async (personaId: string) => {
+    const profile = await authService.loginAsPersona(personaId);
+    setUser(profile);
+    setPendingMobile(profile.mobile);
+    setIsFirstTime(false);
+    setAuthState("AUTHENTICATED");
+    setOtpStatus("IDLE");
+    setOtpError(null);
+  };
+
   const completeOnboarding = async (name: string, language: "en" | "hi") => {
     const profile = await authService.completeOnboarding(pendingMobile, { name, language });
     setUser(profile);
@@ -135,6 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         sendOtp,
         verifyOtp,
         resendOtp,
+        loginAsPersona,
         completeOnboarding,
         logout,
         clearOtpError,
@@ -143,6 +156,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </AuthContext.Provider>
   );
+
 };
 
 export function useAuth() {
