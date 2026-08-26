@@ -31,8 +31,8 @@ class FeatureFlag:
         if self.rollout_percentage <= 0:
             return False
 
-        # Deterministic hash bucket (0-99)
-        bucket = int(hashlib.md5(f"{self.key}:{user_id}".encode()).hexdigest()[:4], 16) % 100
+        # Deterministic hash bucket (0-99) using SHA-256
+        bucket = int(hashlib.sha256(f"{self.key}:{user_id}".encode()).hexdigest()[:4], 16) % 100
         return bucket < self.rollout_percentage
 
 class FeatureFlagManager:
