@@ -1,9 +1,5 @@
 import React from "react";
-import { FormPage } from "../../patterns/FormPage";
 import { Button } from "../../components/ui/Button";
-import { Badge } from "../../components/ui/Badge";
-import { Alert } from "../../components/ui/Alert";
-import { Stepper } from "../../components/ui/ProgressIndicator";
 
 interface DocumentsReadyViewProps {
   onExecuteVerification: () => void;
@@ -15,75 +11,70 @@ export const DocumentsReadyView: React.FC<DocumentsReadyViewProps> = ({
   onCancel,
 }) => {
   return (
-    <FormPage
-      title="Documents Ready for Verification"
-      description="2 of 2 requested credentials have been retrieved and validated at source."
-      backHref="#/verify/consent"
-      backLabel="Cancel"
-    >
-      <div className="space-y-6">
-        <Stepper
-          steps={["Review Request", "DigiLocker Auth", "Consent", "Retrieve", "Verify"]}
-          currentStep={4}
-        />
-
-        <div className="space-y-3">
-          <div className="p-4 bg-white border border-emerald-300 rounded-xl shadow-xs flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <h4 className="text-sm font-bold text-[#092F4F] m-0">Class 10 Certificate</h4>
-                <Badge variant="success" size="sm">✓ Level 4 (Gov Verified)</Badge>
-              </div>
-              <p className="text-xs text-slate-500 m-0">Central Board of Secondary Education (CBSE)</p>
-              <div className="text-[11px] text-emerald-700 font-medium">
-                ✓ Date of birth verified • Roll Number match 100%
-              </div>
-            </div>
-            <div className="w-8 h-8 rounded-full bg-[#DFF6E8] text-[#14743F] flex items-center justify-center font-bold text-sm shrink-0">
-              ✓
-            </div>
+    <div className="max-w-xl mx-auto py-6 space-y-6">
+      <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+        {/* Unmistakable Success State */}
+        <div className="text-center space-y-2 border-b border-slate-100 pb-5">
+          <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-800 text-2xl flex items-center justify-center mx-auto border border-emerald-300">
+            ✓
           </div>
+          <h1 className="text-2xl font-extrabold text-[#092F4F] m-0">
+            Verified
+          </h1>
+          <p className="text-xs text-slate-500 m-0">
+            Proof generated 26 Aug 2026 · 15:51
+          </p>
+        </div>
 
-          <div className="p-4 bg-white border border-emerald-300 rounded-xl shadow-xs flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <h4 className="text-sm font-bold text-[#092F4F] m-0">Class 12 Certificate</h4>
-                <Badge variant="success" size="sm">✓ Level 4 (Gov Verified)</Badge>
-              </div>
-              <p className="text-xs text-slate-500 m-0">Central Board of Secondary Education (CBSE)</p>
-              <div className="text-[11px] text-emerald-700 font-medium">
-                ✓ Passing year verified • Aggregate &gt;= 60.0% satisfied (ZKP Assertion)
-              </div>
-            </div>
-            <div className="w-8 h-8 rounded-full bg-[#DFF6E8] text-[#14743F] flex items-center justify-center font-bold text-sm shrink-0">
-              ✓
-            </div>
+        {/* Verification Summary Card */}
+        <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5 text-xs">
+          <div className="flex justify-between py-1 border-b border-slate-200">
+            <span className="text-slate-500">Qualification:</span>
+            <strong className="text-[#092F4F]">Class XII Qualification</strong>
+          </div>
+          <div className="flex justify-between py-1 border-b border-slate-200">
+            <span className="text-slate-500">Issued by:</span>
+            <strong className="text-[#092F4F]">CBSE</strong>
+          </div>
+          <div className="flex justify-between py-1 border-b border-slate-200">
+            <span className="text-slate-500">Verified for:</span>
+            <strong className="text-[#092F4F]">NTA</strong>
+          </div>
+          <div className="flex justify-between py-1">
+            <span className="text-slate-500">Passing year:</span>
+            <strong className="text-[#092F4F]">2026</strong>
           </div>
         </div>
 
-        <Alert type="success" title="Source Registries Verified">
-          Digital signatures from CBSE have been verified. No raw files will be transferred to ABC University; only a cryptographic proof token will be generated.
-        </Alert>
+        {/* Proof Token Box */}
+        <div className="p-3.5 bg-slate-900 text-slate-300 rounded-xl font-mono text-[11px] space-y-1">
+          <div className="text-slate-400 text-[10px]">JWS PROOF TOKEN (Ed25519)</div>
+          <div className="text-cyan-300 break-all">
+            eyJhbGciOiJFZERTQSI...8f9a2b1c4e7d0f3a6b5c8e9d2a4f7b0e
+          </div>
+        </div>
 
+        {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <Button
             variant="primary"
-            size="lg"
-            className="flex-1"
+            size="md"
+            className="flex-1 font-bold text-xs shadow-sm cursor-pointer"
             onClick={onExecuteVerification}
           >
-            Generate Signed Proof & Complete →
+            View proof →
           </Button>
 
           <Button
             variant="secondary"
-            size="lg"
+            size="md"
             onClick={onCancel}
+            className="font-bold text-xs cursor-pointer"
           >
-            Cancel
+            Done
           </Button>
         </div>
       </div>
-    </FormPage>
+    </div>
   );
 };

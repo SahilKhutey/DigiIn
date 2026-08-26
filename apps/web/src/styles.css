@@ -1,3 +1,4 @@
+@import "tailwindcss";
 @import "./design-system/tokens.css";
 
 :root {
@@ -5,24 +6,54 @@
   color: var(--ux4g-text-primary);
   background: var(--ux4g-surface-bg);
   line-height: var(--ux4g-leading-normal);
+  -webkit-font-smoothing: antialiased;
 }
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--ux4g-surface-bg); }
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--ux4g-surface-bg);
+  color: var(--ux4g-text-primary);
+  overflow-x: hidden;
+}
+
+/* Strict Single Source of Truth Container System */
+.container {
+  width: min(100% - 32px, 1240px);
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .container {
+    width: min(100% - 48px, 1240px);
+  }
+}
+
+/* Global Focus Ring for WCAG 2.1 AA Compliance */
 *:focus-visible {
   outline: var(--ux4g-focus-ring);
   outline-offset: var(--ux4g-focus-ring-offset);
 }
 
-header { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 18px; } header a { color: #0b5d9b; font-weight: 700; } nav { display: flex; flex-wrap: wrap; gap: 14px; justify-content: flex-end; } .brand { color: #092f4f; font-size: 1.15rem; font-weight: 800; } .brand span { color: #5a7184; font-weight: 500; }
-.hero { max-width: 690px; padding: 56px 0 30px; } .eyebrow { margin: 0 0 8px; color: #0a6990; font-size: .75rem; letter-spacing: .11em; font-weight: 800; } h1 { margin: 0; color: #092f4f; font-size: clamp(2.2rem, 6vw, 4.2rem); line-height: 1.05; } .hero > p:last-child { color: #48637a; font-size: 1.1rem; max-width: 60ch; }
-.notice { border-left: 4px solid #0b779a; background: #e6f4f8; padding: 14px 16px; border-radius: 6px; color: #174b60; } .card { margin-top: 28px; padding: 28px; background: white; border-radius: 8px; box-shadow: 0 8px 30px #092f4f13; } .card-heading { display: flex; justify-content: space-between; gap: 20px; align-items: start; } h2, h3 { color: #092f4f; } h2 { margin: 0; } .badge { background: #fff0cc; color: #744b00; border-radius: 999px; padding: 6px 10px; font-weight: 700; font-size: .85rem; white-space: nowrap; }
-.scenario-picker { margin-top: 28px; padding: 24px 28px; border: 1px solid #d6e1e8; border-radius: 8px; background: #fff; } .scenario-picker label { display: grid; gap: 7px; margin-top: 20px; color: #244a65; font-weight: 700; } select { min-height: 46px; border: 1px solid #7890a1; border-radius: 7px; padding: 8px 12px; color: #102a43; background: #fff; font: inherit; } select:focus { outline: 3px solid #78c5dd; outline-offset: 2px; } .scenario-picker > p:last-child { color: #4b6476; margin: 12px 0 0; }
-.intent { margin-top: 28px; } .trust { display: flex; gap: 10px; margin-top: 16px; padding: 12px; border-radius: 8px; background: #edf8f1; color: #1a613a; } .trust span { color: #3e6350; } .health-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0 8px; } .health-grid p { margin: 0; padding: 12px; border-radius: 8px; background: #f3f7fa; } .health-grid strong, .health-grid span { display: block; } .health-grid strong { color: #5c7385; font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; } .health-grid span { margin-top: 4px; color: #153f5d; font-weight: 700; } .health-grid .unavailable { color: #9d311f; } .health-grid .available { color: #197345; } .summary { margin: 20px 0 0; color: #244a65; font-size: 1.05rem; } .badge.resolved { background: #dff6e8; color: #14743f; } .badge.unavailable { background: #ffe3dc; color: #9d311f; }
-.proof-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; } .platform-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; } .platform-grid p { margin: 0; padding: 13px; border-radius: 8px; background: #f4f8ec; } .platform-grid strong, .platform-grid span { display: block; overflow-wrap: anywhere; } .platform-grid strong { color: #607048; font-size: .78rem; text-transform: uppercase; } .platform-grid span { color: #254c13; font-weight: 800; } .consent-panel, .result-panel { margin-top: 22px; padding: 18px; border: 1px solid #d6e1e8; border-radius: 8px; background: #fbfdff; } .request-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; } .request-grid p { margin: 0; padding: 12px; background: #eef6f9; border-radius: 8px; } .request-grid strong, .request-grid span { display: block; overflow-wrap: anywhere; } .request-grid strong { color: #607789; font-size: .78rem; text-transform: uppercase; } .requirement-list, .proof-results { display: grid; gap: 10px; margin: 18px 0 0; padding: 0; list-style: none; } .requirement-list li, .proof-results li { display: grid; gap: 4px; padding: 12px; border-radius: 8px; background: #fff; border: 1px solid #dde8ef; } .requirement-list span, .proof-results span { color: #526b7c; } .proof-results code, .token-preview code { display: block; margin-top: 8px; white-space: normal; overflow-wrap: anywhere; } .token-preview { margin: 18px 0 0; } .token-check { margin-top: 16px; padding: 14px 16px; border-radius: 8px; } .token-check.valid { background: #e4f7ed; color: #165d38; } .token-check.invalid { background: #ffe7e1; color: #8b2b19; } .token-check p { margin: 4px 0 0; }
-.recovery { margin-top: 8px; padding: 20px; border-radius: 8px; background: #edf5fb; } .recovery h3 { margin: 0; font-size: 1.2rem; } .recovery > p:not(.eyebrow):not(.reference) { color: #3e5e73; } button { min-height: 42px; margin: 4px 8px 4px 0; padding: 8px 13px; border: 0; border-radius: 7px; background: #0b5d9b; color: #fff; font: inherit; font-weight: 700; cursor: pointer; } button:hover { background: #074b7d; } button:disabled { opacity: .55; cursor: not-allowed; } button.secondary { background: #fff; border: 1px solid #0b5d9b; color: #0b5d9b; } button.danger { background: #fff; border: 1px solid #c93b27; color: #c93b27; } button.danger:hover { background: #ffece8; } .reference { margin-bottom: 0; color: #49687c; font-size: .9rem; } code { color: #173f5a; }
-.timeline { margin: 28px 0 0; padding: 0; list-style: none; } .timeline li { display: grid; grid-template-columns: 38px 1fr; gap: 14px; padding-bottom: 26px; position: relative; } .timeline li:not(:last-child)::before { position: absolute; content: ""; width: 2px; background: #d6e1e8; top: 32px; bottom: 0; left: 18px; } .marker { z-index: 1; height: 38px; display: grid; place-items: center; border-radius: 50%; background: #e7eef3; color: #50697c; font-weight: 900; } .complete .marker { background: #dff6e8; color: #14743f; } .attention .marker { background: #fff0cc; color: #855200; } .stage-title { display: flex; justify-content: space-between; gap: 15px; } h3 { margin: 5px 0 2px; font-size: 1rem; } .stage-title span { color: #5c7385; font-size: .87rem; text-align: right; } article > p { margin: 5px 0; color: #4b6476; } .next { margin-top: 13px; padding: 12px 14px; border-radius: 8px; background: #fff8e7; color: #5c450d; } .next p { margin: 4px 0 0; } .privacy { margin-top: 32px; padding: 28px; border-radius: 14px; background: #092f4f; color: #e7f1f7; } .privacy h2 { color: white; } .privacy p { margin-bottom: 0; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; } .form-grid label { display: grid; gap: 6px; color: #244a65; font-weight: 700; font-size: .9rem; } input[type="text"] { min-height: 44px; border: 1px solid #7890a1; border-radius: 7px; padding: 8px 12px; color: #102a43; font: inherit; } input[type="text"]:focus { outline: 3px solid #78c5dd; outline-offset: 2px; }
-.version-list { display: grid; gap: 14px; margin: 18px 0 0; padding: 0; list-style: none; }
+/* Standardized Typography Defaults */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--ux4g-navy-900);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* Standard Header & Brand */
+header {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .version-card { padding: 16px; border-radius: 8px; border: 1px solid #d6e1e8; background: #fff; }
 .version-card.active { border-color: #197345; background: #f6fcf8; }
 .version-card.superseded { border-color: #cbd5e1; background: #f8fafc; opacity: .85; }
@@ -587,6 +618,170 @@ header { min-height: 72px; display: flex; align-items: center; justify-content: 
   background: #2563eb;
   color: #ffffff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================================================
+   DigiIn Motion System — Standardized Animations & Interactions
+   ========================================================================== */
+
+/* 1. Button Hover, Active Press, and Arrow Translations */
+button, .ux4g-btn, .button {
+  transition: background-color var(--motion-fast) var(--ease-standard),
+              transform var(--motion-fast) var(--ease-standard),
+              box-shadow var(--motion-fast) var(--ease-standard),
+              border-color var(--motion-fast) var(--ease-standard);
+}
+
+button:hover:not(:disabled), .ux4g-btn:hover:not(:disabled), .button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled), .ux4g-btn:active:not(:disabled), .button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+/* 2. Interactive Link & Navigation Underlines */
+.nav-link {
+  position: relative;
+  transition: color var(--motion-fast) var(--ease-standard);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--ux4g-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--motion-fast) var(--ease-standard);
+}
+
+.nav-link:hover::after, .nav-link.active::after {
+  transform: scaleX(1);
+}
+
+/* 3. Service & Document Card Interactions */
+.interactive-card {
+  transition: transform var(--motion-normal) var(--ease-standard),
+              border-color var(--motion-normal) var(--ease-standard),
+              box-shadow var(--motion-normal) var(--ease-standard);
+}
+
+.interactive-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--ux4g-primary);
+}
+
+.interactive-card:hover .card-arrow {
+  transform: translateX(4px);
+}
+
+.card-arrow {
+  transition: transform var(--motion-fast) var(--ease-standard);
+}
+
+/* 4. Checkmark Drawing SVG Keyframe */
+@keyframes checkmarkDraw {
+  0% {
+    stroke-dashoffset: 50;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.animate-checkmark {
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+  animation: checkmarkDraw 0.6s var(--ease-out) forwards;
+}
+
+/* 5. Smooth Loading Skeleton Shimmer */
+@keyframes skeletonShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.8s infinite ease-in-out;
+}
+
+/* 6. Toast Notification Entrance / Exit */
+@keyframes toastEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast-enter {
+  animation: toastEnter var(--motion-normal) var(--ease-out) forwards;
+}
+
+/* 7. Modal & Dialog Scale-In */
+@keyframes modalScaleIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-animate-in {
+  animation: modalScaleIn var(--motion-normal) var(--ease-out) forwards;
+}
+
+/* 8. Purposeful Page Entrance */
+.page-enter {
+  animation: pageFadeIn var(--motion-slow) var(--ease-standard) forwards;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.btn-arrow-hover:hover span[aria-hidden="true"] {
+  transform: translateX(4px);
+}
+
+/* 9. Strict Reduced Motion Overrides */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 

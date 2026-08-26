@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 11-judge-demo-flagship.spec.ts
  *
  * DigiIn Phase 39 — Judge Demo Flagship E2E Specification
@@ -22,8 +22,8 @@ test.describe("Phase 39: Judge Demo Flagship Suite", () => {
   });
 
   test("Step 1 — Home page renders branding, hero, trust badges, and navigation", async ({ page }) => {
-    await expect(page.locator("h1")).toContainText(/Verify once/i);
-    await expect(page.getByRole("button", { name: /Start Verification Journey/i })).toBeVisible();
+    await expect(page.locator("h1")).toContainText(/(Verify once|Your documents)/i);
+    await expect(page.getByRole("button", { name: /(Start Verification Journey|Get Started)/i }).first()).toBeVisible();
     await expect(page.getByRole("button", { name: /Open Document Vault/i })).toBeVisible();
     await expect(page.locator("header")).toContainText(/UX4G 3.0/i);
   });
@@ -81,7 +81,8 @@ test.describe("Phase 39: Judge Demo Flagship Suite", () => {
     await expect(page.locator("body")).toContainText("0 bytes");
 
     // Approve consent
-    await page.getByTestId("approve-consent-btn").click();
+    await page.getByTestId("allow-continue-btn").click();
+    await page.getByTestId("submit-btn").click();
 
     // Verify success receipt
     await expect(page.getByTestId("success-screen")).toBeVisible({ timeout: 10000 });

@@ -21,13 +21,13 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseClasses = "ux4g-btn inline-flex items-center justify-center font-bold transition-all select-none cursor-pointer focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-2";
+  const baseClasses = "ux4g-btn inline-flex items-center justify-center font-bold transition-all select-none cursor-pointer border active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0B5D9B] focus-visible:outline-offset-2";
   
   const variantClasses = {
-    primary: "bg-[#0B5D9B] hover:bg-[#074B7D] active:bg-[#053659] text-white border-transparent",
+    primary: "bg-[#0B5D9B] hover:bg-[#074B7D] active:bg-[#053659] text-white border-transparent shadow-xs",
     secondary: "bg-[#F3F7FA] hover:bg-[#E2E8F0] active:bg-[#CBD5E1] text-[#092F4F] border-[#CBD5E1]",
     outline: "bg-transparent hover:bg-[#EBF4FA] text-[#0B5D9B] border-[#0B5D9B]",
-    danger: "bg-[#991B1B] hover:bg-[#7F1D1D] active:bg-[#571414] text-white border-transparent",
+    danger: "bg-[#991B1B] hover:bg-[#7F1D1D] active:bg-[#571414] text-white border-transparent shadow-xs",
     ghost: "bg-transparent hover:bg-[#F3F7FA] text-[#475569] border-transparent",
   }[variant];
 

@@ -5,6 +5,7 @@ test.describe("Citizen File Upload & OCR Classifier Pipeline", () => {
     await page.goto("/");
 
     // 1. Open the upload dropzone
+    await page.getByRole("button", { name: /🗂️ Vault/i }).click();
     await page.getByRole("button", { name: "+ Upload & Classify File" }).click();
     await expect(page.locator(".upload-modal-content")).toBeVisible();
 

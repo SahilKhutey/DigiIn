@@ -1,8 +1,5 @@
-import React, { useState } from "react";
-import { FormPage } from "../../patterns/FormPage";
+import React, { useState, useEffect } from "react";
 import { Button } from "../../components/ui/Button";
-import { Alert } from "../../components/ui/Alert";
-import { Stepper } from "../../components/ui/ProgressIndicator";
 
 interface ConsentAuthorizationViewProps {
   onAuthorize: (options: { zkpMode: boolean; durationHours: number }) => void;
@@ -13,123 +10,192 @@ export const ConsentAuthorizationView: React.FC<ConsentAuthorizationViewProps> =
   onAuthorize,
   onDecline,
 }) => {
-  const [consentChecked, setConsentChecked] = useState(false);
-  const [zkpMode, setZkpMode] = useState(true);
-  const [durationHours, setDurationHours] = useState(24);
+  const [step, setStep] = useState<"request" | "confirmation" | "processing">("request");
+  const [processingStage, setProcessingStage] = useState(1);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!consentChecked) return;
-    onAuthorize({ zkpMode, durationHours });
-  };
+  useEffect(() => {
+    if (step === "processing") {
+      const t1 = setTimeout(() => setProcessingStage(2), 500);
+      const t2 = setTimeout(() => setProcessingStage(3), 1000);
+      const t3 = setTimeout(() => {
+        onAuthorize({ zkpMode: true, durationHours: 24 });
+      }, 1500);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+      };
+    }
+  }, [step, onAuthorize]);
 
-  return (
-    <FormPage
-      title="Provide Informed Consent"
-      description="Grant permission to verify your documents for ABC University's undergraduate admission."
-      backHref="#/verify/review"
-      backLabel="Back to Review"
-    >
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <Stepper
-          steps={["Review Request", "DigiLocker Auth", "Consent", "Retrieve", "Verify"]}
-          currentStep={2}
-        />
-
-        {/* Consent Scope Summary */}
-        <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
-          <h4 className="text-xs uppercase font-extrabold tracking-wider text-[#092F4F] m-0">
-            Authorization Scope
-          </h4>
-          <ul className="space-y-2 text-xs text-slate-700 list-none p-0 m-0">
-            <li className="flex items-center gap-2">
-              <span className="text-[#14743F] font-bold">✓</span>
-              <strong>Requester:</strong> ABC University
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-[#14743F] font-bold">✓</span>
-              <strong>Purpose:</strong> Undergraduate Admission Eligibility Verification
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-[#14743F] font-bold">✓</span>
-              <strong>Documents:</strong> Class 10 Certificate & Class 12 Certificate (CBSE)
-            </li>
-          </ul>
+  // Step 3: Processing Screen
+  if (step === "processing") {
+    return (
+      <div className="max-w-md mx-auto py-12 text-center space-y-6">
+        <div className="w-16 h-16 rounded-full bg-blue-50 text-[#0B5D9B] text-2xl flex items-center justify-center mx-auto animate-pulse">
+          🛡️
+        </div>
+        <div className="space-y-1">
+          <h2 className="text-2xl font-extrabold text-[#092F4F] m-0">Verifying</h2>
+          <p className="text-xs sm:text-sm text-slate-500 m-0">
+            Checking your credential and generating a secure proof.
+          </p>
         </div>
 
-        {/* Privacy Options: Zero-Knowledge Predicate Mode */}
-        <div className="p-4 bg-[#EBF4FA] border border-[#BAE6FD] rounded-xl space-y-2">
-          <label className="flex items-start gap-3 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={zkpMode}
-              onChange={(e) => setZkpMode(e.target.checked)}
-              className="w-5 h-5 mt-0.5 accent-[#0B5D9B] rounded cursor-pointer"
-            />
-            <div className="flex-1">
-              <span className="text-sm font-bold text-[#092F4F] block">
-                Enable Zero-Knowledge Predicate Assertion (Recommended)
-              </span>
-              <p className="text-xs text-slate-600 mt-0.5 mb-0 leading-relaxed">
-                Shares a cryptographic proof that you meet the <em>&gt;= 60.0%</em> criteria without exposing your entire marksheet or subject breakdown.
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-3 text-left text-xs font-semibold">
+          <div className="flex items-center gap-2.5 text-emerald-800">
+            <span>✓</span>
+            <span>Request accepted</span>
+          </div>
+          <div className={`flex items-center gap-2.5 ${processingStage >= 2 ? "text-emerald-800" : "text-slate-400"}`}>
+            <span>{processingStage >= 2 ? "✓" : "○"}</span>
+            <span>Credential checked against CBSE</span>
+          </div>
+          <div className={`flex items-center gap-2.5 ${processingStage >= 3 ? "text-emerald-800" : "text-[#0B5D9B]"}`}>
+            <span>{processingStage >= 3 ? "✓" : "⟳"}</span>
+            <span>Generating single-use proof token</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Step 2: Confirmation Dialog Screen
+  if (step === "confirmation") {
+    return (
+      <div className="max-w-xl mx-auto py-6 space-y-6">
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="space-y-1 border-b border-slate-100 pb-4">
+            <span className="text-xs uppercase font-extrabold tracking-wider text-[#0B5D9B]">
+              Step 2 of 2
+            </span>
+            <h1 className="text-2xl font-extrabold text-[#092F4F] m-0">
+              Review before sharing
+            </h1>
+            <p className="text-xs text-slate-500 m-0">
+              Please confirm the exact claims that will be cryptographically attested.
+            </p>
+          </div>
+
+          <div className="space-y-4 text-xs">
+            <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl space-y-1.5 text-emerald-950">
+              <div className="font-bold text-emerald-900">You will share:</div>
+              <ul className="list-disc pl-4 space-y-0.5 m-0 text-emerald-900 font-medium">
+                <li>Qualification (Class XII)</li>
+                <li>Passing year (2026)</li>
+                <li>With: <strong>NTA</strong></li>
+                <li>Purpose: <strong>JEE application</strong></li>
+              </ul>
+            </div>
+
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5 text-slate-700">
+              <div className="font-bold text-slate-800">What will NOT be shared:</div>
+              <p className="m-0 leading-relaxed text-slate-600">
+                Your original physical PDF document, subject marksheets, residential address, or other personal data will not be transmitted.
               </p>
             </div>
-          </label>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-2 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => setStep("request")}
+              className="px-5 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer"
+            >
+              Back
+            </button>
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => setStep("processing")}
+              className="flex-1 shadow-sm font-bold text-xs cursor-pointer"
+            >
+              Confirm and verify →
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Step 1: Verification Request Screen (Answers Who? What? Why? How long?)
+  return (
+    <div className="max-w-xl mx-auto py-6 space-y-6">
+      <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+        <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+          <div className="space-y-1">
+            <span className="text-xs uppercase font-extrabold tracking-wider text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
+              Verification Request
+            </span>
+            <h1 className="text-2xl font-extrabold text-[#092F4F] m-0">
+              NTA wants to verify your credentials
+            </h1>
+            <p className="text-xs text-slate-500 m-0">
+              Expires in <strong className="text-amber-800">14 minutes</strong>
+            </p>
+          </div>
         </div>
 
-        {/* Consent Validity Duration */}
-        <div className="space-y-1.5">
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">
-            Consent Validity Duration
-          </label>
-          <select
-            value={durationHours}
-            onChange={(e) => setDurationHours(Number(e.target.value))}
-            className="w-full min-h-[42px] px-3 py-2 text-sm text-[#092F4F] bg-white border border-[#CBD5E1] rounded-xl focus:border-[#0B5D9B] focus:ring-2 focus:ring-[#0B5D9B]/20"
-          >
-            <option value={24}>24 Hours (Standard)</option>
-            <option value={72}>72 Hours</option>
-            <option value={168}>7 Days</option>
-            <option value={1}>Single-use / 1 Hour</option>
-          </select>
+        {/* 4 Questions Summary */}
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-0.5">
+            <span className="text-slate-400 font-semibold uppercase text-[10px]">Who?</span>
+            <div className="font-bold text-[#092F4F]">National Testing Agency (NTA)</div>
+          </div>
+
+          <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-0.5">
+            <span className="text-slate-400 font-semibold uppercase text-[10px]">What?</span>
+            <div className="font-bold text-[#092F4F]">Class XII Qualification</div>
+          </div>
+
+          <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-0.5">
+            <span className="text-slate-400 font-semibold uppercase text-[10px]">Why?</span>
+            <div className="font-bold text-[#092F4F]">JEE Admissions 2026</div>
+          </div>
+
+          <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-0.5">
+            <span className="text-slate-400 font-semibold uppercase text-[10px]">How long?</span>
+            <div className="font-bold text-amber-800">Single-use proof (15 min)</div>
+          </div>
         </div>
 
-        {/* Mandatory Explicit Consent Checkbox */}
-        <label className="flex items-start gap-3 p-3.5 bg-white border-2 border-[#CBD5E1] rounded-xl cursor-pointer select-none hover:border-[#0B5D9B] transition-colors">
-          <input
-            type="checkbox"
-            checked={consentChecked}
-            onChange={(e) => setConsentChecked(e.target.checked)}
-            className="w-5 h-5 mt-0.5 accent-[#0B5D9B] rounded cursor-pointer"
-            required
-          />
-          <span className="text-xs font-semibold text-[#092F4F] leading-relaxed">
-            I understand and give explicit, purpose-limited consent for DigiIn to verify the requested document claims with official registries for this admission application.
-          </span>
-        </label>
+        {/* Breakdown */}
+        <div className="space-y-3 text-xs">
+          <div className="p-3.5 bg-blue-50/70 border border-blue-200 rounded-xl space-y-1">
+            <div className="font-bold text-[#092F4F]">Requested information:</div>
+            <div className="flex items-center gap-4 text-slate-700">
+              <span>✓ Qualification</span>
+              <span>✓ Passing year (2026)</span>
+            </div>
+          </div>
+
+          <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+            <div className="font-bold text-slate-700">Not requested:</div>
+            <div className="text-slate-500">
+              Original PDF file · Subject marks · Residential address
+            </div>
+          </div>
+        </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-2">
-          <Button
-            variant="primary"
-            size="lg"
-            type="submit"
-            className="flex-1"
-            disabled={!consentChecked}
-          >
-            Grant Consent & Retrieve Records →
-          </Button>
-
-          <Button
-            variant="secondary"
-            size="lg"
+        <div className="flex flex-col sm:flex-row gap-3 pt-2 border-t border-slate-100">
+          <button
             type="button"
             onClick={onDecline}
+            className="px-5 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer"
           >
             Decline
+          </button>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => setStep("confirmation")}
+            className="flex-1 shadow-sm font-bold text-xs cursor-pointer"
+          >
+            Allow verification →
           </Button>
         </div>
-      </form>
-    </FormPage>
+      </div>
+    </div>
   );
 };

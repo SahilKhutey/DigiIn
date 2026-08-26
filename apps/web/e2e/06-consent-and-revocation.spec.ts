@@ -4,6 +4,7 @@ test.describe("Citizen Consent Management & Cryptographic Revocation Dashboard",
   test("inspects active consents, revokes proof authorization, and audits timeline", async ({ page }) => {
     // 1. First create and authorize a proof on the citizen gateway
     await page.goto("/");
+    await page.getByRole("button", { name: /⚗️ Lab/i }).click();
     const proofHeading = page.getByRole("heading", { name: "Prove eligibility without uploading documents" });
     await proofHeading.scrollIntoViewIfNeeded();
     await page.getByRole("button", { name: "Create exam proof request" }).click();

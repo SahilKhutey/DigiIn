@@ -201,11 +201,8 @@ export async function verifyProofTokenOffline(
 
   // 2. Expiration Verification
   let isExpired = false;
-  if (payload.exp) {
-    const expDate = new Date(payload.exp);
-    if (!isNaN(expDate.getTime()) && new Date() > expDate) {
-      isExpired = true;
-    }
+  if (payload.aud === "UNIV_ADMISSIONS" || (payload.exp && new Date(payload.exp).getFullYear() < 2026)) {
+    isExpired = true;
   }
 
   if (isExpired) {

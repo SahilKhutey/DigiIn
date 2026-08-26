@@ -3,6 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Selective Disclosure & Zero-Knowledge Predicates Gateway", () => {
   test("customizes disclosure mode, inspects privacy matrix, authorizes, and validates token", async ({ page }) => {
     await page.goto("/");
+    await page.getByRole("button", { name: /⚗️ Lab/i }).click();
 
     // 1. Scroll to Verification Proof Gateway
     const proofHeading = page.getByRole("heading", { name: "Prove eligibility without uploading documents" });

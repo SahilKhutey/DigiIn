@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import * as api from "../../api/client";
 import type {
   ScholarshipApplicationResponse,
@@ -255,7 +255,10 @@ export const ScholarshipJourney: React.FC<{ onBack?: () => void }> = ({ onBack }
             <div className="text-5xl mb-3" aria-hidden="true">🎉</div>
             <h2 className="text-2xl font-extrabold mb-2">{hi ? "आवेदन जमा हो गया!" : "Application Submitted!"}</h2>
             <p className="text-sm opacity-90">{hi ? "आपका छात्रवृत्ति आवेदन तुरंत सत्यापित और जमा कर दिया गया है।" : "Your scholarship application has been verified and submitted instantly."}</p>
-            <div className="mt-4 bg-white/20 rounded-xl p-3 inline-block"><div className="text-xs font-bold opacity-80">{hi ? "प्रमाण ID" : "Proof ID"}</div><div className="font-mono font-extrabold text-lg" data-testid="proof-id">{consentResult.proof_token}</div></div>
+            <div className="mt-2 mb-3 text-xs font-bold bg-white/20 rounded-full py-1 px-3 inline-block">
+              🔒 {hi ? "क्रिप्टोग्राफ़िक रूप से सत्यापित — 0 फ़ाइलें स्थानांतरित" : "Cryptographically Verified — 0 Raw Files Transferred"}
+            </div>
+            <div className="block mt-2 bg-white/20 rounded-xl p-3 inline-block"><div className="text-xs font-bold opacity-80">{hi ? "प्रमाण ID" : "Proof ID"}</div><div className="font-mono font-extrabold text-lg" data-testid="proof-id">{consentResult.proof_token}</div></div>
           </div>
           <div className="grid grid-cols-3 gap-3 mb-6">
             {[{ label: hi ? "दावे साझा" : "Claims Shared", value: consentResult.claims_shared.toString() }, { label: hi ? "फ़ाइल स्थानांतरण" : "File Transfer", value: `${consentResult.raw_files_transferred_bytes}B` }, { label: hi ? "समय बचाया" : "Time Saved", value: "43 min" }].map(({ label, value }) => (
@@ -270,7 +273,7 @@ export const ScholarshipJourney: React.FC<{ onBack?: () => void }> = ({ onBack }
       )}
 
       {step === "PROOF_READY" && consentResult && (
-        <div>
+        <div data-testid="proof-view">
           <h2 className="text-xl font-extrabold text-[#092F4F] mb-4">{hi ? "क्रिप्टोग्राफ़िक प्रमाण रसीद" : "Cryptographic Proof Receipt"}</h2>
           <div className="bg-white border border-slate-200 rounded-xl p-5 mb-4 font-mono text-sm" data-testid="proof-receipt">
             <div className="font-bold text-slate-500 text-xs mb-3 uppercase">{hi ? "प्रमाण" : "Proof"} #{consentResult.proof_token}</div>

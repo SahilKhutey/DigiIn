@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 10-builder-brief-flagship.spec.ts
  *
  * DigiIn Builder Brief — Flagship E2E Test
@@ -133,10 +133,10 @@ test.describe("Builder Brief Flagship: Scholarship Journey", () => {
   test("6 — Demo Lab view: Verification Lab renders all 5 test cases", async ({ page }) => {
     await page.getByRole("button", { name: /⚗️ Lab/i }).click();
     // Lab should show test cards
-    await expect(page.getByText(/Valid Proof Verification/i)).toBeVisible({ timeout: 8000 });
-    await expect(page.getByText(/Tampered Claim Rejection/i)).toBeVisible();
-    await expect(page.getByText(/Revoked Credential Rejection/i)).toBeVisible();
-    await expect(page.getByText(/Expired Proof Rejection/i)).toBeVisible();
+    await expect(page.getByText(/Valid Proof Verification/i).first()).toBeVisible({ timeout: 8000 });
+    await expect(page.getByText(/Tampered Claim Rejection/i).first()).toBeVisible();
+    await expect(page.getByText(/Revoked Credential Rejection/i).first()).toBeVisible();
+    await expect(page.getByText(/Expired Proof Rejection/i).first()).toBeVisible();
   });
 
   test("7 — Wallet view: clean citizen view (no dev tools)", async ({ page }) => {

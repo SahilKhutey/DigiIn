@@ -6,6 +6,7 @@ test.describe("Citizen Document Center & 5 Discrete Trust Signals", () => {
 
     // 1. Verify Page Header & Brand
     await expect(page.locator(".brand")).toContainText("DigiIn");
+    await page.getByRole("button", { name: /🗂️ Vault/i }).click();
     await expect(page.getByRole("heading", { name: "My Document Wallet & Trust Signals" })).toBeVisible();
 
     // 2. Verify Document Cards are rendered

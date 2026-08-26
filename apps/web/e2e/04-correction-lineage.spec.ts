@@ -3,6 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Correction & Immutable Versioning Lineage (v1 -> v2)", () => {
   test("citizen submits correction, officer approves, and document advances to v2", async ({ page }) => {
     await page.goto("/");
+    await page.getByRole("button", { name: /⚗️ Lab/i }).click();
 
     // 1. Scroll to Correction Section
     const correctionHeading = page.getByRole("heading", { name: "Correction & Versioning Lifecycle" });

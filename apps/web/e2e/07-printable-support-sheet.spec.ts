@@ -3,6 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Printable Support-Safe Diagnostic Sheet", () => {
   test("generates support-safe reference and renders printable summary sheet modal", async ({ page }) => {
     await page.goto("/");
+    await page.getByRole("button", { name: /⚗️ Lab/i }).click();
 
     // 1. Scroll to Diagnostic Timeline & Recovery section
     const recoverySection = page.locator("#recovery");

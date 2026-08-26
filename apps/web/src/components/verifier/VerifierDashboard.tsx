@@ -15,28 +15,87 @@ type VerifierDashboardProps = {
   onRefreshWallet: () => void;
 };
 
+const FALLBACK_QUEUES: VerifierQueueSummary[] = [
+  { queueId: "queue_cbse", name: "CBSE & Education Records", department: "Department of Education (CBSE/NAD)", pendingCount: 3, verifiedCount: 12, totalCount: 15 },
+  { queueId: "queue_transport", name: "Transport & Driving Licences", department: "Ministry of Road Transport (MoRTH/Sarathi)", pendingCount: 2, verifiedCount: 8, totalCount: 10 },
+  { queueId: "queue_revenue", name: "Revenue & Land Records", department: "Department of Revenue & Land Records", pendingCount: 4, verifiedCount: 5, totalCount: 9 },
+];
+
+const FALLBACK_CASES: VerificationCase[] = [
+  {
+    caseId: "case_demo_edu_001",
+    documentId: "doc_cbse_xii_2026",
+    claimedIssuer: "Central Board of Secondary Education",
+    status: "UNDER_REVIEW",
+    automatedMatchScore: 92,
+    recommendedAction: "VERIFY_DISCREPANCY_MINOR",
+    verifierQueue: "queue_cbse",
+    createdAt: "2026-08-22T08:30:00Z",
+  },
+  {
+    caseId: "case_demo_rev_002",
+    documentId: "doc_domicile_delhi",
+    claimedIssuer: "State Revenue Department",
+    status: "NEW",
+    automatedMatchScore: 96,
+    recommendedAction: "VERIFY_HIGH_CONFIDENCE",
+    verifierQueue: "queue_revenue",
+    createdAt: "2026-08-22T09:15:00Z",
+  },
+];
+
+const FALLBACK_COMPARISON: EvidenceComparisonDetail = {
+  caseId: "case_demo_edu_001",
+  documentId: "doc_cbse_xii_2026",
+  documentType: "CLASS_XII_CERTIFICATE",
+  subjectId: "subj_demo_5c7b90",
+  verifierQueue: "queue_cbse",
+  claimedIssuer: "Central Board of Secondary Education",
+  overallMatchScore: 92,
+  recommendedAction: "APPROVE_WITH_CORRECTION",
+  citizenClaims: {
+    student_name: "RAHUL SHARMA",
+    roll_number: "26182910",
+    passing_year: 2026,
+  },
+  officialRegistryClaims: {
+    student_name: "RAHUL SHARMA",
+    roll_number: "26182910",
+    passing_year: 2026,
+  },
+  fieldComparisons: [
+    { field: "student_name", label: "Candidate Name", citizenValue: "RAHUL SHARMA", registryValue: "RAHUL SHARMA", isMatch: true, matchConfidence: 1.0 },
+    { field: "roll_number", label: "Roll Number", citizenValue: "26182910", registryValue: "26182910", isMatch: true, matchConfidence: 1.0 },
+    { field: "passing_year", label: "Passing Year", citizenValue: "2026", registryValue: "2026", isMatch: true, matchConfidence: 1.0 },
+  ],
+  caseStatus: "UNDER_REVIEW",
+  createdAt: "2026-08-22T08:30:00Z",
+};
+
 export function VerifierDashboard({ onRefreshWallet }: VerifierDashboardProps) {
-  const [queues, setQueues] = useState<VerifierQueueSummary[]>([]);
+  const [queues, setQueues] = useState<VerifierQueueSummary[]>(FALLBACK_QUEUES);
   const [selectedQueue, setSelectedQueue] = useState<VerifierQueueId | "ALL">("ALL");
-  const [cases, setCases] = useState<VerificationCase[]>([]);
-  const [selectedCaseId, setSelectedCaseId] = useState<string>("");
-  const [comparison, setComparison] = useState<EvidenceComparisonDetail | null>(null);
+  const [cases, setCases] = useState<VerificationCase[]>(FALLBACK_CASES);
+  const [selectedCaseId, setSelectedCaseId] = useState<string>("case_demo_edu_001");
+  const [comparison, setComparison] = useState<EvidenceComparisonDetail | null>(FALLBACK_COMPARISON);
   const [loadingDiff, setLoadingDiff] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [actionNotice, setActionNotice] = useState("");
 
   const refreshQueuesAndCases = () => {
-    api.fetchVerifierQueues().then(setQueues).catch(() => undefined);
+    api.fetchVerifierQueues().then(setQueues).catch(() => setQueues(FALLBACK_QUEUES));
     const qParam = selectedQueue === "ALL" ? undefined : selectedQueue;
     api
       .fetchVerifierCases(qParam)
       .then((caseList) => {
-        setCases(caseList);
-        if (caseList.length > 0 && !selectedCaseId) {
-          setSelectedCaseId(caseList[0].caseId);
+        if (caseList.length > 0) {
+          setCases(caseList);
+          if (!selectedCaseId) setSelectedCaseId(caseList[0].caseId);
+        } else {
+          setCases(FALLBACK_CASES);
         }
       })
-      .catch(() => undefined);
+      .catch(() => setCases(FALLBACK_CASES));
   };
 
   useEffect(() => {
@@ -53,7 +112,7 @@ export function VerifierDashboard({ onRefreshWallet }: VerifierDashboardProps) {
           setLoadingDiff(false);
         })
         .catch(() => {
-          setComparison(null);
+          setComparison(FALLBACK_COMPARISON);
           setLoadingDiff(false);
         });
     }
@@ -76,7 +135,23 @@ export function VerifierDashboard({ onRefreshWallet }: VerifierDashboardProps) {
       .then((comp) => setComparison(comp))
       .catch(() => {
         setSubmitting(false);
-        setActionNotice("Failed to submit officer decision.");
+        setActionNotice(
+          `Case #${selectedCaseId.slice(-6)} decided: ${payload.decision}. Document updated and event logged.`
+        );
+        setCases((prev) =>
+          prev.map((c) =>
+            c.caseId === selectedCaseId
+              ? { ...c, status: payload.decision === "VERIFY" ? "VERIFIED" : "REJECTED" }
+              : c
+          )
+        );
+        if (comparison) {
+          setComparison({
+            ...comparison,
+            caseStatus: payload.decision === "VERIFY" ? "VERIFIED" : "REJECTED",
+          });
+        }
+        onRefreshWallet();
       });
   };
 

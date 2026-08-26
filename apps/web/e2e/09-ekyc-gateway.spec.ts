@@ -5,6 +5,7 @@ test.describe("Aadhaar / eKYC Mock Gateway Integration & Demographic Verificatio
     page,
   }) => {
     await page.goto("/");
+    await page.getByRole("button", { name: /🗂️ Vault/i }).click();
 
     // 1. Locate Citizen Document Center and Click eKYC Verify on a document card
     const walletHeading = page.getByRole("heading", { name: "My Document Wallet & Trust Signals" });
@@ -47,6 +48,7 @@ test.describe("Aadhaar / eKYC Mock Gateway Integration & Demographic Verificatio
 
   test("rejects invalid 6-digit OTP code and maintains security boundary", async ({ page }) => {
     await page.goto("/");
+    await page.getByRole("button", { name: /🗂️ Vault/i }).click();
 
     // 1. Open eKYC Modal from wallet
     const ekycBtn = page.locator(".btn-ekyc-trigger").first();

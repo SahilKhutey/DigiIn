@@ -155,25 +155,41 @@ export const SignInView: React.FC<SignInViewProps> = ({
             fullWidth
             disabled={loading || !!personaLoading}
           >
-            {loading ? "Requesting OTP..." : "Continue with Mobile →"}
+            {loading ? "Requesting OTP..." : "Send OTP →"}
           </Button>
 
-          <div className="flex items-center justify-center gap-3 text-xs text-slate-500 pt-2 border-t border-slate-200">
-            <button
-              type="button"
-              onClick={onNavigatePrivacy}
-              className="text-slate-500 hover:text-[#0B5D9B] hover:underline cursor-pointer"
-            >
-              Privacy
-            </button>
-            <span>•</span>
+          <div className="flex items-center gap-3 my-3">
+            <div className="flex-1 border-t border-slate-200" />
+            <span className="text-[11px] font-bold text-slate-400 uppercase">OR</span>
+            <div className="flex-1 border-t border-slate-200" />
+          </div>
+
+          <button
+            type="button"
+            onClick={() => handlePersonaClick("rahul-sharma")}
+            disabled={!!personaLoading}
+            className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-slate-800 bg-slate-50 hover:bg-slate-100 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-2"
+          >
+            <span>🔐</span> Continue with Passkey / Biometrics
+          </button>
+
+          <div className="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-200">
             <button
               type="button"
               onClick={onNavigateHelp}
-              className="text-slate-500 hover:text-[#0B5D9B] hover:underline cursor-pointer"
+              className="text-[#0B5D9B] font-bold hover:underline cursor-pointer"
             >
-              Help
+              Need help?
             </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onNavigatePrivacy}
+                className="text-slate-500 hover:text-[#0B5D9B] hover:underline cursor-pointer"
+              >
+                Privacy
+              </button>
+            </div>
           </div>
         </form>
       </div>

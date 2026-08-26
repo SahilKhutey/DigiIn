@@ -60,7 +60,7 @@ export function OcrExtractionPreview({
             </tr>
           </thead>
           <tbody>
-            {Object.entries(classification.extractedFields).map(([key, val]) => (
+            {Object.entries(classification.extractedFields || (classification as any).extractedEntities || {}).map(([key, val]) => (
               <tr key={key}>
                 <td>
                   <strong>{key.replace(/_/g, " ").toUpperCase()}</strong>
@@ -75,12 +75,12 @@ export function OcrExtractionPreview({
       </div>
 
       {/* Classification Notes */}
-      {classification.classificationNotes.length > 0 && (
+      {(classification.classificationNotes || []).length > 0 && (
         <div className="classification-notes-box">
           <strong>OCR Classifier Intelligence Notes:</strong>
           <ul>
-            {classification.classificationNotes.map((note, i) => (
-              <li key={i}>{note}</li>
+            {(classification.classificationNotes || []).map((note, idx) => (
+              <li key={idx}>{note}</li>
             ))}
           </ul>
         </div>

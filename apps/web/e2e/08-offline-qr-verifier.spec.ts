@@ -5,6 +5,7 @@ test.describe("Offline QR Code Verifier Scanner & Asymmetric Proof Verification"
     page,
   }) => {
     await page.goto("/");
+    await page.getByRole("button", { name: /⚗️ Lab/i }).click();
 
     // 1. Generate an Asymmetric Proof Token in the Verification Gateway
     const proofHeading = page.getByRole("heading", { name: "Prove eligibility without uploading documents" });

@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { Button, Card, Badge } from "../../components/ui";
 import { useLanguage } from "../../context/LanguageContext";
 
@@ -82,10 +82,15 @@ const SERVICES: ServiceItem[] = [
 
 interface Props {
   onSelectService: (serviceId: string) => void;
+  onViewDetails?: (serviceId: string) => void;
   onBackToHome: () => void;
 }
 
-export const ServicesCatalogView: React.FC<Props> = ({ onSelectService, onBackToHome }) => {
+export const ServicesCatalogView: React.FC<Props> = ({
+  onSelectService,
+  onViewDetails,
+  onBackToHome,
+}) => {
   const { locale } = useLanguage();
   const hi = locale === "hi";
 
@@ -224,17 +229,22 @@ export const ServicesCatalogView: React.FC<Props> = ({ onSelectService, onBackTo
             </div>
 
             {/* Card Action */}
-            <div className="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between gap-4">
-              <span className="text-[11px] font-semibold text-slate-500">
-                🔒 Minimal Selective Disclosure
-              </span>
+            <div className="pt-5 mt-5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => (onViewDetails ? onViewDetails(service.id) : onSelectService(service.id))}
+                className="text-xs font-bold text-[#0B5D9B] hover:underline cursor-pointer"
+              >
+                View Details & Eligibility →
+              </button>
+
               <Button
                 variant="primary"
-                size="md"
+                size="sm"
                 onClick={() => onSelectService(service.id)}
-                className="shadow-xs"
+                className="shadow-xs font-bold"
               >
-                {service.id === "srv_scholarship_du" ? "Apply with DigiIn →" : "View Sandbox Journey →"}
+                {service.id === "srv_scholarship_du" ? "Apply with DigiIn →" : "Start Journey →"}
               </Button>
             </div>
           </div>

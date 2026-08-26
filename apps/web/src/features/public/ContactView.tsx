@@ -7,7 +7,11 @@ import { Textarea } from "../../components/ui/Textarea";
 import { Button } from "../../components/ui/Button";
 import { Alert } from "../../components/ui/Alert";
 
-export const ContactView: React.FC = () => {
+interface ContactViewProps {
+  onBack?: () => void;
+}
+
+export const ContactView: React.FC<ContactViewProps> = ({ onBack }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [topic, setTopic] = useState("general");
@@ -24,7 +28,8 @@ export const ContactView: React.FC = () => {
       title="Contact the DigiIn Team"
       description="Submit a support request, report a verification discrepancy, or inquire about institutional API onboarding."
       backHref="#/help"
-      backLabel="Back to Help & FAQ"
+      backLabel="Back"
+      onBack={onBack}
     >
       {submitted ? (
         <div className="space-y-4 text-center py-6">

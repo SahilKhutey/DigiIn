@@ -19,6 +19,15 @@ const KNOWN_CREDENTIAL_ATTRIBUTES: Record<string, { label: string; pii: boolean 
     { label: "roll_number", pii: true },
     { label: "school_code", pii: true },
   ],
+  CLASS_XII_CERTIFICATE: [
+    { label: "qualification", pii: false },
+    { label: "passing_year", pii: false },
+    { label: "qualification_status", pii: false },
+    { label: "board", pii: false },
+    { label: "percentage", pii: true },
+    { label: "roll_number", pii: true },
+    { label: "school_code", pii: true },
+  ],
   DOMICILE: [
     { label: "jurisdiction", pii: false },
     { label: "residence_verified", pii: false },
@@ -40,7 +49,8 @@ const KNOWN_CREDENTIAL_ATTRIBUTES: Record<string, { label: string; pii: boolean 
 };
 
 const DEFAULT_PREDICATES: Record<string, string> = {
-  CLASS_XII: "12th Board Result == PASSED (Score >= 50%)",
+  CLASS_XII: "Age Threshold >= 18 & 12th Board Result == PASSED (Score >= 50%)",
+  CLASS_XII_CERTIFICATE: "Age Threshold >= 18 & 12th Board Result == PASSED (Score >= 50%)",
   DOMICILE: "State Domicile == CHHATTISGARH",
   AGE_OVER_18: "Age Threshold >= 18 Years (Legal Age)",
   GRADUATION: "Degree == BACHELORS",

@@ -77,42 +77,54 @@
   --ux4g-leading-relaxed: 1.625;
 
   /* ==========================================================================
-     3. Spacing System (4px Scale)
+     3. Spacing System (4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 80 / 96)
      ========================================================================== */
   --ux4g-space-1: 4px;
   --ux4g-space-2: 8px;
   --ux4g-space-3: 12px;
   --ux4g-space-4: 16px;
-  --ux4g-space-5: 20px;
   --ux4g-space-6: 24px;
   --ux4g-space-8: 32px;
-  --ux4g-space-10: 40px;
   --ux4g-space-12: 48px;
   --ux4g-space-16: 64px;
+  --ux4g-space-20: 80px;
+  --ux4g-space-24: 96px;
 
   /* ==========================================================================
-     4. Border Radius & Shadows (Elevation)
+     4. Border Radius (6px / 10px / 14px / 20px) & Shadows
      ========================================================================== */
-  --ux4g-radius-sm: 4px;
-  --ux4g-radius-md: 8px;
-  --ux4g-radius-lg: 12px;
+  --ux4g-radius-sm: 6px;       /* small controls / badges */
+  --ux4g-radius-md: 10px;      /* inputs / buttons */
+  --ux4g-radius-lg: 14px;      /* cards */
+  --ux4g-radius-xl: 20px;      /* major panels / modals */
   --ux4g-radius-full: 9999px;
   
-  --ux4g-shadow-sm: 0 1px 2px 0 rgba(9, 47, 79, 0.05);
-  --ux4g-shadow-md: 0 4px 12px -1px rgba(9, 47, 79, 0.08), 0 2px 6px -1px rgba(9, 47, 79, 0.04);
-  --ux4g-shadow-lg: 0 10px 25px -3px rgba(9, 47, 79, 0.12), 0 4px 10px -2px rgba(9, 47, 79, 0.06);
-  --ux4g-shadow-xl: 0 20px 35px -5px rgba(9, 47, 79, 0.16);
+  --ux4g-shadow-sm: 0 1px 2px 0 rgba(9, 47, 79, 0.04);
+  --ux4g-shadow-md: 0 4px 12px -1px rgba(9, 47, 79, 0.06), 0 2px 4px -1px rgba(9, 47, 79, 0.03);
+  --ux4g-shadow-lg: 0 10px 25px -3px rgba(9, 47, 79, 0.08), 0 4px 8px -2px rgba(9, 47, 79, 0.04);
+  --ux4g-shadow-xl: 0 20px 35px -5px rgba(9, 47, 79, 0.12);
 
   /* ==========================================================================
-     5. Accessibility & Interaction (Focus Rings & Motion)
+     5. Motion Tokens, Transitions & Focus Rings
      ========================================================================== */
+  --motion-fast: 180ms;
+  --motion-normal: 250ms;
+  --motion-medium: 350ms;
+  --motion-slow: 500ms;
+  --motion-workflow: 1200ms;
+
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  --ux4g-transition-fast: var(--motion-fast) var(--ease-standard);
+  --ux4g-transition-normal: var(--motion-normal) var(--ease-standard);
+  --ux4g-transition-medium: var(--motion-medium) var(--ease-standard);
+
   --ux4g-focus-ring-color: #0B5D9B;
   --ux4g-focus-ring-width: 3px;
-  --ux4g-focus-ring-offset: 2px;
+  --ux4g-focus-ring-offset: 3px;
   --ux4g-focus-ring: var(--ux4g-focus-ring-width) solid var(--ux4g-focus-ring-color);
-  
-  --ux4g-transition-fast: 150ms ease-in-out;
-  --ux4g-transition-normal: 250ms ease-in-out;
 
   /* ==========================================================================
      6. Responsive Breakpoints
