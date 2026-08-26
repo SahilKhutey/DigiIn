@@ -1,4 +1,4 @@
-﻿"""DigiIn Standalone Background Worker Process."""
+"""DigiIn Standalone Background Worker Process."""
 
 from __future__ import annotations
 

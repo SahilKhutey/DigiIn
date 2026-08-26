@@ -1,4 +1,4 @@
-﻿"""
+"""
 Phase 16 — Async Document Processing Jobs API.
 
 Provides citizen-facing processing status polling and admin DLQ endpoints.
