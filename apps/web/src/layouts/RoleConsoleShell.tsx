@@ -67,6 +67,7 @@ export const RoleConsoleShell: React.FC<RoleConsoleShellProps> = ({
                 const val = e.target.value;
                 if (val === "PUBLIC") onViewChange("LANDING");
                 else if (val === "CITIZEN") onViewChange("DASHBOARD");
+                else if (val === "ZK_STUDIO") onViewChange("ZK_STUDIO");
                 else if (val === "ISSUER") onViewChange("ISSUER_CONSOLE");
                 else if (val === "VERIFIER") onViewChange("VERIFIER_CONSOLE");
                 else if (val === "ADMIN") onViewChange("ADMIN_CONSOLE");
@@ -76,6 +77,7 @@ export const RoleConsoleShell: React.FC<RoleConsoleShellProps> = ({
               <option value="ISSUER" className="bg-slate-900 text-white">🏛️ Issuer Console</option>
               <option value="VERIFIER" className="bg-slate-900 text-white">🔍 Verifier Portal</option>
               <option value="ADMIN" className="bg-slate-900 text-white">⚙️ Admin / Operations</option>
+              <option value="ZK_STUDIO" className="bg-slate-900 text-white">⚡ ZK Predicate Studio</option>
               <option value="CITIZEN" className="bg-slate-900 text-white">👤 Citizen App</option>
               <option value="PUBLIC" className="bg-slate-900 text-white">🌐 Public Portal</option>
             </select>

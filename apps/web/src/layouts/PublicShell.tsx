@@ -65,7 +65,9 @@ export const PublicShell: React.FC<PublicShellProps> = ({
             <span className="text-slate-400 font-medium hidden sm:inline">Role Surface:</span>
             <select
               value={
-                currentView === "ISSUER_CONSOLE"
+                currentView === "ZK_STUDIO"
+                  ? "ZK_STUDIO"
+                  : currentView === "ISSUER_CONSOLE"
                   ? "ISSUER"
                   : currentView === "VERIFIER_CONSOLE"
                   ? "VERIFIER"
@@ -79,6 +81,7 @@ export const PublicShell: React.FC<PublicShellProps> = ({
                 const role = e.target.value;
                 if (role === "PUBLIC") onViewChange("LANDING");
                 else if (role === "CITIZEN") onViewChange(isAuthenticated ? "DASHBOARD" : "SIGN_IN");
+                else if (role === "ZK_STUDIO") onViewChange("ZK_STUDIO");
                 else if (role === "ISSUER") onViewChange("ISSUER_CONSOLE");
                 else if (role === "VERIFIER") onViewChange("VERIFIER_CONSOLE");
                 else if (role === "ADMIN") onViewChange("ADMIN_CONSOLE");
@@ -88,6 +91,7 @@ export const PublicShell: React.FC<PublicShellProps> = ({
             >
               <option value="PUBLIC" className="bg-[#092F4F] text-white">🌐 Public Portal</option>
               <option value="CITIZEN" className="bg-[#092F4F] text-white">👤 Citizen App</option>
+              <option value="ZK_STUDIO" className="bg-[#092F4F] text-white">⚡ ZK Predicate Studio</option>
               <option value="ISSUER" className="bg-[#092F4F] text-white">🏛️ Issuer Console</option>
               <option value="VERIFIER" className="bg-[#092F4F] text-white">🔍 Verifier Portal</option>
               <option value="ADMIN" className="bg-[#092F4F] text-white">⚙️ Admin / Operations</option>

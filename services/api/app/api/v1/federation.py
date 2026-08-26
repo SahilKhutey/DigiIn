@@ -219,7 +219,7 @@ def issue_verifiable_credential(req: IssueCredentialRequest) -> dict[str, Any]:
 
     # 2. Cryptographic signature with issuer private key
     signing_key = _get_issuer_signing_key(req.issuer_id)
-    signature_payload = f"{cred_id}:{req.citizen_account_id}:{req.credential_type}:{claim_digest}:{now.isoformat()}".encode("utf-8")
+    signature_payload = f"{cred_id}:{req.citizen_account_id}:{req.credential_type}:{claim_digest}:{now.isoformat()}".encode()
     signature = signing_key.sign(signature_payload)
     sig_b64 = base64.urlsafe_b64encode(signature).decode().rstrip("=")
 
@@ -283,7 +283,7 @@ def revoke_verifiable_credential(req: RevokeCredentialRequest) -> dict[str, Any]
 
     # 2. Generate cryptographic revocation assertion
     signing_key = _get_issuer_signing_key(req.issuer_id)
-    rev_payload = f"REVOKE:{req.credential_id}:{req.issuer_id}:{req.reason}:{now.isoformat()}".encode("utf-8")
+    rev_payload = f"REVOKE:{req.credential_id}:{req.issuer_id}:{req.reason}:{now.isoformat()}".encode()
     rev_sig = base64.urlsafe_b64encode(signing_key.sign(rev_payload)).decode().rstrip("=")
 
     # 3. Publish to dynamic revocation registry

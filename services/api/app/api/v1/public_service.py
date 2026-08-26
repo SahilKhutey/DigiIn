@@ -246,6 +246,33 @@ def reset_demo_scenario() -> dict[str, Any]:
     return demo_seed_manager.reset_demo()
 
 
+@router.get("/verification-lab")
+def get_verification_lab() -> dict[str, Any]:
+    """Returns interactive Verification Lab test cases (valid, tampered, wrong audience, revoked, expired)."""
+    from app.core.verification_hardening.verification_lab import VerificationLabService
+
+    lab_svc = VerificationLabService()
+    test_cases = lab_svc.run_all_lab_tests()
+    return {
+        "status": "success",
+        "total_tests": len(test_cases),
+        "tests": [
+            {
+                "test_id": tc.test_id,
+                "test_name": tc.name,
+                "description": tc.description,
+                "is_valid": tc.actual_result.is_valid,
+                "status": tc.actual_result.status,
+                "failure_reason": tc.actual_result.reason or tc.actual_result.failed_check,
+                "failed_check": tc.actual_result.failed_check,
+                "digest_computed": tc.actual_result.digest_computed,
+                "expected_digest": tc.actual_result.expected_digest,
+            }
+            for tc in test_cases
+        ],
+    }
+
+
 @router.get("/demo/state")
 def get_demo_state() -> dict[str, Any]:
     """Returns the current deterministic demo state and credentials."""

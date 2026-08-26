@@ -242,6 +242,7 @@ export const CitizenAppShell: React.FC<CitizenAppShellProps> = ({
                 onChange={(e) => {
                   const val = e.target.value;
                   if (val === "PUBLIC") onViewChange("LANDING");
+                  else if (val === "ZK_STUDIO") onViewChange("ZK_STUDIO");
                   else if (val === "ISSUER") onViewChange("ISSUER_CONSOLE");
                   else if (val === "VERIFIER") onViewChange("VERIFIER_CONSOLE");
                   else if (val === "ADMIN") onViewChange("ADMIN_CONSOLE");
@@ -250,6 +251,7 @@ export const CitizenAppShell: React.FC<CitizenAppShellProps> = ({
               >
                 <option value="CITIZEN">👤 Citizen App</option>
                 <option value="PUBLIC">🌐 Public Portal</option>
+                <option value="ZK_STUDIO">⚡ ZK Predicate Studio</option>
                 <option value="ISSUER">🏛️ Issuer Console</option>
                 <option value="VERIFIER">🔍 Verifier Portal</option>
                 <option value="ADMIN">⚙️ Admin / Operations</option>

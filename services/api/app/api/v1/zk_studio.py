@@ -194,7 +194,7 @@ def evaluate_zk_predicates(req: EvaluatePredicatesRequest) -> dict[str, Any]:
 
         # Generate cryptographic blinding salt and commitment hash
         salt = secrets.token_hex(16)
-        commitment_preimage = f"{pred.predicate_id}:{is_satisfied}:{salt}".encode("utf-8")
+        commitment_preimage = f"{pred.predicate_id}:{is_satisfied}:{salt}".encode()
         commitment_hash = hashlib.sha256(commitment_preimage).hexdigest()
         blinded_hashes.append(commitment_hash)
 
@@ -239,7 +239,7 @@ def evaluate_zk_predicates(req: EvaluatePredicatesRequest) -> dict[str, Any]:
     # Canonical base64url serialization & Ed25519 signing
     header_b64 = base64.urlsafe_b64encode(json.dumps(header, separators=(",", ":")).encode("utf-8")).decode().rstrip("=")
     payload_b64 = base64.urlsafe_b64encode(json.dumps(payload, separators=(",", ":")).encode("utf-8")).decode().rstrip("=")
-    signing_input = f"{header_b64}.{payload_b64}".encode("utf-8")
+    signing_input = f"{header_b64}.{payload_b64}".encode()
 
     signing_key = _get_zk_gateway_key()
     signature_bytes = signing_key.sign(signing_input)
