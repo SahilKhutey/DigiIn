@@ -93,7 +93,7 @@ export const GovHeader: React.FC<GovHeaderProps> = ({
 
   return (
     <header
-      className={`ux4g-header sticky top-0 z-50 transition-all duration-200 ${
+      className={`ux4g-header flex flex-col w-full sticky top-0 z-50 transition-all duration-200 ${
         isScrolled
           ? "bg-white/95 backdrop-blur-md shadow-xs border-b border-slate-200"
           : "bg-white border-b border-slate-200"
