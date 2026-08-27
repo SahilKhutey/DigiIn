@@ -18,7 +18,7 @@ type Step =
   | "PROOF_READY"
   | "VERIFIER_VIEW";
 
-const DEMO_CITIZEN_ID = "DIN-DEMO-001";
+const DEMO_CITIZEN_ID = "DI-7K4M-9Q2X-8P6R";
 const DEMO_CITIZEN_NAME = "Demo Citizen (Rahul Sharma)";
 
 const SandboxBanner: React.FC = () => (

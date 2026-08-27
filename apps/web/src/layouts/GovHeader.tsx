@@ -20,6 +20,7 @@ export type AppView =
   | "OTP"
   | "ONBOARDING"
   | "DASHBOARD"
+  | "IDENTITY"
   | "DOCUMENTS"
   | "DOCUMENT_DETAIL"
   | "UPLOAD"
@@ -41,7 +42,8 @@ export type AppView =
   | "CORRECTIONS"
   | "SUPPORT"
   | "DEMO_LAB"
-  | "ZK_STUDIO";
+  | "ZK_STUDIO"
+  | "MOCK_PORTAL";
 
 interface GovHeaderProps {
   currentView: AppView;

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
-import { Button, Switch, Badge } from "../../components/ui";
+import { Button, Switch, Badge, DigiInIDCard } from "../../components/ui";
 
 export const SettingsView: React.FC = () => {
   const { user } = useAuth();
@@ -34,23 +34,30 @@ export const SettingsView: React.FC = () => {
       )}
 
       {/* 1. Sovereign Identity Card */}
-      <div className="bg-white border border-[#CBD5E1] rounded-2xl p-6 shadow-xs space-y-4">
-        <h2 className="text-base font-bold text-[#092F4F] m-0 flex items-center gap-2">
-          <span>🛡️</span> Sovereign Citizen Identity
-        </h2>
+      <div className="space-y-4">
+        <DigiInIDCard
+          idNumber={user?.digiinId || "DI-7K4M-9Q2X-8P6R"}
+          holderName={user?.name || "Rahul Sharma"}
+          status="Active & Sovereign"
+        />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-          <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1">
-            <span className="text-slate-500 font-medium">Citizen Name:</span>
-            <div className="font-bold text-slate-900">{user?.name || "Rahul Sharma"}</div>
-          </div>
-          <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1 font-mono">
-            <span className="font-sans text-slate-500 font-medium">DigiIn Sovereign ID:</span>
-            <div className="font-bold text-[#0B5D9B]">{user?.digiinId || "DIN-84K2-19Q7"}</div>
-          </div>
-          <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1 sm:col-span-2 font-mono">
-            <span className="font-sans text-slate-500 font-medium">Ed25519 Root Key Fingerprint:</span>
-            <div className="text-[11px] text-slate-700 break-all">SHA256:8f9a2b1c4e7d0f3a6b5c8e9d2a4f7b0e3c6a9d1f5e8b2a4c</div>
+        <div className="bg-white border border-[#CBD5E1] rounded-2xl p-5 shadow-xs space-y-3">
+          <h2 className="text-sm font-bold text-[#092F4F] m-0 flex items-center gap-2">
+            <span>👤</span> Personal Account Attributes (Private)
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
+              <span className="text-slate-500 font-medium">Citizen Full Name:</span>
+              <div className="font-bold text-slate-900">{user?.name || "Rahul Sharma"}</div>
+            </div>
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
+              <span className="text-slate-500 font-medium">Account Role:</span>
+              <div className="font-bold text-slate-900">{user?.role || "CITIZEN"}</div>
+            </div>
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1 sm:col-span-2 font-mono">
+              <span className="font-sans text-slate-500 font-medium">Ed25519 Root Key Fingerprint:</span>
+              <div className="text-[11px] text-slate-700 break-all">SHA256:8f9a2b1c4e7d0f3a6b5c8e9d2a4f7b0e3c6a9d1f5e8b2a4c</div>
+            </div>
           </div>
         </div>
       </div>

@@ -7,7 +7,7 @@ export const DEMO_PERSONAS: DemoPersona[] = [
     id: "rahul-citizen",
     name: "Rahul Sharma",
     role: "CITIZEN",
-    digiinId: "DIN-DEMO-001",
+    digiinId: "DI-7K4M-9Q2X-8P6R",
     organization: "Sovereign Citizen (Holder)",
     avatarBadge: "👤",
     mobile: "9876543210",
@@ -17,7 +17,7 @@ export const DEMO_PERSONAS: DemoPersona[] = [
     id: "priya-citizen",
     name: "Priya Verma",
     role: "CITIZEN",
-    digiinId: "DIN-DEMO-002",
+    digiinId: "DI-9Q2X-4M7K-1P8R",
     organization: "Sovereign Citizen (Holder)",
     avatarBadge: "👤",
     mobile: "9876500000",
@@ -68,7 +68,7 @@ let activeSession: ActiveOtpSession | null = null;
 const EXISTING_CITIZENS: Record<string, Partial<CitizenProfile>> = {
   "9876543210": {
     name: "Rahul Sharma",
-    digiinId: "DIN-84K2-19Q7",
+    digiinId: "DI-7K4M-9Q2X-8P6R",
     language: "en",
     isFirstTime: false,
     ekycVerified: true,
@@ -77,7 +77,7 @@ const EXISTING_CITIZENS: Record<string, Partial<CitizenProfile>> = {
   },
   "9876500000": {
     name: "Priya Patel",
-    digiinId: "DIN-3N8V-55B1",
+    digiinId: "DI-9Q2X-4M7K-1P8R",
     language: "hi",
     isFirstTime: false,
     ekycVerified: true,
@@ -117,7 +117,7 @@ export const mockAuthBackend = {
         const isExisting = mobile in EXISTING_CITIZENS;
         const profileData = EXISTING_CITIZENS[mobile] || {
           name: "Rahul Sharma",
-          digiinId: "DIN-7K4P-92M8",
+          digiinId: "DI-7K4M-9Q2X-8P6R",
           language: "en",
           isFirstTime: !isExisting,
           ekycVerified: true,
@@ -179,7 +179,7 @@ export const mockAuthBackend = {
     const isExisting = mobile in EXISTING_CITIZENS;
     const profileData = EXISTING_CITIZENS[mobile] || {
       name: "Rahul Sharma",
-      digiinId: "DIN-7K4P-92M8",
+      digiinId: "DI-7K4M-9Q2X-8P6R",
       language: "en",
       isFirstTime: !isExisting,
       ekycVerified: true,
@@ -190,7 +190,7 @@ export const mockAuthBackend = {
     const profile: CitizenProfile = {
       mobile,
       name: profileData.name || "Citizen User",
-      digiinId: profileData.digiinId || "DIN-7K4P-92M8",
+      digiinId: profileData.digiinId || "DI-7K4M-9Q2X-8P6R",
       language: (profileData.language as "en" | "hi") || "en",
       isFirstTime: profileData.isFirstTime ?? !isExisting,
       ekycVerified: profileData.ekycVerified ?? true,
@@ -212,7 +212,7 @@ export const mockAuthBackend = {
     const profile: CitizenProfile = {
       mobile,
       name: data.name,
-      digiinId: "DIN-7K4P-92M8",
+      digiinId: "DI-7K4M-9Q2X-8P6R",
       language: data.language,
       isFirstTime: false,
       ekycVerified: true,

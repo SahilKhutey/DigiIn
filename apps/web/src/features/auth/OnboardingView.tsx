@@ -18,7 +18,7 @@ export const OnboardingView: React.FC<OnboardingViewProps> = ({ onComplete }) =>
   const [showIdCard, setShowIdCard] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const assignedDin = "DIN-7K4P-92M8";
+  const assignedDin = "DI-7K4M-9Q2X-8P6R";
 
   const handleCreateAccount = async (e: React.FormEvent) => {
     e.preventDefault();

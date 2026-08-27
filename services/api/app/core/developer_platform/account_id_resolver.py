@@ -12,6 +12,10 @@ class AccountIdResolver:
     def __init__(self):
         # Maps opaque account IDs to internal subject references (in production backed by encrypted subject mapping)
         self._accounts: dict[str, dict[str, Any]] = {
+            "DI-7K4M-9Q2X-8P6R": {"subject_ref": "subj_synthetic_rahul_01", "is_sandbox": True, "active": True},
+            "DI-9Q2X-4M7K-1P8R": {"subject_ref": "subj_synthetic_priya_02", "is_sandbox": True, "active": True},
+            "DIN-DEMO-001": {"subject_ref": "subj_synthetic_rahul_01", "is_sandbox": True, "active": True},
+            "DIN-DEMO-002": {"subject_ref": "subj_synthetic_priya_02", "is_sandbox": True, "active": True},
             "DGI-SBX-001": {"subject_ref": "subj_synthetic_rahul_01", "is_sandbox": True, "active": True},
             "DGI-SBX-002": {"subject_ref": "subj_synthetic_priya_02", "is_sandbox": True, "active": True},
             "DGI-7F8K-99MX": {"subject_ref": "subj_citizen_prod_8812", "is_sandbox": False, "active": True},

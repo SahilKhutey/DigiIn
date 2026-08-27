@@ -12,6 +12,7 @@ export const routes = {
   register: "/register",
   otp: "/verify",
   dashboard: "/dashboard",
+  identity: "/identity",
   documents: "/documents",
   upload: "/documents/upload",
   credentials: "/credentials",
@@ -27,6 +28,7 @@ export const routes = {
   admin: "/admin",
   scholarship: "/scholarship",
   zkStudio: "/zk-studio",
+  sandbox: "/sandbox",
 } as const;
 
 export type AppRoute = typeof routes[keyof typeof routes];

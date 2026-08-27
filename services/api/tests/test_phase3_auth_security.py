@@ -10,7 +10,10 @@ def test_account_id_is_independent_of_identity_data():
     account_id = generate_account_id()
     assert is_valid_account_id(account_id)
     assert "@" not in account_id
-    assert account_id.startswith("DIN-")
+    assert account_id.startswith("DI-")
+    assert len(account_id) == 17  # DI-XXXX-XXXX-XXXX (12 Base32 chars + DI- prefix + 2 hyphens)
+
+
 
 
 def test_secret_is_hashed_and_verifiable():

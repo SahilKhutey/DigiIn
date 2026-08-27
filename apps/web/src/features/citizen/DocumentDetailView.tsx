@@ -110,8 +110,13 @@ export const DocumentDetailView: React.FC<DocumentDetailViewProps> = ({
           </div>
 
           <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+            <div className="text-slate-500 font-medium">Sovereign Account Owner</div>
+            <div className="text-sm font-mono font-bold text-[#0B5D9B]">DI-7K4M-9Q2X-8P6R</div>
+          </div>
+
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-1 sm:col-span-2">
             <div className="text-slate-500 font-medium">Verification Level</div>
-            <div className="text-sm font-bold text-emerald-800">{doc.authorityLevel} (Direct Registry)</div>
+            <div className="text-sm font-bold text-emerald-800">{doc.authorityLevel} (Direct Authoritative Registry)</div>
           </div>
         </div>
 

@@ -25,6 +25,7 @@ export const CitizenAppShell: React.FC<CitizenAppShellProps> = ({
 
   const primaryNavItems: { id: AppView; label: string; icon: string; badge?: string }[] = [
     { id: "DASHBOARD", label: "Dashboard", icon: "🏠" },
+    { id: "IDENTITY", label: "My Identity", icon: "🪪", badge: "DI-7K4M" },
     { id: "WALLET", label: "Documents", icon: "🗂️", badge: "4" },
     { id: "CREDENTIALS", label: "Credentials", icon: "🛡️", badge: "Level 4" },
     { id: "VERIFICATION", label: "Verification", icon: "🔍" },
@@ -46,6 +47,7 @@ export const CitizenAppShell: React.FC<CitizenAppShellProps> = ({
   const getBreadcrumbTitle = (view: AppView): string => {
     switch (view) {
       case "DASHBOARD": return "Dashboard Overview";
+      case "IDENTITY": return "My Sovereign Identity Center";
       case "WALLET":
       case "DOCUMENTS": return "Documents & Vault";
       case "CREDENTIALS": return "Verified Credentials Store";
@@ -61,6 +63,7 @@ export const CitizenAppShell: React.FC<CitizenAppShellProps> = ({
       case "CORRECTIONS": return "Discrepancy Corrections";
       case "SUPPORT": return "Diagnostic Support";
       case "SETTINGS": return "Account Settings";
+      case "MOCK_PORTAL": return "Hackathon Sandbox Institutions Portal";
       default: return "Citizen Portal";
     }
   };
@@ -112,7 +115,7 @@ export const CitizenAppShell: React.FC<CitizenAppShellProps> = ({
               <span className="truncate">{user?.name || "Rahul Sharma"}</span>
             </div>
             <div className="text-[11px] font-mono text-cyan-300 mt-1 font-semibold">
-              {user?.digiinId || "DIN-84K2-19Q7"}
+              {user?.digiinId || "DI-7K4M-9Q2X-8P6R"}
             </div>
           </div>
         )}
@@ -246,10 +249,12 @@ export const CitizenAppShell: React.FC<CitizenAppShellProps> = ({
                   else if (val === "ISSUER") onViewChange("ISSUER_CONSOLE");
                   else if (val === "VERIFIER") onViewChange("VERIFIER_CONSOLE");
                   else if (val === "ADMIN") onViewChange("ADMIN_CONSOLE");
+                  else if (val === "MOCK_PORTAL") onViewChange("MOCK_PORTAL");
                 }}
                 className="bg-transparent text-[#0B5D9B] font-bold border-none cursor-pointer focus:outline-none"
               >
                 <option value="CITIZEN">👤 Citizen App</option>
+                <option value="MOCK_PORTAL">🧪 Sandbox Institutions</option>
                 <option value="PUBLIC">🌐 Public Portal</option>
                 <option value="ZK_STUDIO">⚡ ZK Predicate Studio</option>
                 <option value="ISSUER">🏛️ Issuer Console</option>
@@ -267,10 +272,18 @@ export const CitizenAppShell: React.FC<CitizenAppShellProps> = ({
               {locale === "en" ? "हिन्दी" : "English"}
             </button>
 
-            {/* User Pill */}
-            <div className="flex items-center gap-2 bg-[#EBF4FA] px-3 py-1 rounded-xl border border-[#BAE6FD]">
+            {/* User Pill (Click to open Identity Center) */}
+            <button
+              type="button"
+              onClick={() => handleNavClick("IDENTITY")}
+              className="flex items-center gap-2 bg-[#EBF4FA] hover:bg-[#D9EEFA] transition-all px-3 py-1 rounded-xl border border-[#BAE6FD] cursor-pointer"
+              title="Open DigiIn Identity Center"
+            >
               <span className="text-xs font-bold text-[#092F4F]">👤 {user?.name || "Rahul"}</span>
-            </div>
+              <span className="text-[10px] font-mono font-bold text-[#0B5D9B] bg-white px-1.5 py-0.2 rounded border border-[#BAE6FD]">
+                {user?.digiinId ? user.digiinId.slice(0, 7) + "…" : "DI-7K4M…"}
+              </span>
+            </button>
           </div>
         </header>
 

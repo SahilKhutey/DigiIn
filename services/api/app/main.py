@@ -64,6 +64,9 @@ from app.api.v1 import (
     review as review_router,
 )
 from app.api.v1 import (
+    verification as verification_api_router,
+)
+from app.api.v1 import (
     verification_intelligence as intelligence_router,
 )
 from app.api.v1 import (
@@ -250,6 +253,7 @@ app.include_router(health_router.router, prefix="/api/v1")
 app.include_router(ops_router.router, prefix="/api/v1")
 app.include_router(demo_router.router, prefix="/api/v1")
 app.include_router(auth_router.router, prefix="/api/v1")
+app.include_router(verification_api_router.router, prefix="/api/v1")
 app.include_router(citizen_router.router, prefix="/api/v1")
 app.include_router(documents_router.router, prefix="/api/v1")
 app.include_router(federation_router.router, prefix="/api/v1")
@@ -415,7 +419,6 @@ def get_consent_preview() -> ConsentPreview:
 
 
 @app.post("/api/v1/verification/request", response_model=VerificationRequestRecord)
-@app.post("/api/v1/verification/requests", response_model=VerificationRequestRecord)
 def create_proof_request(payload: VerificationRequestCreate) -> VerificationRequestRecord:
     """Create a purpose-bound verification request from a requester portal."""
     return create_verification_request(payload)
@@ -428,7 +431,6 @@ def create_demo_exam_request() -> VerificationRequestRecord:
 
 
 @app.get("/api/v1/verification/request", response_model=list[VerificationRequestRecord])
-@app.get("/api/v1/verification/requests", response_model=list[VerificationRequestRecord])
 def verification_requests() -> list[VerificationRequestRecord]:
     return list_verification_requests()
 

@@ -96,6 +96,19 @@ SERVICES_CATALOGUE: dict[str, PublicServiceDefinition] = {
         purpose="University Admission Eligibility Verification",
         validity_hours=72,
     ),
+    "srv_land_property_records": PublicServiceDefinition(
+        service_id="srv_land_property_records",
+        name="Municipal Land & Property Ownership Attestation",
+        department="Department of Revenue & Urban Local Bodies",
+        category="Land & Local Administration",
+        description="Verify identity and domicile status for land title record verification without uploading physical identity proofs.",
+        estimated_time_digiin="1 minute",
+        estimated_time_traditional="2 weeks",
+        required_credentials=["IDENTITY_AADHAAR", "DOMICILE_CERTIFICATE"],
+        required_predicates=["identity.fullName", "domicile.state"],
+        purpose="Land & Property Verification",
+        validity_hours=24,
+    ),
 }
 
 

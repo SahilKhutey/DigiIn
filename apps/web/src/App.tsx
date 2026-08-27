@@ -39,6 +39,8 @@ import {
 } from "./features/auth";
 import { ServiceDetailView } from "./features/services/ServiceDetailView";
 import { CitizenDashboardView } from "./features/citizen/CitizenDashboardView";
+import { IdentityCenterView } from "./features/identity/IdentityCenterView";
+import { MockInstitutionPortalView } from "./features/sandbox/MockInstitutionPortalView";
 import { DocumentDetailView } from "./features/citizen/DocumentDetailView";
 import { UploadPipelineView } from "./features/citizen/UploadPipelineView";
 import { AuditTrailView } from "./features/citizen/AuditTrailView";
@@ -811,6 +813,22 @@ function AppContent() {
           onNavigateAudit={() => setCurrentView("AUDIT_TRAIL")}
           onOpenScanner={() => handleOpenScanner()}
           onOpenEkyc={handleOpenEkyc}
+        />
+      )}
+
+      {/* Sovereign Identity Center (Account ID & Associated Info Hub) */}
+      {currentView === "IDENTITY" && (
+        <IdentityCenterView
+          onNavigateToDocuments={() => setCurrentView("WALLET")}
+          onNavigateToServices={() => setCurrentView("SERVICES")}
+          onNavigateToVerification={() => setCurrentView("VERIFICATION")}
+        />
+      )}
+
+      {/* Hackathon Sandbox Mock Institutions Portal */}
+      {currentView === "MOCK_PORTAL" && (
+        <MockInstitutionPortalView
+          onSwitchToCitizenApp={() => setCurrentView("IDENTITY")}
         />
       )}
 

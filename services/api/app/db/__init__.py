@@ -16,4 +16,10 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
+try:
+    init_db()
+except Exception:
+    pass
+
 __all__ = ["Base", "SessionLocal", "check_db_health", "engine", "get_db", "init_db"]
+

@@ -56,6 +56,7 @@ def get_db_session() -> Generator[Session, None, None]:
 
 def _run_migrations(conn) -> None:
     columns_to_ensure = [
+        ("users", "digiin_account_id", "VARCHAR(40)"),
         ("documents", "owner_account_id", "VARCHAR(80)"),
         ("document_versions", "owner_account_id", "VARCHAR(80)"),
         ("document_versions", "object_id", "VARCHAR(80)"),
@@ -81,6 +82,30 @@ def _run_migrations(conn) -> None:
                 conn.commit()
         except Exception:
             pass
+
+    # Backfill any existing users that have NULL or empty digiin_account_id
+    try:
+        from app.core.ids import generate_account_id
+        null_users = conn.execute(text("SELECT id FROM users WHERE digiin_account_id IS NULL OR digiin_account_id = ''")).fetchall()
+        for row in null_users:
+            user_pk = row[0]
+            new_id = generate_account_id()
+            conn.execute(text("UPDATE users SET digiin_account_id = :acc_id WHERE id = :user_id"), {"acc_id": new_id, "user_id": user_pk})
+        if null_users:
+            conn.commit()
+    except Exception:
+        pass
+
+    # Ensure UNIQUE index on users.digiin_account_id
+    try:
+        conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_digiin_account_id ON users (digiin_account_id)"))
+        conn.commit()
+    except Exception:
+        pass
+
+
+
+
 
 
 

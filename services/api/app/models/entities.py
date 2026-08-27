@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
+from app.core.ids import generate_account_id
 from app.db import Base
 
 
@@ -18,11 +19,21 @@ def now() -> datetime:
 class User(Base):
     __tablename__ = "users"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    digiin_account_id: Mapped[str] = mapped_column(String(40), unique=True, index=True, default=generate_account_id)
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(Text)
     role: Mapped[str] = mapped_column(String(32), default="CITIZEN")
     status: Mapped[str] = mapped_column(String(32), default="ACTIVE")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+    def __init__(self, **kwargs):
+        if "id" not in kwargs:
+            kwargs["id"] = uid()
+        if "digiin_account_id" not in kwargs:
+            kwargs["digiin_account_id"] = generate_account_id()
+        super().__init__(**kwargs)
+
+
 
 
 class RefreshSession(Base):

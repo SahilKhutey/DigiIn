@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "../../components/ui";
+import { Button, DigiInIDCard } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import { WalletDocument } from "../../types";
 
@@ -27,6 +27,7 @@ export const CitizenDashboardView: React.FC<CitizenDashboardViewProps> = ({
   onOpenEkyc,
 }) => {
   const { user } = useAuth();
+  const citizenDigiinId = user?.digiinId || "DI-7K4M-9Q2X-8P6R";
 
   return (
     <div className="space-y-8 max-w-[1200px] mx-auto py-2">
@@ -37,7 +38,7 @@ export const CitizenDashboardView: React.FC<CitizenDashboardViewProps> = ({
             Good afternoon, {user?.name || "Rahul Sharma"}.
           </h1>
           <p className="text-xs text-slate-500 mt-1 m-0">
-            DigiIn Sovereign ID: <code className="font-mono font-bold text-[#0B5D9B] bg-slate-100 px-2 py-0.5 rounded">{user?.digiinId || "DIN-84K2-19Q7"}</code>
+            DigiIn Sovereign ID: <code className="font-mono font-bold text-[#0B5D9B] bg-slate-100 px-2 py-0.5 rounded">{citizenDigiinId}</code>
           </p>
         </div>
 
@@ -61,6 +62,13 @@ export const CitizenDashboardView: React.FC<CitizenDashboardViewProps> = ({
           </Button>
         </div>
       </div>
+
+      {/* DigiIn Sovereign ID Card Banner */}
+      <DigiInIDCard
+        idNumber={citizenDigiinId}
+        holderName={user?.name || "Rahul Sharma"}
+        status="Active & Sovereign"
+      />
 
       {/* 2. Priority Pending Request (Action Needed) */}
       <div className="bg-amber-50/90 border border-amber-300 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">

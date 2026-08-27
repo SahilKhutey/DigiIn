@@ -42,7 +42,7 @@ export const ForCitizensView: React.FC<ForCitizensViewProps> = ({
               Your DigiIn ID gives you instant access to all your verified education, identity, and transport records in one place.
             </p>
             <ul className="space-y-1.5 text-xs text-slate-700 list-none p-0 pt-2">
-              <li>✓ Unique DigiIn ID (<code>DIN-84K2-19Q7</code>) for verified public services</li>
+              <li>✓ Unique DigiIn ID (<code>DI-7K4M-9Q2X-8P6R</code>) for verified public services</li>
               <li>✓ Instant trust posture metrics across all your certificates</li>
               <li>✓ 1-click revocation of active sharing permissions</li>
             </ul>

@@ -1,43 +1,58 @@
-# DigiLocker X — Core Foundation Architecture
+# DigiIn — Core Foundation Architecture & Trusted Verification Subsystem
 
-This document defines the backend infrastructure, technological stack, architectural boundaries, and code organization rules for the DigiLocker X platform.
+DigiIn is a **National Reusable, Trusted Digital Verification Layer** between citizens and government services.
+
+> **Foundational Principle: Store once → Verify once → Reuse many times**
+> Powered by: **Consent + Authorization + Purpose Limitation + Minimum Disclosure + Auditability**
 
 ---
 
-## 1. System Architecture
+## 1. System Architecture & Dedicated Subsystems
 
-```
-                    ┌────────────────────────────────────────────────────────┐
-                    │                      Client Layer                      │
-                    │  Next.js Web │ React Native Mobile │ Consoles (Admin)  │
-                    └───────────────────────────┬────────────────────────────┘
-                                                │ HTTPS / WSS / REST
-                                                ▼
-                    ┌────────────────────────────────────────────────────────┐
-                    │                      API Gateway                       │
-                    │      Rate Limiter • TLS Termination • Auth Guard       │
-                    └───────────────────────────┬────────────────────────────┘
-                                                │
-                                                ▼
-                    ┌────────────────────────────────────────────────────────┐
-                    │                    Application Core                    │
-                    │    ┌──────────────────┬──────────────────┐             │
-                    │    │ Identity Service │ Document Service │             │
-                    │    ├──────────────────┼──────────────────┤             │
-                    │    │ Credential Svc   │ Verification Svc │             │
-                    │    ├──────────────────┼──────────────────┤             │
-                    │    │ Consent Service  │ Proof Engine     │             │
-                    │    └──────────────────┴──────────────────┘             │
-                    └───────────────────────────┬────────────────────────────┘
-                                                │
-                 ┌──────────────────────────────┼──────────────────────────────┐
-                 ▼                              ▼                              ▼
-    ┌────────────────────────┐    ┌────────────────────────┐    ┌────────────────────────┐
-    │     Data & Storage     │    │   Async Task Workers   │    │  Integration Adapters  │
-    │  PostgreSQL 16 (Rel.)  │    │  Celery / Redis Queue  │    │  CBSE / State Boards   │
-    │  Redis 7 (Cache/Lock)  │    │  OCR & Virus Scanning  │    │  UIDAI eKYC Gateway    │
-    │  S3 / MinIO (Blob)     │    │  Webhook Notifications │    │  University Registries │
-    └────────────────────────┘    └────────────────────────┘    └────────────────────────┘
+```text
+DigiIn
+│
+├── 1. Identity Subsystem
+│   ├── Public DigiIn Account ID (DI-7K4M-9Q2X-8P6R)
+│   ├── Internal Sovereign Account ID (UUIDv7 / UUID4)
+│   ├── Ephemeral Counter Verification Codes (6-digit, 10-min TTL)
+│   └── Signed Verification QR Tokens
+│
+├── 2. Document Vault
+│   ├── Immutable Raw Document Storage (SHA-256 Content-Addressed)
+│   ├── Cryptographic Claim & Metadata Registry
+│   └── Multi-Version Provenance Lineage
+│
+├── 3. Verification Engine
+│   ├── Automated Schema & Format Verification
+│   ├── Direct Department Issuer Verification (CBSE, UIDAI, Revenue)
+│   ├── Human Review & Exception Processing
+│   └── 6-Tier Trust Levels (Level 0 – Level 5)
+│
+├── 4. Access & Consent Layer
+│   ├── Sovereign Citizen Consent Policy Engine
+│   ├── Department Accreditation & Role Authorization Guard
+│   ├── Strict Purpose Limitation & Scope Boundaries
+│   └── Unilateral 1-Click Revocation Engine
+│
+├── 5. DigiIn Verification API (Gateway)
+│   ├── /api/v1/verification/identity
+│   ├── /api/v1/verification/document
+│   ├── /api/v1/verification/attribute
+│   ├── /api/v1/public-service/verify-attributes
+│   └── Minimum Disclosure Verification Response (0 Raw Bytes Transferred)
+│
+├── 6. Trust Layer
+│   ├── RFC 7515/8032 Ed25519 Asymmetric JWS Proof Signatures
+│   ├── SHA-256 Canonical Digest Computation (RFC 8785)
+│   ├── Merkle Provenance Lineage
+│   └── Cryptographic Tamper & Modification Detection
+│
+└── 7. Sovereign Audit Layer
+    ├── Department Request & Access Logs
+    ├── Citizen Consent & Revocation Logs
+    ├── Verification Assertion Disclosures
+    └── Immutable Audit Trail
 ```
 
 ---

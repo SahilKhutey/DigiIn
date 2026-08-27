@@ -8,8 +8,9 @@ from app.integrations.auth import DemoAuthProvider
 def test_account_id_is_opaque_and_valid():
     account_id = generate_account_id()
     assert is_valid_account_id(account_id)
-    assert account_id.startswith("DIN-")
-    assert len(account_id) == 18
+    assert account_id.startswith("DI-")
+    assert len(account_id) == 17  # DI-XXXX-XXXX-XXXX
+
 
 
 def test_account_id_rejects_personal_data_shapes():
