@@ -676,8 +676,6 @@ function AppContent() {
       onOpenScanner={() => handleOpenScanner()}
       onOpenEkyc={() => handleOpenEkyc()}
     >
-      <NoticeBanner notice={notice} />
-
       {/* View 1: PUBLIC LANDING EXPERIENCE */}
       {currentView === "LANDING" && (
         <LandingView
@@ -1079,6 +1077,13 @@ function AppContent() {
           />
         </div>
       )}
+
+      {/* Bottom Compliance Notice & Quick Home Navigation */}
+      <NoticeBanner
+        notice={notice}
+        onBackToHome={() => handleNavigate("LANDING")}
+        isHome={currentView === "LANDING"}
+      />
 
       {/* Modals for Offline Scanner & eKYC */}
       <OfflineScannerModal
