@@ -20,6 +20,8 @@ from fastapi import (
     UploadFile,
 )
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 
 import app.db.repository as repo
@@ -1117,6 +1119,40 @@ def get_issuer_keys_endpoint(issuer_id: str) -> dict[str, Any]:
             }
         ],
     }
+
+
+# ==============================================================================
+# Sovereign UX4G 3.0 Web Application Static Asset & SPA Mount
+# ==============================================================================
+_static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(_static_dir):
+    _assets_dir = os.path.join(_static_dir, "assets")
+    if os.path.exists(_assets_dir):
+        app.mount("/assets", StaticFiles(directory=_assets_dir), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_spa_frontend(full_path: str):
+        # Allow API routes, health probes, OpenAPI docs, and JWKS to pass through
+        if full_path.startswith((
+            "api/",
+            "health",
+            ".well-known/",
+            "docs",
+            "redoc",
+            "openapi.json",
+        )):
+            raise HTTPException(status_code=404, detail="API route not found")
+
+        target_file = os.path.join(_static_dir, full_path)
+        if full_path and os.path.isfile(target_file):
+            return FileResponse(target_file)
+
+        index_file = os.path.join(_static_dir, "index.html")
+        if os.path.isfile(index_file):
+            return FileResponse(index_file)
+
+        raise HTTPException(status_code=404, detail="Web application index.html not found")
+
 
 
 
